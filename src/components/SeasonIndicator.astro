@@ -1,0 +1,60 @@
+---
+/**
+ * SeasonIndicator.astro — 12-month presence dot strip
+ *
+ * Shows a bird's seasonal presence as a row of 12 colored dots.
+ * Dots are colored by presence type: resident, breeding, wintering, migrating.
+ */
+
+interface MonthPresence {
+  month: number; // 1–12
+  presence: 'resident' | 'breeding' | 'wintering' | 'migrating' | null;
+}
+
+interface Props {
+  /** Array of 12 monthly presence records (or sparse — missing months = absent) */
+  months: MonthPresence[];
+  /** Show month labels (Jan, Feb, …) — default: false */
+  showLabels?: boolean;
+}
+
+const { months, showLabels = false } = Astro.props;
+
+const MONTH_ABBR = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+
+// Build a lookup map: month number → presence type
+const presenceMap = new Map(months.map((m) => [m.month, m.presence]));
+
+// Build all 12 dots
+const dots = Array.from({ length: 12 }, (_, i) => {
+  const month = i + 1;
+  const presence = presenceMap.get(month) ?? null;
+  const label = MONTH_ABBR[i] ?? '';
+  return { month, presence, label };
+});
+---
+
+<div
+  class="season-indicator"
+  role="img"
+  aria-label={`Seasonal presence: ${months.length} months active`}
+>
+  {dots.map(({ month, presence, label }) => (
+    <div
+      class={`season-dot${presence ? ` presence-dot-${presence}` : ''}`}
+      data-present={presence ? 'true' : 'false'}
+      data-presence={presence ?? undefined}
+      title={presence
+        ? `${new Date(2000, month - 1).toLocaleString('en', { month: 'long' })}: ${presence}`
+        : `${new Date(2000, month - 1).toLocaleString('en', { month: 'long' })}: absent`}
+      aria-hidden="true"
+    />
+  ))}
+  {showLabels && (
+    <span class="sr-only">
+      Present in: {months.filter((m) => m.presence).map((m) =>
+        new Date(2000, m.month - 1).toLocaleString('en', { month: 'long' })
+      ).join(', ')}
+    </span>
+  )}
+</div>

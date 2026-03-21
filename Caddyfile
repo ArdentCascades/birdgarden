@@ -1,0 +1,85 @@
+# Bird Garden — Caddy Reverse Proxy Configuration
+# Replace birdgarden.example.com with your actual domain.
+# Caddy handles TLS automatically via Let's Encrypt.
+
+{
+    servers {
+        protocols h1 h2 h3
+    }
+}
+
+birdgarden.example.com {
+    tls {
+        protocols tls1.2 tls1.3
+    }
+
+    # Security headers — applied to all responses
+    header {
+        # Content Security Policy
+        # - script-src 'self': no inline scripts (primary XSS defense)
+        # - style-src 'self' 'unsafe-inline': Astro injects critical CSS inline
+        # - img-src 'self' data:: data: needed for LQIP base64 placeholders
+        # - media-src 'self': audio from same origin only
+        # - frame-ancestors 'none': site must never be embedded in an iframe
+        # - geolocation=(self): only the site itself can request geolocation
+        Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+
+        # HTTP Strict Transport Security — 2 years, preload-ready
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+
+        # Prevent MIME sniffing
+        X-Content-Type-Options "nosniff"
+
+        # Prevent clickjacking
+        X-Frame-Options "DENY"
+
+        # Referrer policy — send origin on same-origin, nothing cross-origin
+        Referrer-Policy "strict-origin-when-cross-origin"
+
+        # Permissions policy — disable unused powerful features
+        Permissions-Policy "camera=(), microphone=(), geolocation=(self), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()"
+
+        # Remove Server header to avoid information disclosure
+        -Server
+    }
+
+    # Serve static media files directly (audio + images)
+    # Aggressive caching — content-addressed filenames via pipeline
+    handle /media/* {
+        root * /opt/bird-garden
+        file_server {
+            hide .git
+        }
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+
+    # Serve optimized fonts with long cache
+    handle /fonts/* {
+        root * /opt/bird-garden/dist
+        file_server
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+
+    # Static assets (JS, CSS, images with content hashes)
+    handle /_astro/* {
+        root * /opt/bird-garden/dist
+        file_server
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+
+    # Favicon
+    handle /favicon.* {
+        root * /opt/bird-garden/dist
+        file_server
+        header Cache-Control "public, max-age=86400"
+    }
+
+    # Everything else → Astro server (SSR + API routes)
+    handle {
+        reverse_proxy localhost:4321 {
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+}

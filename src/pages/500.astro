@@ -1,0 +1,29 @@
+---
+/**
+ * 500.astro — Custom server error page
+ *
+ * On-brand, styled — leaks NO server information, stack traces, or paths.
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Something Went Wrong">
+  <div class="container">
+    <div class="empty-state" style="padding-top: var(--space-24);">
+      <svg class="empty-state-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <circle cx="32" cy="32" r="24" fill="var(--color-sienna-100)" stroke="var(--color-sienna-300)" stroke-width="2"/>
+        <path d="M32 20V34" stroke="var(--color-sienna-600)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="32" cy="42" r="2" fill="var(--color-sienna-600)"/>
+      </svg>
+
+      <h1 class="empty-state-title">Something went wrong</h1>
+      <p class="empty-state-message">
+        We're experiencing technical difficulties. Please try again in a moment.
+      </p>
+      <div style="display: flex; gap: var(--space-3); margin-top: var(--space-4);">
+        <a href="/" class="btn btn-primary">Back to home</a>
+        <button onclick="window.location.reload()" class="btn btn-outline">Try again</button>
+      </div>
+    </div>
+  </div>
+</Base>

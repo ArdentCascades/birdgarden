@@ -1,0 +1,118 @@
+{
+  "site": {
+    "name": "Bird Garden",
+    "tagline": "Discover native plants that attract birds to your garden",
+    "description": "Browse native plants by region, learn which birds they attract, and build your own bird-friendly garden."
+  },
+  "nav": {
+    "plants": "Plants",
+    "birds": "Birds",
+    "myGarden": "My Garden",
+    "about": "About",
+    "openMenu": "Open navigation menu",
+    "closeMenu": "Close navigation menu"
+  },
+  "region": {
+    "selectRegion": "Select your region",
+    "continent": "Continent",
+    "country": "Country",
+    "stateProvince": "State / Province",
+    "useMyLocation": "Use my location",
+    "useMyLocationHelp": "We'll find your nearest region. Your coordinates are processed on-device and not stored.",
+    "locationError": "We couldn't determine your location. Please select your region manually.",
+    "locationPermissionDenied": "Location access was denied. Please select your region manually.",
+    "changeRegion": "Change region",
+    "noRegionSelected": "No region selected"
+  },
+  "plants": {
+    "pageTitle": "Native Plants",
+    "pageSubtitle": "Browse plants native to your region that attract birds",
+    "filterByType": "Filter by type",
+    "filterBloomingNow": "Blooming now",
+    "sortBy": "Sort by",
+    "sortBirds": "Most birds attracted",
+    "sortAlpha": "Alphabetical",
+    "sortBloom": "Bloom period",
+    "searchPlaceholder": "Search plants…",
+    "attractsBirds": "{count} birds",
+    "attractsBird": "1 bird",
+    "addToGarden": "Add to garden",
+    "inGarden": "In your garden",
+    "removeFromGarden": "Remove from garden",
+    "noResults": "No plants found",
+    "noResultsHint": "Try broadening your filters or exploring all native plants.",
+    "clearFilters": "Clear filters",
+    "activeFilters": "Active filters:",
+    "plantTypes": {
+      "tree": "Tree",
+      "shrub": "Shrub",
+      "perennial": "Perennial",
+      "grass": "Grass",
+      "vine": "Vine"
+    }
+  },
+  "birds": {
+    "pageTitle": "Bird Guide",
+    "pageSubtitle": "Birds attracted to native plants in your region",
+    "searchPlaceholder": "Search birds…",
+    "presence": {
+      "resident": "Year-round resident",
+      "breeding": "Breeding season",
+      "wintering": "Winter visitor",
+      "migrating": "Migrating through"
+    },
+    "attractedBy": "Attracted by",
+    "noResults": "No birds found",
+    "noResultsHint": "Try selecting different plants or adjusting your filters."
+  },
+  "audio": {
+    "play": "Play bird song",
+    "pause": "Pause",
+    "speed": "Playback speed",
+    "seekTo": "Seek to {percent}%",
+    "nowPlaying": "Now playing: {name}",
+    "playbackComplete": "Playback complete",
+    "recordedBy": "Recorded by",
+    "license": "License",
+    "source": "Source",
+    "closePlayer": "Close player"
+  },
+  "garden": {
+    "pageTitle": "My Garden",
+    "emptyTitle": "Start building your garden",
+    "emptyMessage": "Browse native plants for your region and add them to see which birds they'll attract.",
+    "browsePlants": "Browse native plants",
+    "totalPlants": "Plants",
+    "totalBirds": "Bird species",
+    "seasonalCoverage": "Seasonal coverage",
+    "removePlant": "Remove from garden",
+    "share": "Share garden",
+    "shareHelp": "Copy this link to share your garden selection",
+    "jukeboxPlay": "Play all songs",
+    "jukeboxStop": "Stop jukebox"
+  },
+  "errors": {
+    "notFound": "Page not found",
+    "notFoundMessage": "The page you're looking for doesn't exist or has moved.",
+    "serverError": "Something went wrong",
+    "serverErrorMessage": "We're experiencing technical difficulties. Please try again later.",
+    "backHome": "Back to home",
+    "tryAgain": "Try again"
+  },
+  "common": {
+    "loading": "Loading…",
+    "close": "Close",
+    "clear": "Clear",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "skip": "Skip to main content",
+    "learnMore": "Learn more",
+    "viewAll": "View all",
+    "bloomPeriod": "Bloom period",
+    "hardinessZone": "Hardiness zone",
+    "zone": "Zone",
+    "family": "Family",
+    "scientificName": "Scientific name"
+  }
+}

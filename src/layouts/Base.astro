@@ -1,0 +1,253 @@
+---
+/**
+ * Base.astro — Site shell layout
+ * Provides: <html>, <head>, skip-to-content, nav, footer, aria-live regions
+ * All pages extend this layout.
+ */
+import '../styles/global.css';
+import '../styles/layout.css';
+import '../styles/components.css';
+
+interface Props {
+  /** Page title — will be prefixed with site name */
+  title: string;
+  /** Meta description for SEO */
+  description?: string;
+  /** Open Graph image URL (absolute) */
+  ogImage?: string;
+  /** Whether to suppress the page breadcrumb area */
+  fullWidth?: boolean;
+  /** Canonical URL for this page */
+  canonicalUrl?: string;
+}
+
+const {
+  title,
+  description = 'Discover native plants that attract birds to your garden. Browse by region, season, and plant type.',
+  ogImage,
+  canonicalUrl,
+} = Astro.props;
+
+const siteTitle = 'Bird Garden';
+const fullTitle = title === siteTitle ? siteTitle : `${title} — ${siteTitle}`;
+
+// Derive current path for aria-current on nav links
+const currentPath = Astro.url.pathname;
+
+// Region from URL params (for persistent nav indicator)
+const selectedRegion = Astro.url.searchParams.get('region');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+
+    <!-- Canonical URL -->
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+    <!-- Fonts: Newsreader (display serif) + Source Sans 3 (body humanist sans) -->
+    <!-- Self-hosted WOFF2, Latin subset. font-display: swap prevents invisible text. -->
+    <style>
+      @font-face {
+        font-family: 'Newsreader';
+        font-weight: 400 700;
+        font-style: normal italic;
+        font-display: swap;
+        src: url('/fonts/newsreader-latin.woff2') format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+
+      @font-face {
+        font-family: 'Source Sans 3';
+        font-weight: 300 700;
+        font-style: normal italic;
+        font-display: swap;
+        src: url('/fonts/source-sans-3-latin.woff2') format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+    </style>
+
+    <!-- Preload display font to reduce FOUT -->
+    <link rel="preload" href="/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- Favicon (placeholder — replace with actual SVG/PNG) -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <title>{fullTitle}</title>
+  </head>
+
+  <body>
+    <!-- Skip to main content — keyboard / screen reader accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Primary navigation -->
+    <header role="banner">
+      <nav class="site-nav" aria-label="Primary navigation">
+        <div class="container nav-inner">
+          <!-- Logo / brand -->
+          <a href="/" class="nav-logo" aria-label="Bird Garden — home">
+            <!-- Inline SVG leaf icon -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false">
+              <path d="M14 3C14 3 5 8 5 16C5 21.5228 9.47715 26 14 26C18.5228 26 23 21.5228 23 16C23 8 14 3 14 3Z" fill="currentColor" opacity="0.15"/>
+              <path d="M14 3C14 3 5 8 5 16C5 21.5228 9.47715 26 14 26" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M14 26C14 14 20 10 25 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+              <path d="M14 18L14 26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Bird Garden
+          </a>
+
+          <!-- Desktop nav links -->
+          <ul class="nav-links" role="list">
+            <li>
+              <a
+                href="/plants"
+                class="nav-link"
+                aria-current={currentPath.startsWith('/plants') ? 'page' : undefined}
+              >
+                Plants
+              </a>
+            </li>
+            <li>
+              <a
+                href="/birds"
+                class="nav-link"
+                aria-current={currentPath.startsWith('/birds') ? 'page' : undefined}
+              >
+                Birds
+              </a>
+            </li>
+            <li>
+              <a
+                href="/garden"
+                class="nav-link"
+                aria-current={currentPath === '/garden' ? 'page' : undefined}
+              >
+                My Garden
+              </a>
+            </li>
+            <li>
+              <a
+                href="/about"
+                class="nav-link"
+                aria-current={currentPath === '/about' ? 'page' : undefined}
+              >
+                About
+              </a>
+            </li>
+          </ul>
+
+          <!-- Persistent region indicator chip -->
+          {selectedRegion && (
+            <a
+              href={`/?region=${selectedRegion}`}
+              class="nav-region-chip"
+              aria-label={`Viewing ${selectedRegion}. Click to change region.`}
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <circle cx="6" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M6 12C6 12 2 8.5 2 5C2 2.79 3.79 1 6 1C8.21 1 10 2.79 10 5C10 8.5 6 12 6 12Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              </svg>
+              {selectedRegion}
+            </a>
+          )}
+
+          <!-- Mobile nav toggle — MobileNav.tsx island handles the drawer -->
+          <button
+            class="nav-mobile-toggle"
+            aria-label="Open navigation menu"
+            aria-expanded="false"
+            aria-controls="mobile-nav-drawer"
+            id="mobile-nav-toggle"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path d="M3 6H21M3 12H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Mobile navigation drawer island — loaded as Preact client component -->
+      <!-- <MobileNav client:load /> — will be added in Task 6 -->
+    </header>
+
+    <!-- Main content area -->
+    <main id="main-content" class="site-main" tabindex="-1">
+      <slot />
+    </main>
+
+    <!-- Site footer -->
+    <footer class="site-footer" role="contentinfo">
+      <div class="container">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <div class="nav-logo" style="color: #ffffff; margin-bottom: 0.5rem;">
+              Bird Garden
+            </div>
+            <p style="font-size: var(--text-sm); color: var(--color-neutral-400); max-width: 28ch; line-height: var(--leading-relaxed);">
+              Discover native plants that attract birds to your garden.
+            </p>
+          </div>
+
+          <div>
+            <p class="footer-heading">Explore</p>
+            <ul class="footer-links" role="list">
+              <li><a href="/plants">Native Plants</a></li>
+              <li><a href="/birds">Bird Guide</a></li>
+              <li><a href="/garden">My Garden</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <p class="footer-heading">Information</p>
+            <ul class="footer-links" role="list">
+              <li><a href="/about">About</a></li>
+              <li><a href="/about#data-sources">Data Sources</a></li>
+              <li><a href="/about#attribution">Attribution</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>
+            All bird song recordings and images used under Creative Commons licenses.
+            <a href="/about#attribution" style="color: var(--color-neutral-400);">See full attribution.</a>
+          </p>
+          <p>
+            Built with <a href="https://astro.build" rel="noopener noreferrer" style="color: var(--color-neutral-400);">Astro</a>
+            &amp; <a href="https://bun.sh" rel="noopener noreferrer" style="color: var(--color-neutral-400);">Bun</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!--
+      aria-live regions for dynamic announcements.
+      - polite: audio player state, filter results count
+      - assertive: reserved for critical errors only
+    -->
+    <div id="aria-live-polite" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+    <div id="aria-live-assertive" aria-live="assertive" aria-atomic="true" class="sr-only"></div>
+
+    <!--
+      Mini player island — sticky bottom bar when audio is playing.
+      Rendered here so it sits above all page content in the stacking context.
+      <MiniPlayer client:load /> — will be wired up in Task 9
+    -->
+  </body>
+</html>

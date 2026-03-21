@@ -1,0 +1,31 @@
+---
+/**
+ * 404.astro — Custom "Not Found" page
+ *
+ * On-brand, styled — leaks no server information.
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page Not Found">
+  <div class="container">
+    <div class="empty-state" style="padding-top: var(--space-24);">
+      <!-- Leaf icon -->
+      <svg class="empty-state-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <path d="M32 8C32 8 12 18 12 36C12 47.046 21.507 56 32 56C42.493 56 52 47.046 52 36C52 18 32 8 32 8Z" fill="var(--color-green-100)" stroke="var(--color-green-400)" stroke-width="2"/>
+        <path d="M32 56L32 32" stroke="var(--color-green-500)" stroke-width="2" stroke-linecap="round"/>
+        <path d="M32 40L22 30" stroke="var(--color-green-400)" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+        <path d="M32 48L42 38" stroke="var(--color-green-400)" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+        <text x="32" y="36" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--color-green-700)">404</text>
+      </svg>
+
+      <h1 class="empty-state-title">Page not found</h1>
+      <p class="empty-state-message">
+        The page you're looking for doesn't exist or has moved.
+      </p>
+      <a href="/" class="btn btn-primary" style="margin-top: var(--space-4);">
+        Back to home
+      </a>
+    </div>
+  </div>
+</Base>

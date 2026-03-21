@@ -1,0 +1,21 @@
+---
+/**
+ * /plants/[slug] — Plant detail page
+ *
+ * SSG with static paths. Implemented in Task 8.
+ */
+import Base from '../../layouts/Base.astro';
+
+export function getStaticPaths() {
+  // TODO: Implement in Task 8 — query all plant slugs from DB for SSG
+  return [];
+}
+
+const { slug } = Astro.params;
+---
+
+<Base title={`Plant: ${slug}`}>
+  <div class="container">
+    <p style="color: var(--color-text-muted);">Plant detail page — implemented in Task 8.</p>
+  </div>
+</Base>

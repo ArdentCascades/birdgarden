@@ -1,0 +1,110 @@
+---
+/**
+ * PlantCard.astro — Plant summary card
+ *
+ * Information hierarchy per spec:
+ *   image → common name (largest) → "Attracts N birds" badge
+ *   → plant type + bloom period → scientific name (de-emphasized)
+ *   → "Add to Garden" button
+ */
+import Picture from './Picture.astro';
+import { formatBloomPeriod } from '../lib/seasonality.ts';
+
+interface Props {
+  slug: string;
+  commonName: string;
+  scientificName: string;
+  plantType?: string | null;
+  bloomStart?: number | null;
+  bloomEnd?: number | null;
+  birdCount?: number;
+  imageAlt?: string;
+  hasImage?: boolean;
+  /** Animation delay for staggered card appearance (ms) */
+  animationDelay?: number;
+}
+
+const {
+  slug,
+  commonName,
+  scientificName,
+  plantType,
+  bloomStart = null,
+  bloomEnd = null,
+  birdCount = 0,
+  imageAlt = `${commonName} photograph`,
+  hasImage = false,
+  animationDelay = 0,
+} = Astro.props;
+
+const bloomLabel = formatBloomPeriod(bloomStart, bloomEnd);
+const birdLabel = birdCount === 1 ? '1 bird' : `${birdCount} birds`;
+---
+
+<div
+  class="plant-card animate-card-appear"
+  style={animationDelay ? `animation-delay: ${animationDelay}ms` : undefined}
+>
+  <a href={`/plants/${slug}`} class="plant-card-image" tabindex="-1" aria-hidden="true">
+    {hasImage ? (
+      <Picture slug={slug} entityType="plant" alt={imageAlt} />
+    ) : (
+      <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--color-green-100);">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <path d="M24 6C24 6 10 14 10 28C10 36.837 16.268 44 24 44C31.732 44 38 36.837 38 28C38 14 24 6 24 6Z"
+            fill="var(--color-green-300)"/>
+          <path d="M24 44V28" stroke="var(--color-green-600)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    )}
+  </a>
+
+  <div class="plant-card-body">
+    <!-- Common name — primary, largest text -->
+    <a href={`/plants/${slug}`} style="text-decoration: none; color: inherit;">
+      <h3 class="plant-card-name">{commonName}</h3>
+    </a>
+
+    <!-- "Attracts N birds" — highlight badge -->
+    {birdCount > 0 && (
+      <span class="plant-card-birds-badge" aria-label={`Attracts ${birdLabel}`}>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+          <path d="M2 9C2 9 4 6 6 5C8 4 10 5 10 7C10 9 8 10 6 10C5 10 3 9.5 2 9Z"/>
+          <circle cx="7.5" cy="4.5" r="1"/>
+        </svg>
+        {birdLabel}
+      </span>
+    )}
+
+    <!-- Plant type + bloom period — secondary metadata -->
+    <div class="plant-card-meta">
+      {plantType && (
+        <span class="badge badge-sage">{plantType.charAt(0).toUpperCase() + plantType.slice(1)}</span>
+      )}
+      {bloomStart !== null && (
+        <span title="Bloom period">{bloomLabel}</span>
+      )}
+    </div>
+
+    <!-- Scientific name — de-emphasized, italic, below common name -->
+    <p class="plant-card-scientific scientific-name">{scientificName}</p>
+  </div>
+
+  <!-- "Add to Garden" button -->
+  <div class="plant-card-footer">
+    <!--
+      This button is a client-side action handled by the GardenBuilder island.
+      In SSR/SSG context, it posts to a form action as progressive enhancement.
+      The Preact island upgrades this behavior with localStorage.
+    -->
+    <button
+      class="add-to-garden-btn"
+      data-plant-slug={slug}
+      data-plant-name={commonName}
+      aria-label={`Add ${commonName} to your garden`}
+      type="button"
+    >
+      Add to Garden
+    </button>
+  </div>
+</div>

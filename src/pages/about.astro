@@ -1,0 +1,30 @@
+---
+/**
+ * /about — About page with data sources and attribution
+ *
+ * SSG. Content populated in Task 12.
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="About" description="About Bird Garden — data sources, attribution, and the project behind the site.">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">About Bird Garden</h1>
+    </div>
+
+    <div class="prose-layout" style="padding-bottom: var(--space-16);">
+      <p>
+        Bird Garden helps you discover native plants that attract birds to your garden.
+        All plant and bird data, recordings, and images are from public-domain or
+        Creative Commons sources.
+      </p>
+
+      <h2 id="data-sources" style="margin-top: var(--space-10);">Data Sources</h2>
+      <p style="color: var(--color-text-muted);">Full data source attribution added in Task 12.</p>
+
+      <h2 id="attribution" style="margin-top: var(--space-8);">Media Attribution</h2>
+      <p style="color: var(--color-text-muted);">Full media attribution added in Task 12.</p>
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,79 @@
+---
+/**
+ * Picture.astro — Responsive image with AVIF/WebP/JPEG srcset
+ *
+ * Follows the image pipeline conventions:
+ *   media/images/{birds|plants}/{slug}-{width}.avif
+ *   media/images/{birds|plants}/{slug}-{width}.webp
+ *   media/images/{birds|plants}/{slug}-800.jpg  (JPEG fallback)
+ *
+ * Usage:
+ *   <Picture slug="northern-cardinal" entityType="bird" alt="Northern Cardinal" />
+ */
+
+interface Props {
+  /** Entity slug (e.g., "northern-cardinal") */
+  slug: string;
+  /** Entity type for path resolution */
+  entityType: 'bird' | 'plant';
+  /** Alt text (required — stored in DB) */
+  alt: string;
+  /** Whether this is the hero/LCP image */
+  isHero?: boolean;
+  /** CSS class */
+  class?: string;
+  /** LQIP base64 data URI for instant placeholder */
+  lqip?: string;
+  /** Custom sizes attribute */
+  sizes?: string;
+  /** Explicit width for layout */
+  width?: number;
+  /** Explicit height for layout */
+  height?: number;
+}
+
+const {
+  slug,
+  entityType,
+  alt,
+  isHero = false,
+  class: className,
+  lqip,
+  sizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px',
+  width = 800,
+  height = 600,
+} = Astro.props;
+
+const base = `/media/images/${entityType}s/${slug}`;
+---
+
+<picture>
+  <!-- AVIF — best compression, supported in all modern browsers -->
+  <source
+    type="image/avif"
+    srcset={`${base}-400.avif 400w, ${base}-800.avif 800w, ${base}-1200.avif 1200w`}
+    sizes={sizes}
+  />
+
+  <!-- WebP — broad support, good compression -->
+  <source
+    type="image/webp"
+    srcset={`${base}-400.webp 400w, ${base}-800.webp 800w, ${base}-1200.webp 1200w`}
+    sizes={sizes}
+  />
+
+  <!-- JPEG fallback -->
+  <img
+    src={`${base}-800.jpg`}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={isHero ? 'eager' : 'lazy'}
+    decoding={isHero ? 'sync' : 'async'}
+    fetchpriority={isHero ? 'high' : undefined}
+    class={className}
+    style={lqip
+      ? `background-image: url('${lqip}'); background-size: cover; background-position: center;`
+      : undefined}
+  />
+</picture>

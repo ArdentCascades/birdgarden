@@ -1,0 +1,20 @@
+---
+/**
+ * /birds — Bird browser
+ *
+ * SSR page. Implemented in Task 9.
+ */
+export const prerender = false;
+
+import Base from '../../layouts/Base.astro';
+---
+
+<Base title="Bird Guide" description="Browse birds attracted to native plants in your region.">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">Bird Guide</h1>
+      <p class="page-subtitle">Birds attracted to native plants in your region</p>
+    </div>
+    <p style="color: var(--color-text-muted);">Bird browser implemented in Task 9.</p>
+  </div>
+</Base>

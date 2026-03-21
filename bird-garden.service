@@ -1,0 +1,70 @@
+[Unit]
+Description=Bird Garden — Native Plant & Bird Discovery Site
+Documentation=https://github.com/your-org/bird-garden
+After=network.target
+
+[Service]
+Type=simple
+User=birdgarden
+Group=birdgarden
+WorkingDirectory=/opt/bird-garden
+
+# Environment file — never commit .env to the repo
+EnvironmentFile=/opt/bird-garden/.env
+ExecStart=/home/birdgarden/.bun/bin/bun run start
+
+# Restart on failure with 5 second backoff
+Restart=on-failure
+RestartSec=5
+
+# Logging — output goes to journald
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bird-garden
+
+# ============================================================
+# Systemd Security Sandboxing
+# ============================================================
+
+# Prevent privilege escalation
+NoNewPrivileges=true
+
+# Filesystem restrictions
+ProtectSystem=strict
+ProtectHome=true
+
+# Only these paths are writable
+ReadWritePaths=/opt/bird-garden/db
+
+# These paths are readable but not writable
+ReadOnlyPaths=/opt/bird-garden/media /opt/bird-garden/dist /opt/bird-garden/src
+
+# Private /tmp — prevents /tmp information leaks between services
+PrivateTmp=true
+
+# Prevent modification of kernel parameters
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+# Network restrictions — only IPv4, IPv6, and Unix sockets
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+# Prevent namespace manipulation
+RestrictNamespaces=true
+
+# Prevent acquiring real-time scheduling
+RestrictRealtime=true
+
+# Syscall filter — allow only system-service-typical calls
+SystemCallFilter=@system-service
+
+# Memory limit — prevents runaway processes
+MemoryMax=512M
+MemorySwapMax=0
+
+# CPU quota — prevent monopolizing CPU
+CPUQuota=80%
+
+[Install]
+WantedBy=multi-user.target

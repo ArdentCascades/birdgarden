@@ -1,0 +1,21 @@
+---
+/**
+ * /birds/[slug] — Bird detail page
+ *
+ * SSG. Implemented in Task 9.
+ */
+import Base from '../../layouts/Base.astro';
+
+export function getStaticPaths() {
+  // TODO: Implement in Task 9 — query all bird slugs from DB for SSG
+  return [];
+}
+
+const { slug } = Astro.params;
+---
+
+<Base title={`Bird: ${slug}`}>
+  <div class="container">
+    <p style="color: var(--color-text-muted);">Bird detail page — implemented in Task 9.</p>
+  </div>
+</Base>

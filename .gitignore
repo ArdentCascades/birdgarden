@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Bun
+bun.lockb
+
+# Build output
+dist/
+.astro/
+
+# Environment files — never commit secrets
+.env
+.env.local
+.env.*.local
+
+# Database (generated at deploy time)
+db/*.sqlite
+db/*.sqlite-wal
+db/*.sqlite-shm
+
+# Media (downloaded at deploy time — not committed to repo)
+media/songs/*.opus
+media/songs/*.mp3
+media/images/birds/*.avif
+media/images/birds/*.webp
+media/images/birds/*.jpg
+media/images/plants/*.avif
+media/images/plants/*.webp
+media/images/plants/*.jpg
+
+# Public-domain fonts (self-hosted WOFF2)
+# These are committed to the repo under public/fonts/
+# If using a CDN, add them to .gitignore instead.
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/settings.json
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Backups
+backups/

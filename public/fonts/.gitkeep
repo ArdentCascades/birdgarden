@@ -1,0 +1,7 @@
+# Self-hosted WOFF2 font files go here.
+# Expected files:
+#   newsreader-latin.woff2      — display serif (Task 6)
+#   source-sans-3-latin.woff2  — body humanist sans (Task 6)
+#
+# These are downloaded and subsetted in Task 6.
+# Do NOT commit font files if licensing requires distribution restrictions.
