@@ -1,54 +1,301 @@
 [
-  { "bird_slug": "northern-cardinal",     "plant_slug": "eastern-redbud",      "attraction_type": "food_seed" },
-  { "bird_slug": "northern-cardinal",     "plant_slug": "serviceberry",         "attraction_type": "food_berry" },
-  { "bird_slug": "northern-cardinal",     "plant_slug": "red-oak",              "attraction_type": "food_insect" },
-  { "bird_slug": "american-goldfinch",    "plant_slug": "purple-coneflower",    "attraction_type": "food_seed" },
-  { "bird_slug": "american-goldfinch",    "plant_slug": "black-eyed-susan",     "attraction_type": "food_seed" },
-  { "bird_slug": "american-goldfinch",    "plant_slug": "native-switchgrass",   "attraction_type": "food_seed" },
-  { "bird_slug": "american-robin",        "plant_slug": "serviceberry",         "attraction_type": "food_berry" },
-  { "bird_slug": "american-robin",        "plant_slug": "dogwood-flowering",    "attraction_type": "food_berry" },
-  { "bird_slug": "american-robin",        "plant_slug": "elderberry",           "attraction_type": "food_berry" },
-  { "bird_slug": "american-robin",        "plant_slug": "spicebush",            "attraction_type": "food_berry" },
-  { "bird_slug": "ruby-throated-hummingbird", "plant_slug": "trumpet-vine",     "attraction_type": "food_nectar" },
-  { "bird_slug": "ruby-throated-hummingbird", "plant_slug": "bee-balm",         "attraction_type": "food_nectar" },
-  { "bird_slug": "ruby-throated-hummingbird", "plant_slug": "eastern-red-columbine", "attraction_type": "food_nectar" },
-  { "bird_slug": "baltimore-oriole",      "plant_slug": "eastern-redbud",       "attraction_type": "food_nectar" },
-  { "bird_slug": "baltimore-oriole",      "plant_slug": "trumpet-vine",         "attraction_type": "food_nectar" },
-  { "bird_slug": "baltimore-oriole",      "plant_slug": "elderberry",           "attraction_type": "food_berry" },
-  { "bird_slug": "black-capped-chickadee", "plant_slug": "red-oak",             "attraction_type": "food_insect" },
-  { "bird_slug": "black-capped-chickadee", "plant_slug": "serviceberry",        "attraction_type": "food_berry" },
-  { "bird_slug": "black-capped-chickadee", "plant_slug": "red-oak",             "attraction_type": "nesting" },
-  { "bird_slug": "cedar-waxwing",         "plant_slug": "serviceberry",         "attraction_type": "food_berry" },
-  { "bird_slug": "cedar-waxwing",         "plant_slug": "dogwood-flowering",    "attraction_type": "food_berry" },
-  { "bird_slug": "cedar-waxwing",         "plant_slug": "american-beautyberry", "attraction_type": "food_berry" },
-  { "bird_slug": "cedar-waxwing",         "plant_slug": "elderberry",           "attraction_type": "food_berry" },
-  { "bird_slug": "cedar-waxwing",         "plant_slug": "native-virginia-creeper", "attraction_type": "food_berry" },
-  { "bird_slug": "eastern-bluebird",      "plant_slug": "serviceberry",         "attraction_type": "food_berry" },
-  { "bird_slug": "eastern-bluebird",      "plant_slug": "dogwood-flowering",    "attraction_type": "food_berry" },
-  { "bird_slug": "eastern-bluebird",      "plant_slug": "american-beautyberry", "attraction_type": "food_berry" },
-  { "bird_slug": "house-finch",           "plant_slug": "purple-coneflower",    "attraction_type": "food_seed" },
-  { "bird_slug": "house-finch",           "plant_slug": "black-eyed-susan",     "attraction_type": "food_seed" },
-  { "bird_slug": "house-finch",           "plant_slug": "serviceberry",         "attraction_type": "food_berry" },
-  { "bird_slug": "song-sparrow",          "plant_slug": "native-switchgrass",   "attraction_type": "food_seed" },
-  { "bird_slug": "song-sparrow",          "plant_slug": "elderberry",           "attraction_type": "nesting" },
-  { "bird_slug": "yellow-warbler",        "plant_slug": "elderberry",           "attraction_type": "food_insect" },
-  { "bird_slug": "yellow-warbler",        "plant_slug": "spicebush",            "attraction_type": "food_insect" },
-  { "bird_slug": "downy-woodpecker",      "plant_slug": "red-oak",              "attraction_type": "food_insect" },
-  { "bird_slug": "downy-woodpecker",      "plant_slug": "spicebush",            "attraction_type": "food_insect" },
-  { "bird_slug": "dark-eyed-junco",       "plant_slug": "native-switchgrass",   "attraction_type": "food_seed" },
-  { "bird_slug": "dark-eyed-junco",       "plant_slug": "purple-coneflower",    "attraction_type": "food_seed" },
-  { "bird_slug": "dark-eyed-junco",       "plant_slug": "black-eyed-susan",     "attraction_type": "food_seed" },
-  { "bird_slug": "tufted-titmouse",       "plant_slug": "red-oak",              "attraction_type": "food_insect" },
-  { "bird_slug": "tufted-titmouse",       "plant_slug": "serviceberry",         "attraction_type": "food_berry" },
-  { "bird_slug": "carolina-wren",         "plant_slug": "spicebush",            "attraction_type": "food_insect" },
-  { "bird_slug": "carolina-wren",         "plant_slug": "elderberry",           "attraction_type": "nesting" },
-  { "bird_slug": "indigo-bunting",        "plant_slug": "native-switchgrass",   "attraction_type": "food_seed" },
-  { "bird_slug": "indigo-bunting",        "plant_slug": "black-eyed-susan",     "attraction_type": "food_seed" },
-  { "bird_slug": "white-breasted-nuthatch", "plant_slug": "red-oak",            "attraction_type": "food_insect" },
-  { "bird_slug": "gray-catbird",          "plant_slug": "serviceberry",         "attraction_type": "food_berry" },
-  { "bird_slug": "gray-catbird",          "plant_slug": "elderberry",           "attraction_type": "food_berry" },
-  { "bird_slug": "gray-catbird",          "plant_slug": "american-beautyberry", "attraction_type": "food_berry" },
-  { "bird_slug": "northern-mockingbird",  "plant_slug": "american-beautyberry", "attraction_type": "food_berry" },
-  { "bird_slug": "northern-mockingbird",  "plant_slug": "serviceberry",         "attraction_type": "food_berry" },
-  { "bird_slug": "northern-mockingbird",  "plant_slug": "native-virginia-creeper", "attraction_type": "food_berry" }
+  { "bird_slug": "northern-cardinal",          "plant_slug": "eastern-redbud",        "attraction_type": "food_seed" },
+  { "bird_slug": "northern-cardinal",          "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "northern-cardinal",          "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "northern-cardinal",          "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "northern-cardinal",          "plant_slug": "dogwood-flowering",      "attraction_type": "food_berry" },
+
+  { "bird_slug": "american-goldfinch",         "plant_slug": "purple-coneflower",      "attraction_type": "food_seed" },
+  { "bird_slug": "american-goldfinch",         "plant_slug": "black-eyed-susan",       "attraction_type": "food_seed" },
+  { "bird_slug": "american-goldfinch",         "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "american-goldfinch",         "plant_slug": "goldenrod",              "attraction_type": "food_seed" },
+  { "bird_slug": "american-goldfinch",         "plant_slug": "new-england-aster",      "attraction_type": "food_seed" },
+  { "bird_slug": "american-goldfinch",         "plant_slug": "ironweed",               "attraction_type": "food_seed" },
+  { "bird_slug": "american-goldfinch",         "plant_slug": "cup-plant",              "attraction_type": "food_seed" },
+  { "bird_slug": "american-goldfinch",         "plant_slug": "wild-bergamot",          "attraction_type": "food_seed" },
+
+  { "bird_slug": "american-robin",             "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "american-robin",             "plant_slug": "dogwood-flowering",      "attraction_type": "food_berry" },
+  { "bird_slug": "american-robin",             "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "american-robin",             "plant_slug": "spicebush",              "attraction_type": "food_berry" },
+  { "bird_slug": "american-robin",             "plant_slug": "hackberry",              "attraction_type": "food_berry" },
+  { "bird_slug": "american-robin",             "plant_slug": "arrowwood-viburnum",     "attraction_type": "food_berry" },
+  { "bird_slug": "american-robin",             "plant_slug": "wild-black-cherry",      "attraction_type": "food_berry" },
+  { "bird_slug": "american-robin",             "plant_slug": "staghorn-sumac",         "attraction_type": "food_berry" },
+  { "bird_slug": "american-robin",             "plant_slug": "wild-grape",             "attraction_type": "food_berry" },
+  { "bird_slug": "american-robin",             "plant_slug": "sassafras",              "attraction_type": "food_berry" },
+
+  { "bird_slug": "ruby-throated-hummingbird",  "plant_slug": "trumpet-vine",           "attraction_type": "food_nectar" },
+  { "bird_slug": "ruby-throated-hummingbird",  "plant_slug": "bee-balm",               "attraction_type": "food_nectar" },
+  { "bird_slug": "ruby-throated-hummingbird",  "plant_slug": "eastern-red-columbine",  "attraction_type": "food_nectar" },
+  { "bird_slug": "ruby-throated-hummingbird",  "plant_slug": "cardinal-flower",        "attraction_type": "food_nectar" },
+  { "bird_slug": "ruby-throated-hummingbird",  "plant_slug": "trumpet-honeysuckle",    "attraction_type": "food_nectar" },
+  { "bird_slug": "ruby-throated-hummingbird",  "plant_slug": "crossvine",              "attraction_type": "food_nectar" },
+  { "bird_slug": "ruby-throated-hummingbird",  "plant_slug": "wild-bergamot",          "attraction_type": "food_nectar" },
+  { "bird_slug": "ruby-throated-hummingbird",  "plant_slug": "great-blue-lobelia",     "attraction_type": "food_nectar" },
+
+  { "bird_slug": "baltimore-oriole",           "plant_slug": "eastern-redbud",         "attraction_type": "food_nectar" },
+  { "bird_slug": "baltimore-oriole",           "plant_slug": "trumpet-vine",           "attraction_type": "food_nectar" },
+  { "bird_slug": "baltimore-oriole",           "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "baltimore-oriole",           "plant_slug": "eastern-cottonwood",     "attraction_type": "nesting" },
+  { "bird_slug": "baltimore-oriole",           "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "baltimore-oriole",           "plant_slug": "tulip-poplar",           "attraction_type": "food_nectar" },
+  { "bird_slug": "baltimore-oriole",           "plant_slug": "wild-black-cherry",      "attraction_type": "food_berry" },
+
+  { "bird_slug": "black-capped-chickadee",     "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "black-capped-chickadee",     "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "black-capped-chickadee",     "plant_slug": "red-oak",               "attraction_type": "nesting" },
+  { "bird_slug": "black-capped-chickadee",     "plant_slug": "eastern-white-pine",     "attraction_type": "shelter" },
+
+  { "bird_slug": "cedar-waxwing",              "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "cedar-waxwing",              "plant_slug": "dogwood-flowering",      "attraction_type": "food_berry" },
+  { "bird_slug": "cedar-waxwing",              "plant_slug": "american-beautyberry",   "attraction_type": "food_berry" },
+  { "bird_slug": "cedar-waxwing",              "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "cedar-waxwing",              "plant_slug": "virginia-creeper",       "attraction_type": "food_berry" },
+  { "bird_slug": "cedar-waxwing",              "plant_slug": "hackberry",              "attraction_type": "food_berry" },
+  { "bird_slug": "cedar-waxwing",              "plant_slug": "arrowwood-viburnum",     "attraction_type": "food_berry" },
+  { "bird_slug": "cedar-waxwing",              "plant_slug": "highbush-blueberry",     "attraction_type": "food_berry" },
+  { "bird_slug": "cedar-waxwing",              "plant_slug": "wild-black-cherry",      "attraction_type": "food_berry" },
+  { "bird_slug": "cedar-waxwing",              "plant_slug": "gray-dogwood",           "attraction_type": "food_berry" },
+
+  { "bird_slug": "eastern-bluebird",           "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "eastern-bluebird",           "plant_slug": "dogwood-flowering",      "attraction_type": "food_berry" },
+  { "bird_slug": "eastern-bluebird",           "plant_slug": "american-beautyberry",   "attraction_type": "food_berry" },
+  { "bird_slug": "eastern-bluebird",           "plant_slug": "arrowwood-viburnum",     "attraction_type": "food_berry" },
+  { "bird_slug": "eastern-bluebird",           "plant_slug": "staghorn-sumac",         "attraction_type": "food_berry" },
+  { "bird_slug": "eastern-bluebird",           "plant_slug": "smooth-sumac",           "attraction_type": "food_berry" },
+
+  { "bird_slug": "house-finch",                "plant_slug": "purple-coneflower",      "attraction_type": "food_seed" },
+  { "bird_slug": "house-finch",                "plant_slug": "black-eyed-susan",       "attraction_type": "food_seed" },
+  { "bird_slug": "house-finch",                "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "house-finch",                "plant_slug": "goldenrod",              "attraction_type": "food_seed" },
+
+  { "bird_slug": "song-sparrow",               "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "song-sparrow",               "plant_slug": "elderberry",             "attraction_type": "nesting" },
+  { "bird_slug": "song-sparrow",               "plant_slug": "little-bluestem",        "attraction_type": "food_seed" },
+
+  { "bird_slug": "yellow-warbler",             "plant_slug": "elderberry",             "attraction_type": "food_insect" },
+  { "bird_slug": "yellow-warbler",             "plant_slug": "spicebush",              "attraction_type": "food_insect" },
+  { "bird_slug": "yellow-warbler",             "plant_slug": "buttonbush",             "attraction_type": "food_insect" },
+
+  { "bird_slug": "downy-woodpecker",           "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "downy-woodpecker",           "plant_slug": "spicebush",              "attraction_type": "food_insect" },
+  { "bird_slug": "downy-woodpecker",           "plant_slug": "eastern-white-pine",     "attraction_type": "food_insect" },
+  { "bird_slug": "downy-woodpecker",           "plant_slug": "virginia-creeper",       "attraction_type": "food_berry" },
+
+  { "bird_slug": "dark-eyed-junco",            "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "dark-eyed-junco",            "plant_slug": "purple-coneflower",      "attraction_type": "food_seed" },
+  { "bird_slug": "dark-eyed-junco",            "plant_slug": "black-eyed-susan",       "attraction_type": "food_seed" },
+  { "bird_slug": "dark-eyed-junco",            "plant_slug": "little-bluestem",        "attraction_type": "food_seed" },
+  { "bird_slug": "dark-eyed-junco",            "plant_slug": "prairie-dropseed",       "attraction_type": "food_seed" },
+
+  { "bird_slug": "tufted-titmouse",            "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "tufted-titmouse",            "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "tufted-titmouse",            "plant_slug": "eastern-white-pine",     "attraction_type": "shelter" },
+
+  { "bird_slug": "carolina-wren",              "plant_slug": "spicebush",              "attraction_type": "food_insect" },
+  { "bird_slug": "carolina-wren",              "plant_slug": "elderberry",             "attraction_type": "nesting" },
+  { "bird_slug": "carolina-wren",              "plant_slug": "virginia-creeper",       "attraction_type": "food_insect" },
+
+  { "bird_slug": "indigo-bunting",             "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "indigo-bunting",             "plant_slug": "black-eyed-susan",       "attraction_type": "food_seed" },
+  { "bird_slug": "indigo-bunting",             "plant_slug": "goldenrod",              "attraction_type": "food_seed" },
+  { "bird_slug": "indigo-bunting",             "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+
+  { "bird_slug": "white-breasted-nuthatch",    "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "white-breasted-nuthatch",    "plant_slug": "eastern-white-pine",     "attraction_type": "food_insect" },
+
+  { "bird_slug": "gray-catbird",               "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "gray-catbird",               "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "gray-catbird",               "plant_slug": "american-beautyberry",   "attraction_type": "food_berry" },
+  { "bird_slug": "gray-catbird",               "plant_slug": "maypop-passionflower",   "attraction_type": "food_berry" },
+  { "bird_slug": "gray-catbird",               "plant_slug": "spicebush",              "attraction_type": "food_berry" },
+  { "bird_slug": "gray-catbird",               "plant_slug": "arrowwood-viburnum",     "attraction_type": "food_berry" },
+  { "bird_slug": "gray-catbird",               "plant_slug": "wild-grape",             "attraction_type": "food_berry" },
+
+  { "bird_slug": "northern-mockingbird",       "plant_slug": "american-beautyberry",   "attraction_type": "food_berry" },
+  { "bird_slug": "northern-mockingbird",       "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "northern-mockingbird",       "plant_slug": "virginia-creeper",       "attraction_type": "food_berry" },
+  { "bird_slug": "northern-mockingbird",       "plant_slug": "maypop-passionflower",   "attraction_type": "food_berry" },
+  { "bird_slug": "northern-mockingbird",       "plant_slug": "staghorn-sumac",         "attraction_type": "food_berry" },
+
+  { "bird_slug": "painted-bunting",            "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "painted-bunting",            "plant_slug": "little-bluestem",        "attraction_type": "food_seed" },
+
+  { "bird_slug": "rose-breasted-grosbeak",     "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "rose-breasted-grosbeak",     "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "rose-breasted-grosbeak",     "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "rose-breasted-grosbeak",     "plant_slug": "wild-black-cherry",      "attraction_type": "food_berry" },
+
+  { "bird_slug": "blue-grosbeak",              "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "blue-grosbeak",              "plant_slug": "little-bluestem",        "attraction_type": "food_seed" },
+
+  { "bird_slug": "purple-finch",               "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "purple-finch",               "plant_slug": "eastern-white-pine",     "attraction_type": "food_seed" },
+  { "bird_slug": "purple-finch",               "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+
+  { "bird_slug": "pine-siskin",                "plant_slug": "eastern-white-pine",     "attraction_type": "food_seed" },
+  { "bird_slug": "pine-siskin",                "plant_slug": "purple-coneflower",      "attraction_type": "food_seed" },
+  { "bird_slug": "pine-siskin",                "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+
+  { "bird_slug": "white-throated-sparrow",     "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "white-throated-sparrow",     "plant_slug": "arrowwood-viburnum",     "attraction_type": "food_berry" },
+  { "bird_slug": "white-throated-sparrow",     "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+
+  { "bird_slug": "white-crowned-sparrow",      "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "white-crowned-sparrow",      "plant_slug": "little-bluestem",        "attraction_type": "food_seed" },
+
+  { "bird_slug": "chipping-sparrow",           "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "chipping-sparrow",           "plant_slug": "prairie-dropseed",       "attraction_type": "food_seed" },
+
+  { "bird_slug": "field-sparrow",              "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "field-sparrow",              "plant_slug": "little-bluestem",        "attraction_type": "nesting" },
+  { "bird_slug": "field-sparrow",              "plant_slug": "goldenrod",              "attraction_type": "food_seed" },
+
+  { "bird_slug": "fox-sparrow",                "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "fox-sparrow",                "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+
+  { "bird_slug": "american-redstart",          "plant_slug": "elderberry",             "attraction_type": "food_insect" },
+  { "bird_slug": "american-redstart",          "plant_slug": "spicebush",              "attraction_type": "food_insect" },
+
+  { "bird_slug": "common-yellowthroat",        "plant_slug": "native-switchgrass",     "attraction_type": "nesting" },
+  { "bird_slug": "common-yellowthroat",        "plant_slug": "buttonbush",             "attraction_type": "nesting" },
+
+  { "bird_slug": "yellow-rumped-warbler",      "plant_slug": "virginia-creeper",       "attraction_type": "food_berry" },
+  { "bird_slug": "yellow-rumped-warbler",      "plant_slug": "arrowwood-viburnum",     "attraction_type": "food_berry" },
+  { "bird_slug": "yellow-rumped-warbler",      "plant_slug": "eastern-white-pine",     "attraction_type": "shelter" },
+
+  { "bird_slug": "wood-thrush",                "plant_slug": "spicebush",              "attraction_type": "food_berry" },
+  { "bird_slug": "wood-thrush",                "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "wood-thrush",                "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "wood-thrush",                "plant_slug": "sassafras",              "attraction_type": "food_berry" },
+
+  { "bird_slug": "hermit-thrush",              "plant_slug": "arrowwood-viburnum",     "attraction_type": "food_berry" },
+  { "bird_slug": "hermit-thrush",              "plant_slug": "virginia-creeper",       "attraction_type": "food_berry" },
+  { "bird_slug": "hermit-thrush",              "plant_slug": "spicebush",              "attraction_type": "food_berry" },
+
+  { "bird_slug": "swainsons-thrush",           "plant_slug": "spicebush",              "attraction_type": "food_berry" },
+  { "bird_slug": "swainsons-thrush",           "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "swainsons-thrush",           "plant_slug": "dogwood-flowering",      "attraction_type": "food_berry" },
+
+  { "bird_slug": "brown-thrasher",             "plant_slug": "american-beautyberry",   "attraction_type": "food_berry" },
+  { "bird_slug": "brown-thrasher",             "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "brown-thrasher",             "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "brown-thrasher",             "plant_slug": "spicebush",              "attraction_type": "food_berry" },
+  { "bird_slug": "brown-thrasher",             "plant_slug": "sassafras",              "attraction_type": "food_berry" },
+
+  { "bird_slug": "carolina-chickadee",         "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "carolina-chickadee",         "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "carolina-chickadee",         "plant_slug": "american-beautyberry",   "attraction_type": "food_berry" },
+
+  { "bird_slug": "red-breasted-nuthatch",      "plant_slug": "eastern-white-pine",     "attraction_type": "food_seed" },
+
+  { "bird_slug": "house-wren",                 "plant_slug": "elderberry",             "attraction_type": "nesting" },
+  { "bird_slug": "house-wren",                 "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+
+  { "bird_slug": "hairy-woodpecker",           "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "hairy-woodpecker",           "plant_slug": "eastern-white-pine",     "attraction_type": "food_insect" },
+
+  { "bird_slug": "red-bellied-woodpecker",     "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "red-bellied-woodpecker",     "plant_slug": "virginia-creeper",       "attraction_type": "food_berry" },
+  { "bird_slug": "red-bellied-woodpecker",     "plant_slug": "hackberry",              "attraction_type": "food_berry" },
+  { "bird_slug": "red-bellied-woodpecker",     "plant_slug": "wild-black-cherry",      "attraction_type": "food_berry" },
+
+  { "bird_slug": "northern-flicker",           "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "northern-flicker",           "plant_slug": "virginia-creeper",       "attraction_type": "food_berry" },
+  { "bird_slug": "northern-flicker",           "plant_slug": "hackberry",              "attraction_type": "food_berry" },
+
+  { "bird_slug": "pileated-woodpecker",        "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "pileated-woodpecker",        "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "pileated-woodpecker",        "plant_slug": "virginia-creeper",       "attraction_type": "food_berry" },
+
+  { "bird_slug": "yellow-bellied-sapsucker",   "plant_slug": "eastern-white-pine",     "attraction_type": "food_insect" },
+  { "bird_slug": "yellow-bellied-sapsucker",   "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+
+  { "bird_slug": "acorn-woodpecker",           "plant_slug": "coast-live-oak",         "attraction_type": "food_seed" },
+
+  { "bird_slug": "annas-hummingbird",          "plant_slug": "california-fuchsia",     "attraction_type": "food_nectar" },
+  { "bird_slug": "annas-hummingbird",          "plant_slug": "trumpet-honeysuckle",    "attraction_type": "food_nectar" },
+  { "bird_slug": "annas-hummingbird",          "plant_slug": "crossvine",              "attraction_type": "food_nectar" },
+
+  { "bird_slug": "rufous-hummingbird",         "plant_slug": "california-fuchsia",     "attraction_type": "food_nectar" },
+  { "bird_slug": "rufous-hummingbird",         "plant_slug": "trumpet-honeysuckle",    "attraction_type": "food_nectar" },
+  { "bird_slug": "rufous-hummingbird",         "plant_slug": "bee-balm",               "attraction_type": "food_nectar" },
+
+  { "bird_slug": "bullocks-oriole",            "plant_slug": "eastern-cottonwood",     "attraction_type": "nesting" },
+  { "bird_slug": "bullocks-oriole",            "plant_slug": "trumpet-vine",           "attraction_type": "food_nectar" },
+  { "bird_slug": "bullocks-oriole",            "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+
+  { "bird_slug": "orchard-oriole",             "plant_slug": "trumpet-vine",           "attraction_type": "food_nectar" },
+  { "bird_slug": "orchard-oriole",             "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "orchard-oriole",             "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+
+  { "bird_slug": "eastern-phoebe",             "plant_slug": "elderberry",             "attraction_type": "food_insect" },
+  { "bird_slug": "eastern-phoebe",             "plant_slug": "buttonbush",             "attraction_type": "food_insect" },
+
+  { "bird_slug": "eastern-kingbird",           "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "eastern-kingbird",           "plant_slug": "sassafras",              "attraction_type": "food_berry" },
+  { "bird_slug": "eastern-kingbird",           "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+
+  { "bird_slug": "blue-jay",                   "plant_slug": "red-oak",               "attraction_type": "food_seed" },
+  { "bird_slug": "blue-jay",                   "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+  { "bird_slug": "blue-jay",                   "plant_slug": "wild-black-cherry",      "attraction_type": "food_berry" },
+  { "bird_slug": "blue-jay",                   "plant_slug": "hackberry",              "attraction_type": "food_berry" },
+
+  { "bird_slug": "stellers-jay",               "plant_slug": "coast-live-oak",         "attraction_type": "food_seed" },
+  { "bird_slug": "stellers-jay",               "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+
+  { "bird_slug": "american-crow",              "plant_slug": "red-oak",               "attraction_type": "food_seed" },
+  { "bird_slug": "american-crow",              "plant_slug": "wild-black-cherry",      "attraction_type": "food_berry" },
+  { "bird_slug": "american-crow",              "plant_slug": "hackberry",              "attraction_type": "food_berry" },
+
+  { "bird_slug": "mourning-dove",              "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "mourning-dove",              "plant_slug": "little-bluestem",        "attraction_type": "food_seed" },
+  { "bird_slug": "mourning-dove",              "plant_slug": "prairie-dropseed",       "attraction_type": "food_seed" },
+  { "bird_slug": "mourning-dove",              "plant_slug": "goldenrod",              "attraction_type": "food_seed" },
+
+  { "bird_slug": "red-eyed-vireo",             "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "red-eyed-vireo",             "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "red-eyed-vireo",             "plant_slug": "spicebush",              "attraction_type": "food_berry" },
+
+  { "bird_slug": "ruby-crowned-kinglet",       "plant_slug": "spicebush",              "attraction_type": "food_insect" },
+  { "bird_slug": "ruby-crowned-kinglet",       "plant_slug": "eastern-white-pine",     "attraction_type": "food_insect" },
+
+  { "bird_slug": "blue-gray-gnatcatcher",      "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "blue-gray-gnatcatcher",      "plant_slug": "spicebush",              "attraction_type": "food_insect" },
+
+  { "bird_slug": "eastern-towhee",             "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "eastern-towhee",             "plant_slug": "arrowwood-viburnum",     "attraction_type": "food_berry" },
+  { "bird_slug": "eastern-towhee",             "plant_slug": "serviceberry",           "attraction_type": "food_berry" },
+
+  { "bird_slug": "spotted-towhee",             "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "spotted-towhee",             "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+
+  { "bird_slug": "swamp-sparrow",              "plant_slug": "native-switchgrass",     "attraction_type": "nesting" },
+  { "bird_slug": "swamp-sparrow",              "plant_slug": "buttonbush",             "attraction_type": "nesting" },
+
+  { "bird_slug": "american-tree-sparrow",      "plant_slug": "native-switchgrass",     "attraction_type": "food_seed" },
+  { "bird_slug": "american-tree-sparrow",      "plant_slug": "goldenrod",              "attraction_type": "food_seed" },
+
+  { "bird_slug": "brown-creeper",              "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+  { "bird_slug": "brown-creeper",              "plant_slug": "eastern-white-pine",     "attraction_type": "food_insect" },
+
+  { "bird_slug": "winter-wren",                "plant_slug": "spicebush",              "attraction_type": "shelter" },
+
+  { "bird_slug": "tree-swallow",               "plant_slug": "arrowwood-viburnum",     "attraction_type": "food_berry" },
+  { "bird_slug": "tree-swallow",               "plant_slug": "virginia-creeper",       "attraction_type": "food_berry" },
+
+  { "bird_slug": "purple-martin",              "plant_slug": "eastern-cottonwood",     "attraction_type": "nesting" },
+
+  { "bird_slug": "veery",                      "plant_slug": "spicebush",              "attraction_type": "food_berry" },
+  { "bird_slug": "veery",                      "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "veery",                      "plant_slug": "red-oak",               "attraction_type": "food_insect" },
+
+  { "bird_slug": "yellow-breasted-chat",       "plant_slug": "maypop-passionflower",   "attraction_type": "food_berry" },
+  { "bird_slug": "yellow-breasted-chat",       "plant_slug": "elderberry",             "attraction_type": "food_berry" },
+  { "bird_slug": "yellow-breasted-chat",       "plant_slug": "virginia-creeper",       "attraction_type": "food_berry" },
+
+  { "bird_slug": "sharp-shinned-hawk",         "plant_slug": "eastern-white-pine",     "attraction_type": "shelter" },
+  { "bird_slug": "coopers-hawk",               "plant_slug": "eastern-white-pine",     "attraction_type": "nesting" },
+  { "bird_slug": "coopers-hawk",               "plant_slug": "red-oak",               "attraction_type": "nesting" }
 ]

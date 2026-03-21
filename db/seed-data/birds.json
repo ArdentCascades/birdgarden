@@ -4,7 +4,7 @@
     "common_name": "Northern Cardinal",
     "scientific_name": "Cardinalis cardinalis",
     "family": "Cardinalidae",
-    "description": "A mid-sized songbird known for the male's brilliant red plumage and loud, clear whistle. One of the most recognizable backyard birds in eastern North America.",
+    "description": "A mid-sized songbird with the male's brilliant red plumage and loud, clear whistle. One of the most recognizable backyard birds in eastern North America. Females are warm brown with red tinges.",
     "conservation_status": "LC"
   },
   {
@@ -12,7 +12,7 @@
     "common_name": "American Goldfinch",
     "scientific_name": "Spinus tristis",
     "family": "Fringillidae",
-    "description": "A small, brightly colored finch. Males are brilliant yellow in summer with black wings. Frequents weedy fields, roadsides, and gardens with seed-producing plants.",
+    "description": "A small, brightly colored finch. Males are brilliant yellow in summer with black wings. Frequents weedy fields, roadsides, and gardens with seed-producing plants. A strict vegetarian.",
     "conservation_status": "LC"
   },
   {
@@ -20,7 +20,7 @@
     "common_name": "American Robin",
     "scientific_name": "Turdus migratorius",
     "family": "Turdidae",
-    "description": "One of the most familiar North American songbirds. Recognizable by its rusty-orange breast and melodious song at dawn and dusk.",
+    "description": "One of the most familiar North American songbirds. Recognizable by its rusty-orange breast and melodious song at dawn and dusk. Often seen pulling earthworms from lawns.",
     "conservation_status": "LC"
   },
   {
@@ -28,7 +28,7 @@
     "common_name": "Ruby-throated Hummingbird",
     "scientific_name": "Archilochus colubris",
     "family": "Trochilidae",
-    "description": "The only hummingbird breeding in eastern North America. Males have an iridescent ruby-red throat. Attracted to tubular red or orange flowers.",
+    "description": "The only hummingbird breeding in eastern North America. Males have an iridescent ruby-red throat. Attracted to tubular red or orange flowers and sugar-water feeders.",
     "conservation_status": "LC"
   },
   {
@@ -36,7 +36,7 @@
     "common_name": "Baltimore Oriole",
     "scientific_name": "Icterus galbula",
     "family": "Icteridae",
-    "description": "A stunning orange-and-black songbird of forest edges and large shade trees. Famous for its elaborate hanging nest and rich, flute-like song.",
+    "description": "A stunning orange-and-black songbird of forest edges and large shade trees. Famous for its elaborate hanging nest and rich, flute-like song. Attracted to flowering trees and fruit.",
     "conservation_status": "LC"
   },
   {
@@ -44,7 +44,7 @@
     "common_name": "Black-capped Chickadee",
     "scientific_name": "Poecile atricapillus",
     "family": "Paridae",
-    "description": "A tiny, bold bird with a black cap and bib. A year-round resident in northern North America, beloved for its cheerful chick-a-dee-dee call.",
+    "description": "A tiny, bold bird with a black cap and bib, white cheeks, and soft gray back. A year-round resident in northern North America, beloved for its chick-a-dee-dee call and fearless personality.",
     "conservation_status": "LC"
   },
   {
@@ -52,7 +52,7 @@
     "common_name": "Cedar Waxwing",
     "scientific_name": "Bombycilla cedrorum",
     "family": "Bombycillidae",
-    "description": "An elegant, crested bird with silky plumage, a yellow tail tip, and red waxy wingtip spots. Highly gregarious; travels in flocks to feast on berries.",
+    "description": "An elegant, crested bird with silky plumage, a yellow tail tip, and red waxy wingtip spots. Highly gregarious; travels in nomadic flocks to feast on berries wherever they ripen.",
     "conservation_status": "LC"
   },
   {
@@ -60,15 +60,7 @@
     "common_name": "Eastern Bluebird",
     "scientific_name": "Sialia sialis",
     "family": "Turdidae",
-    "description": "A beloved symbol of spring. Males are brilliant blue above with a rusty-orange breast. Nests in cavities and is attracted to open areas with low vegetation.",
-    "conservation_status": "LC"
-  },
-  {
-    "slug": "american-goldfinch",
-    "common_name": "American Goldfinch",
-    "scientific_name": "Spinus tristis",
-    "family": "Fringillidae",
-    "description": "Small, bright finch. Highly attracted to native coneflowers and black-eyed Susan seed heads in late summer and fall.",
+    "description": "A beloved symbol of spring. Males are brilliant blue above with a rusty-orange breast. Nests in cavities and nest boxes; attracted to open areas with low vegetation and berry-producing shrubs.",
     "conservation_status": "LC"
   },
   {
@@ -76,7 +68,7 @@
     "common_name": "House Finch",
     "scientific_name": "Haemorhous mexicanus",
     "family": "Fringillidae",
-    "description": "A small, streaky finch originally from the American West, now widespread across North America. Males have red on the head and breast.",
+    "description": "A small, streaky finch originally from the American West, now widespread across North America. Males have red on the head and breast, varying with diet quality.",
     "conservation_status": "LC"
   },
   {
@@ -84,7 +76,7 @@
     "common_name": "Song Sparrow",
     "scientific_name": "Melospiza melodia",
     "family": "Passerellidae",
-    "description": "A highly variable sparrow with a central breast spot and melodious, complex song. Among the most widespread birds in North America.",
+    "description": "A highly variable sparrow with a central breast spot and one of the most melodious, complex songs in North America. Among the most widespread birds on the continent.",
     "conservation_status": "LC"
   },
   {
@@ -92,7 +84,7 @@
     "common_name": "Yellow Warbler",
     "scientific_name": "Setophaga petechia",
     "family": "Parulidae",
-    "description": "A bright yellow warbler with rusty streaks on the breast of the male. Found in shrubby habitats near water. Feeds heavily on caterpillars.",
+    "description": "A bright, all-yellow warbler with rusty breast streaks in the male. Found in shrubby habitats near water. Feeds heavily on caterpillars; one of the most widely distributed warblers.",
     "conservation_status": "LC"
   },
   {
@@ -100,7 +92,7 @@
     "common_name": "Downy Woodpecker",
     "scientific_name": "Dryobates pubescens",
     "family": "Picidae",
-    "description": "The smallest North American woodpecker. Commonly visits suet feeders. Important for controlling wood-boring insects in native trees.",
+    "description": "The smallest North American woodpecker. Commonly visits suet feeders and forages on native trees for insects. An important predator of wood-boring beetle larvae.",
     "conservation_status": "LC"
   },
   {
@@ -108,7 +100,7 @@
     "common_name": "Dark-eyed Junco",
     "scientific_name": "Junco hyemalis",
     "family": "Passerellidae",
-    "description": "A slate-colored to variable sparrow common at feeders in winter. Shows white outer tail feathers in flight.",
+    "description": "A slate-colored to variable sparrow known as the 'snowbird' for its appearance at feeders in winter. Shows distinctive white outer tail feathers in flight.",
     "conservation_status": "LC"
   },
   {
@@ -116,7 +108,7 @@
     "common_name": "Tufted Titmouse",
     "scientific_name": "Baeolophus bicolor",
     "family": "Paridae",
-    "description": "A perky, crested bird of eastern woodlands. A year-round visitor to feeders, known for its whistled peter-peter-peter song.",
+    "description": "A perky, crested bird of eastern woodlands with large black eyes. A year-round visitor to feeders, known for its loud, whistled peter-peter-peter song.",
     "conservation_status": "LC"
   },
   {
@@ -124,7 +116,7 @@
     "common_name": "Carolina Wren",
     "scientific_name": "Thryothorus ludovicianus",
     "family": "Troglodytidae",
-    "description": "A loud, energetic wren with rich rusty-brown plumage and a bold white eyebrow stripe. Produces an impressively loud song for its small size.",
+    "description": "A loud, energetic wren with rich rusty-brown plumage and a bold white eyebrow stripe. Produces an impressively loud, ringing song for its small size — often heard before seen.",
     "conservation_status": "LC"
   },
   {
@@ -132,7 +124,7 @@
     "common_name": "Indigo Bunting",
     "scientific_name": "Passerina cyanea",
     "family": "Cardinalidae",
-    "description": "Males are a stunning, deep sky-blue — one of the most brilliantly colored birds in North America. Attracted to native grasses and weedy seeds.",
+    "description": "Males are a stunning, deep sky-blue — one of the most brilliantly colored birds in North America. Their blue is structural color from light refraction, not pigment. Attracted to native grasses and weedy seeds.",
     "conservation_status": "LC"
   },
   {
@@ -140,7 +132,7 @@
     "common_name": "White-breasted Nuthatch",
     "scientific_name": "Sitta carolinensis",
     "family": "Sittidae",
-    "description": "A compact bird that forages headfirst down tree trunks. Common at sunflower seed feeders and in mature deciduous woodland.",
+    "description": "A compact bird that famously forages headfirst down tree trunks, probing bark for hidden insects and seeds. Common at sunflower feeders in mature deciduous woodland.",
     "conservation_status": "LC"
   },
   {
@@ -148,7 +140,7 @@
     "common_name": "Gray Catbird",
     "scientific_name": "Dumetella carolinensis",
     "family": "Mimidae",
-    "description": "A slender, dark gray bird known for its cat-like mewing call and complex, rambling song. Fond of dense shrubby thickets and berry-producing shrubs.",
+    "description": "A slender, dark gray bird with a black cap and rusty undertail. Known for its cat-like mewing call and a complex, rambling song that mimics other species. Fond of dense shrubs and berry-producing plants.",
     "conservation_status": "LC"
   },
   {
@@ -156,7 +148,431 @@
     "common_name": "Northern Mockingbird",
     "scientific_name": "Mimus polyglottos",
     "family": "Mimidae",
-    "description": "Famous for mimicking the songs of dozens of other birds. A permanent resident of the southern U.S. Attracted to shrubs with berries.",
+    "description": "Famous for mimicking the songs of dozens of other birds, sometimes singing all night during breeding season. A permanent resident in the South. Attracted to shrubs with berries.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "painted-bunting",
+    "common_name": "Painted Bunting",
+    "scientific_name": "Passerina ciris",
+    "family": "Cardinalidae",
+    "description": "Often called the most beautiful bird in North America. Males are a vivid patchwork of blue, green, and red. Found in thickets and brushy areas; attracted to native seed-producing grasses.",
+    "conservation_status": "NT"
+  },
+  {
+    "slug": "rose-breasted-grosbeak",
+    "common_name": "Rose-breasted Grosbeak",
+    "scientific_name": "Pheucticus ludovicianus",
+    "family": "Cardinalidae",
+    "description": "A stocky, striking bird with males showing a bold triangular rose-red patch on a black-and-white body. Visits sunflower feeders; feeds heavily on insects, berries, and seeds.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "blue-grosbeak",
+    "common_name": "Blue Grosbeak",
+    "scientific_name": "Passerina caerulea",
+    "family": "Cardinalidae",
+    "description": "A large, deep-blue bunting of brushy fields and forest edges in the southern US. Males have rusty wingbars that distinguish them from the smaller Indigo Bunting.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "purple-finch",
+    "common_name": "Purple Finch",
+    "scientific_name": "Haemorhous purpureus",
+    "family": "Fringillidae",
+    "description": "Males are washed in rosy-red — like a sparrow dipped in raspberry juice. Often confused with the House Finch; Purple Finch has a larger bill and lacks streaking on the belly.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "pine-siskin",
+    "common_name": "Pine Siskin",
+    "scientific_name": "Spinus pinus",
+    "family": "Fringillidae",
+    "description": "A small, heavily streaked finch with yellow wing-stripe flashes in flight. An irruptive species — numbers at feeders vary dramatically from year to year depending on northern cone crops.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "white-throated-sparrow",
+    "common_name": "White-throated Sparrow",
+    "scientific_name": "Zonotrichia albicollis",
+    "family": "Passerellidae",
+    "description": "A large, boldly marked sparrow with crisp white throat and yellow lores. Its Old Sam Peabody song is a familiar sound of eastern forests in winter. Scratches in leaf litter for seeds.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "white-crowned-sparrow",
+    "common_name": "White-crowned Sparrow",
+    "scientific_name": "Zonotrichia leucophrys",
+    "family": "Passerellidae",
+    "description": "A large, elegant sparrow with a bold black-and-white striped crown and pink bill. Winters across much of the US in brushy areas and gardens. Attracted to millet and native seed heads.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "chipping-sparrow",
+    "common_name": "Chipping Sparrow",
+    "scientific_name": "Spizella passerina",
+    "family": "Passerellidae",
+    "description": "A slender, clean sparrow with a rusty cap and bold white eyebrow in breeding plumage. One of the most common backyard birds in summer. Favors open areas with short grass and shrubs.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "field-sparrow",
+    "common_name": "Field Sparrow",
+    "scientific_name": "Spizella pusilla",
+    "family": "Passerellidae",
+    "description": "A small, warm-toned sparrow with a pink bill and plaintive, accelerating song. Found in brushy, weedy fields and forest edges. One of the most common breeding birds in the eastern US.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "fox-sparrow",
+    "common_name": "Fox Sparrow",
+    "scientific_name": "Passerella iliaca",
+    "family": "Passerellidae",
+    "description": "The largest and most robust sparrow. Rusty, heavily streaked forms winter in eastern US woodlands, vigorously scratching through leaf litter. Several distinct subspecies exist across North America.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "american-redstart",
+    "common_name": "American Redstart",
+    "scientific_name": "Setophaga ruticilla",
+    "family": "Parulidae",
+    "description": "A hyperactive warbler that constantly fans its tail and droops its wings to flash bold orange (males) or yellow (females) patches, startling insects from foliage.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "common-yellowthroat",
+    "common_name": "Common Yellowthroat",
+    "scientific_name": "Geothlypis trichas",
+    "family": "Parulidae",
+    "description": "Males sport a bold black mask like a bandit. One of the most widespread warblers, found in marshes, wet thickets, and brushy areas with dense vegetation.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "yellow-rumped-warbler",
+    "common_name": "Yellow-rumped Warbler",
+    "scientific_name": "Setophaga coronata",
+    "family": "Parulidae",
+    "description": "The most abundant warbler in North America, especially in winter. Distinctive yellow rump patch always visible. Can digest waxy berry coatings, allowing it to winter farther north than any other warbler.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "wood-thrush",
+    "common_name": "Wood Thrush",
+    "scientific_name": "Hylocichla mustelina",
+    "family": "Turdidae",
+    "description": "Widely considered to produce the most beautiful birdsong in North America — a fluty, flute-like ee-oh-lay spiraling upward. A forest interior specialist; attracted to berry-producing understory plants.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "hermit-thrush",
+    "common_name": "Hermit Thrush",
+    "scientific_name": "Catharus guttatus",
+    "family": "Turdidae",
+    "description": "The only thrush wintering in numbers in the US. Identified by its habit of slowly raising and lowering its tail. Rich, spiraling song; forages for berries and insects in dense woodland.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "swainsons-thrush",
+    "common_name": "Swainson's Thrush",
+    "scientific_name": "Catharus ustulatus",
+    "family": "Turdidae",
+    "description": "A buffy-faced thrush with a spiraling, upward-sweeping song often heard at dusk during migration. Abundant migrant through much of North America; feeds heavily on berries during fall migration.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "brown-thrasher",
+    "common_name": "Brown Thrasher",
+    "scientific_name": "Toxostoma rufum",
+    "family": "Mimidae",
+    "description": "A large, rusty-brown bird with bright yellow eyes and one of the largest song repertoires of any North American bird — over 1,000 song types. Favors dense thickets and shrubs with berries.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "carolina-chickadee",
+    "common_name": "Carolina Chickadee",
+    "scientific_name": "Poecile carolinensis",
+    "family": "Paridae",
+    "description": "The southeastern counterpart to the Black-capped Chickadee; nearly identical but with a slightly higher-pitched call. Year-round resident of southeastern woodlands and suburban gardens.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "red-breasted-nuthatch",
+    "common_name": "Red-breasted Nuthatch",
+    "scientific_name": "Sitta canadensis",
+    "family": "Sittidae",
+    "description": "A compact nuthatch of conifer forests with a rusty-orange breast and bold black eye stripe. An irruptive species — invades lower elevations in large numbers when northern cone crops fail.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "house-wren",
+    "common_name": "House Wren",
+    "scientific_name": "Troglodytes aedon",
+    "family": "Troglodytidae",
+    "description": "A tiny, energetic wren with a surprisingly loud, bubbling song. One of the most common cavity-nesting birds, readily using nest boxes. Arrives in spring and departs in fall.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "hairy-woodpecker",
+    "common_name": "Hairy Woodpecker",
+    "scientific_name": "Dryobates villosus",
+    "family": "Picidae",
+    "description": "A larger version of the Downy Woodpecker with a proportionally longer bill. Year-round resident of mature forests; forages deeper into bark for wood-boring insects.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "red-bellied-woodpecker",
+    "common_name": "Red-bellied Woodpecker",
+    "scientific_name": "Melanerpes carolinus",
+    "family": "Picidae",
+    "description": "A boldly barred woodpecker of eastern forests with a red cap (and nape on males). Despite its name, the red belly is subtle. An adaptable species expanding northward.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "northern-flicker",
+    "common_name": "Northern Flicker",
+    "scientific_name": "Colaptes auratus",
+    "family": "Picidae",
+    "description": "An unusual woodpecker that forages largely on the ground for ants. Shows brilliant yellow or red underwing flash in flight. Attracted to suet and berry-producing plants.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "pileated-woodpecker",
+    "common_name": "Pileated Woodpecker",
+    "scientific_name": "Dryocopus pileatus",
+    "family": "Picidae",
+    "description": "The largest woodpecker in North America — crow-sized with a flaming red crest. Excavates large rectangular holes in dead trees hunting carpenter ants. A keystone species of mature forests.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "yellow-bellied-sapsucker",
+    "common_name": "Yellow-bellied Sapsucker",
+    "scientific_name": "Sphyrapicus varius",
+    "family": "Picidae",
+    "description": "A migratory woodpecker that drills neat rows of small holes (sap wells) in trees to feed on sap and the insects attracted to it. Hummingbirds and other birds often use these wells.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "acorn-woodpecker",
+    "common_name": "Acorn Woodpecker",
+    "scientific_name": "Melanerpes formicivorus",
+    "family": "Picidae",
+    "description": "A clown-faced woodpecker of California and the West with an elaborate social system. Groups cooperatively store thousands of acorns in 'granary trees' — a single tree can hold 50,000 acorns.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "annas-hummingbird",
+    "common_name": "Anna's Hummingbird",
+    "scientific_name": "Calypte anna",
+    "family": "Trochilidae",
+    "description": "The most common hummingbird on the West Coast. Males have a rose-red head and gorget that flashes brilliantly in sunlight. One of the few hummingbirds that winters in the US.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "rufous-hummingbird",
+    "common_name": "Rufous Hummingbird",
+    "scientific_name": "Selasphorus rufus",
+    "family": "Trochilidae",
+    "description": "One of the most aggressive hummingbirds, fiercely defending flower patches despite being tiny. Males are brilliant rusty-orange. Undertakes one of the longest migrations relative to body size.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "bullocks-oriole",
+    "common_name": "Bullock's Oriole",
+    "scientific_name": "Icterus bullockii",
+    "family": "Icteridae",
+    "description": "The western counterpart to the Baltimore Oriole, with similar orange-and-black plumage but a large white wing patch. Nests in cottonwoods and other large trees near water.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "orchard-oriole",
+    "common_name": "Orchard Oriole",
+    "scientific_name": "Icterus spurius",
+    "family": "Icteridae",
+    "description": "The smallest North American oriole; males are chestnut and black rather than orange. Spends less time on the breeding grounds than any other oriole — arrives late and departs early.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "eastern-phoebe",
+    "common_name": "Eastern Phoebe",
+    "scientific_name": "Sayornis phoebe",
+    "family": "Tyrannidae",
+    "description": "A hardy flycatcher and one of the first migrants to return in spring. Identified by its habit of wagging its tail up and down. Nests on ledges, bridges, and buildings near water.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "eastern-kingbird",
+    "common_name": "Eastern Kingbird",
+    "scientific_name": "Tyrannus tyrannus",
+    "family": "Tyrannidae",
+    "description": "A bold, assertive flycatcher that aggressively chases hawks and crows away from its territory. Black above with a white-tipped tail. Perches conspicuously on wires and treetops.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "tree-swallow",
+    "common_name": "Tree Swallow",
+    "scientific_name": "Tachycineta bicolor",
+    "family": "Hirundinidae",
+    "description": "An iridescent blue-green swallow that readily uses nest boxes. One of the earliest migrants to return in spring; can survive cold snaps by switching from insects to berries.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "barn-swallow",
+    "common_name": "Barn Swallow",
+    "scientific_name": "Hirundo rustica",
+    "family": "Hirundinidae",
+    "description": "The most widespread swallow in the world, with a deeply forked tail and rusty-orange underparts. Nests in barns, bridges, and other structures; performs spectacular aerial insect-catching.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "purple-martin",
+    "common_name": "Purple Martin",
+    "scientific_name": "Progne subis",
+    "family": "Hirundinidae",
+    "description": "The largest North American swallow. Males are entirely iridescent purple-black. In the East, now almost entirely dependent on human-provided colonial nest boxes and gourds.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "blue-jay",
+    "common_name": "Blue Jay",
+    "scientific_name": "Cyanocitta cristata",
+    "family": "Corvidae",
+    "description": "A bold, intelligent bird with brilliant blue plumage and a black necklace. Vital for oak regeneration — jays cache tens of thousands of acorns each fall, forgetting many which then germinate.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "stellers-jay",
+    "common_name": "Steller's Jay",
+    "scientific_name": "Cyanocitta stelleri",
+    "family": "Corvidae",
+    "description": "The western counterpart to the Blue Jay, with a sooty-black hood and brilliant blue body. Found in coniferous forests from Alaska to Central America. Noisy, bold, and highly intelligent.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "american-crow",
+    "common_name": "American Crow",
+    "scientific_name": "Corvus brachyrhynchos",
+    "family": "Corvidae",
+    "description": "One of the most intelligent birds in North America. All-black with a fan-shaped tail. Adaptable omnivores that thrive in nearly every habitat from wilderness to city centers.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "mourning-dove",
+    "common_name": "Mourning Dove",
+    "scientific_name": "Zenaida macroura",
+    "family": "Columbidae",
+    "description": "One of the most abundant birds in North America. Recognized by its long tapered tail and mournful, cooing call. A ground feeder that thrives where native grasses and seed plants grow.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "red-eyed-vireo",
+    "common_name": "Red-eyed Vireo",
+    "scientific_name": "Vireo olivaceus",
+    "family": "Vireonidae",
+    "description": "One of the most common neotropical migrants; sings tirelessly from the forest canopy — sometimes 20,000 times in a single day. Feeds heavily on caterpillars and berries during migration.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "ruby-crowned-kinglet",
+    "common_name": "Ruby-crowned Kinglet",
+    "scientific_name": "Corthylio calendula",
+    "family": "Regulidae",
+    "description": "A tiny, energetic bird that constantly flicks its wings. Males have a brilliant red crown patch usually kept hidden. Moves through shrubs and conifers with quick, nervous movements.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "blue-gray-gnatcatcher",
+    "common_name": "Blue-gray Gnatcatcher",
+    "scientific_name": "Polioptila caerulea",
+    "family": "Polioptilidae",
+    "description": "A tiny, active bird with a long tail it cocks sideways or upward. One of the earliest spring migrants — its wheezy calls announce the arrival of warm weather in eastern woodlands.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "eastern-towhee",
+    "common_name": "Eastern Towhee",
+    "scientific_name": "Pipilo erythrophthalmus",
+    "family": "Passerellidae",
+    "description": "A large, striking sparrow with black hood, white-spotted wings, and rusty sides. Scratches noisily through leaf litter in dense brush. Males sing the classic drink-your-teeeea.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "spotted-towhee",
+    "common_name": "Spotted Towhee",
+    "scientific_name": "Pipilo maculatus",
+    "family": "Passerellidae",
+    "description": "The western counterpart of the Eastern Towhee. Black hood and back with white spots on wings and rusty sides. Forages on the ground in dense chaparral and brushy forest edges.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "swamp-sparrow",
+    "common_name": "Swamp Sparrow",
+    "scientific_name": "Melospiza georgiana",
+    "family": "Passerellidae",
+    "description": "A rusty-capped sparrow of wet meadows, marshes, and soggy thickets. Year-round in the mid-Atlantic; breeding in northern wetlands and wintering in the South.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "american-tree-sparrow",
+    "common_name": "American Tree Sparrow",
+    "scientific_name": "Spizelloides arborea",
+    "family": "Passerellidae",
+    "description": "A winter sparrow with a rusty cap and a distinctive dark central breast spot. Arrives from Arctic breeding grounds each fall to winter in weedy fields and brushy areas across the northern US.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "brown-creeper",
+    "common_name": "Brown Creeper",
+    "scientific_name": "Certhia americana",
+    "family": "Certhiidae",
+    "description": "A tiny, cryptically streaked bird that creeps upward along tree trunks in a spiral, then flies to the base of the next tree to start again. Often overlooked despite being common.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "winter-wren",
+    "common_name": "Winter Wren",
+    "scientific_name": "Troglodytes hiemalis",
+    "family": "Troglodytidae",
+    "description": "One of the smallest birds in North America, with an extraordinarily loud and complex song. A dark, round-bodied bird that skulks near the ground in dense tangled undergrowth.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "sharp-shinned-hawk",
+    "common_name": "Sharp-shinned Hawk",
+    "scientific_name": "Accipiter striatus",
+    "family": "Accipitridae",
+    "description": "The smallest accipiter; a swift, agile predator that hunts small birds through forest. A common sight at feeders in winter — providing natural, if undesired, pest control.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "coopers-hawk",
+    "common_name": "Cooper's Hawk",
+    "scientific_name": "Accipiter cooperii",
+    "family": "Accipitridae",
+    "description": "A medium-sized hawk that specializes in catching birds in flight through dense cover. Now commonly nests in suburbs. A regular visitor wherever bird feeders attract prey.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "american-kestrel",
+    "common_name": "American Kestrel",
+    "scientific_name": "Falco sparverius",
+    "family": "Falconidae",
+    "description": "The smallest and most colorful falcon in North America. Males are rusty-orange and blue-gray with a bold facial pattern. Hovers over open fields hunting insects and small prey.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "veery",
+    "common_name": "Veery",
+    "scientific_name": "Catharus fuscescens",
+    "family": "Turdidae",
+    "description": "A warm, tawny thrush with a cascading, downward-spiraling song that sounds like it's echoing itself. Breeds in moist, deciduous forests; feeds on berries and insects.",
+    "conservation_status": "LC"
+  },
+  {
+    "slug": "yellow-breasted-chat",
+    "common_name": "Yellow-breasted Chat",
+    "scientific_name": "Icteria virens",
+    "family": "Icteriidae",
+    "description": "The largest wood-warbler, now considered its own family. Its bizarre, rambling song — clicks, cackles, and whistles — seems more like a mockingbird. Found in dense shrubby thickets.",
     "conservation_status": "LC"
   }
 ]
