@@ -1,20 +1,191 @@
 ---
 /**
- * /birds — Bird browser
+ * /birds — Bird browser (SSR)
  *
- * SSR page. Implemented in Task 9.
+ * Task 9: Server-rendered bird index with region + month filtering.
+ * Initial data is server-fetched; client-side updates via Preact island
+ * are out of scope here — this page uses native form-based navigation.
  */
 export const prerender = false;
 
 import Base from '../../layouts/Base.astro';
+import BirdCard from '../../components/BirdCard.astro';
+import EmptyState from '../../components/EmptyState.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+
+const url = Astro.url;
+const region = url.searchParams.get('region') ?? '';
+const plantParam = url.searchParams.get('plant') ?? '';
+const monthParam = url.searchParams.get('month');
+
+const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,98}[a-z0-9]$|^[a-z0-9]$/;
+const safeRegion = region && SLUG_RE.test(region) ? region : '';
+const safePlant = plantParam && SLUG_RE.test(plantParam) ? plantParam : '';
+const month = monthParam ? parseInt(monthParam, 10) : new Date().getMonth() + 1;
+const safeMonth = month >= 1 && month <= 12 ? month : new Date().getMonth() + 1;
+
+const MONTH_NAMES = [
+  'January','February','March','April','May','June',
+  'July','August','September','October','November','December',
+];
+
+interface BirdRow {
+  id: number;
+  slug: string;
+  common_name: string;
+  scientific_name: string;
+  family: string | null;
+  description: string | null;
+  conservation_status: string | null;
+  presence: string | null;
+  attraction_type: string | null;
+}
+
+let birds: BirdRow[] = [];
+let error = '';
+
+if (safeRegion && safePlant) {
+  try {
+    const { getDb } = await import('../../lib/db.ts');
+    const { getBirdsForPlant } = await import('../../lib/queries.ts');
+    const db = getDb();
+    birds = getBirdsForPlant(db, {
+      plantSlug: safePlant,
+      regionSlug: safeRegion,
+      month: safeMonth,
+    }) as BirdRow[];
+  } catch (e) {
+    error = 'Could not load birds.';
+  }
+} else if (safeRegion) {
+  // Show all birds present in region this month
+  try {
+    const { getDb } = await import('../../lib/db.ts');
+    const db = getDb();
+    birds = (db as any).prepare(`
+      SELECT DISTINCT
+        b.id, b.slug, b.common_name, b.scientific_name, b.family,
+        b.description, b.conservation_status,
+        brs.presence, NULL as attraction_type
+      FROM bird b
+      JOIN bird_region_season brs ON b.id = brs.bird_id
+      JOIN region r ON brs.region_id = r.id
+      WHERE r.slug = ? AND brs.month = ?
+      ORDER BY b.common_name ASC
+      LIMIT 200
+    `).all(safeRegion, safeMonth) as BirdRow[];
+  } catch (e) {
+    error = 'Could not load birds.';
+  }
+}
+
+const pageTitle = safeRegion
+  ? `Birds in ${safeRegion.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} — ${MONTH_NAMES[safeMonth - 1]}`
+  : 'Bird Guide';
 ---
 
-<Base title="Bird Guide" description="Browse birds attracted to native plants in your region.">
+<Base
+  title={pageTitle}
+  description="Browse birds attracted to native plants in your region."
+>
   <div class="container">
-    <div class="page-header">
-      <h1 class="page-title">Bird Guide</h1>
-      <p class="page-subtitle">Birds attracted to native plants in your region</p>
-    </div>
-    <p style="color: var(--color-text-muted);">Bird browser implemented in Task 9.</p>
+    {safePlant ? (
+      <Breadcrumb items={[
+        { label: 'Plants', href: '/plants' },
+        { label: safePlant.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()), href: `/plants/${safePlant}` },
+        { label: 'Birds' },
+      ]} />
+    ) : (
+      <div class="page-header">
+        <h1 class="page-title">Bird Guide</h1>
+        <p class="page-subtitle">Birds attracted to native plants in your region</p>
+      </div>
+    )}
+
+    {/* Filter form */}
+    <form method="get" action="/birds" style="display:flex;flex-wrap:wrap;gap:var(--space-3);align-items:flex-end;margin-bottom:var(--space-6);">
+      <div style="flex:1;min-width:160px;">
+        <label for="bird-region" style="display:block;font-size:var(--text-sm);font-weight:var(--font-medium);margin-bottom:var(--space-1);color:var(--color-text-muted);">
+          Region
+        </label>
+        <input
+          id="bird-region"
+          name="region"
+          type="text"
+          value={safeRegion}
+          placeholder="e.g. new-york"
+          style="width:100%;padding:var(--space-2) var(--space-3);border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-bg-card);color:var(--color-text);font-size:var(--text-base);min-height:2.75rem;"
+          aria-label="Region slug"
+        />
+      </div>
+      <div style="min-width:140px;">
+        <label for="bird-month" style="display:block;font-size:var(--text-sm);font-weight:var(--font-medium);margin-bottom:var(--space-1);color:var(--color-text-muted);">
+          Month
+        </label>
+        <select
+          id="bird-month"
+          name="month"
+          style="width:100%;padding:var(--space-2) var(--space-3);border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-bg-card);color:var(--color-text);font-size:var(--text-base);min-height:2.75rem;"
+        >
+          {MONTH_NAMES.map((name, i) => (
+            <option value={i + 1} selected={i + 1 === safeMonth}>{name}</option>
+          ))}
+        </select>
+      </div>
+      <button class="btn btn-primary" type="submit" style="flex-shrink:0;">
+        Filter
+      </button>
+      {safeRegion && (
+        <a href="/birds" class="btn btn-ghost" style="flex-shrink:0;">
+          Clear
+        </a>
+      )}
+    </form>
+
+    {error && (
+      <p role="alert" style="color:var(--color-error);padding:var(--space-4);background:var(--color-bg-subtle);border-radius:var(--radius-md);margin-bottom:var(--space-4);">
+        {error}
+      </p>
+    )}
+
+    {/* No region selected */}
+    {!safeRegion && (
+      <EmptyState
+        title="Select a region"
+        message="Choose a region and month to see which birds are present."
+        actionLabel="Go to homepage"
+        actionHref="/"
+      />
+    )}
+
+    {/* Results */}
+    {safeRegion && birds.length === 0 && !error && (
+      <EmptyState
+        title="No birds found"
+        message={`No birds recorded for ${safeRegion.replace(/-/g, ' ')} in ${MONTH_NAMES[safeMonth - 1]}.`}
+        actionLabel="Browse all plants"
+        actionHref="/plants"
+      />
+    )}
+
+    {birds.length > 0 && (
+      <>
+        <p style="font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-4);">
+          {birds.length} bird{birds.length !== 1 ? 's' : ''} in {safeRegion.replace(/-/g, ' ')} · {MONTH_NAMES[safeMonth - 1]}
+        </p>
+        <div class="card-grid">
+          {birds.map((bird, i) => (
+            <BirdCard
+              slug={bird.slug}
+              commonName={bird.common_name}
+              scientificName={bird.scientific_name}
+              presence={bird.presence as any}
+              attractionType={bird.attraction_type}
+              animationDelay={i * 30}
+            />
+          ))}
+        </div>
+      </>
+    )}
   </div>
 </Base>

@@ -1,21 +1,201 @@
 ---
 /**
- * /plants/[slug] — Plant detail page
+ * /plants/[slug] — Plant detail page (SSG)
  *
- * SSG with static paths. Implemented in Task 8.
+ * Task 8: Static paths from DB + full plant detail layout.
+ * Queries all plant slugs at build time for pre-rendering.
  */
 import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import BirdCard from '../../components/BirdCard.astro';
+import { formatBloomPeriod } from '../../lib/seasonality.ts';
 
-export function getStaticPaths() {
-  // TODO: Implement in Task 8 — query all plant slugs from DB for SSG
-  return [];
+export async function getStaticPaths() {
+  try {
+    // Use dynamic import so build doesn't fail if DB is missing
+    const { getDb } = await import('../../lib/db.ts');
+    const db = getDb();
+    const rows = (db as any)
+      .prepare('SELECT slug FROM plant ORDER BY slug')
+      .all() as { slug: string }[];
+    return rows.map(({ slug }) => ({ params: { slug } }));
+  } catch {
+    // DB not available at build time — return empty (no static pages)
+    return [];
+  }
 }
 
 const { slug } = Astro.params;
+
+// Load plant data
+let plant: any = null;
+let birds: any[] = [];
+let images: any[] = [];
+
+try {
+  const { getDb } = await import('../../lib/db.ts');
+  const { getPlantBySlug, getBirdBySlug, getImagesForEntity } = await import('../../lib/queries.ts');
+  const db = getDb();
+
+  plant = getPlantBySlug(db, slug!);
+
+  if (plant) {
+    // Fetch birds that this plant attracts (across all regions — show full picture)
+    const birdRows = (db as any).prepare(`
+      SELECT DISTINCT
+        b.id, b.slug, b.common_name, b.scientific_name, b.family,
+        b.description, b.conservation_status,
+        bp.attraction_type
+      FROM bird b
+      JOIN bird_plant bp ON b.id = bp.bird_id
+      JOIN plant p ON bp.plant_id = p.id
+      WHERE p.slug = ?
+      ORDER BY b.common_name ASC
+    `).all(slug) as any[];
+
+    birds = birdRows;
+    images = getImagesForEntity(db, 'plant', plant.id);
+  }
+} catch {
+  // Graceful degradation if DB unavailable at render time
+}
+
+if (!plant) {
+  return Astro.redirect('/plants', 307);
+}
+
+const bloomLabel = formatBloomPeriod(plant.bloom_start, plant.bloom_end);
+const primaryImage = images.find((img) => img.is_primary) ?? images[0] ?? null;
+const typeLabel = plant.plant_type
+  ? plant.plant_type.charAt(0).toUpperCase() + plant.plant_type.slice(1)
+  : null;
 ---
 
-<Base title={`Plant: ${slug}`}>
+<Base
+  title={plant.common_name}
+  description={plant.description ?? `${plant.common_name} (${plant.scientific_name}) — native plant that attracts birds.`}
+>
   <div class="container">
-    <p style="color: var(--color-text-muted);">Plant detail page — implemented in Task 8.</p>
+    <Breadcrumb items={[
+      { label: 'Plants', href: '/plants' },
+      { label: plant.common_name },
+    ]} />
+
+    <div class="detail-layout">
+      <!-- Main content -->
+      <div class="detail-main">
+        <!-- Plant image -->
+        <div style="aspect-ratio: 4/3; border-radius: var(--radius-lg); overflow: hidden; background: var(--color-green-100); margin-bottom: var(--space-6); display: flex; align-items: center; justify-content: center;">
+          {primaryImage ? (
+            <img
+              src={`/media/images/plants/${primaryImage.filename}`}
+              alt={primaryImage.alt_text}
+              style="width: 100%; height: 100%; object-fit: cover;"
+              loading="eager"
+            />
+          ) : (
+            <svg width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+              <path d="M40 10C40 10 16 24 16 46C16 60.912 26.745 73 40 73C53.255 73 64 60.912 64 46C64 24 40 10 40 10Z"
+                fill="var(--color-green-300)"/>
+              <path d="M40 73V46" stroke="var(--color-green-600)" stroke-width="3" stroke-linecap="round"/>
+              <path d="M40 55L50 45" stroke="var(--color-green-500)" stroke-width="2" stroke-linecap="round"/>
+              <path d="M40 62L30 52" stroke="var(--color-green-500)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          )}
+        </div>
+
+        <!-- Title block -->
+        <h1 style="font-family: var(--font-display); font-size: var(--text-3xl); line-height: var(--leading-tight); margin-bottom: var(--space-2);">
+          {plant.common_name}
+        </h1>
+        <p class="scientific-name" style="font-size: var(--text-xl); color: var(--color-text-subtle); margin-bottom: var(--space-4);">
+          {plant.scientific_name}
+        </p>
+
+        <!-- Meta badges -->
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-6);">
+          {typeLabel && <span class="badge badge-sage">{typeLabel}</span>}
+          {plant.family && <span class="badge badge-neutral">{plant.family}</span>}
+          {plant.bloom_start !== null && (
+            <span class="badge badge-green" title="Bloom period">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
+                <path d="M5 1C5 1 2 3 2 6C2 7.657 3.343 9 5 9C6.657 9 8 7.657 8 6C8 3 5 1 5 1Z"/>
+              </svg>
+              {bloomLabel}
+            </span>
+          )}
+          {(plant.usda_zone_min !== null && plant.usda_zone_max !== null) && (
+            <span class="badge badge-neutral" title="USDA Hardiness Zones">
+              Zones {plant.usda_zone_min}–{plant.usda_zone_max}
+            </span>
+          )}
+          {plant.bird_count > 0 && (
+            <span class="badge badge-sienna" title="Bird species attracted">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
+                <path d="M2 9C2 9 4 6 6 5C8 4 10 5 10 7C10 9 8 10 6 10C5 10 3 9.5 2 9Z"/>
+                <circle cx="7.5" cy="4.5" r="1"/>
+              </svg>
+              Attracts {plant.bird_count} bird{plant.bird_count !== 1 ? 's' : ''}
+            </span>
+          )}
+        </div>
+
+        <!-- Description -->
+        {plant.description && (
+          <p style="font-size: var(--text-lg); line-height: var(--leading-relaxed); color: var(--color-text); margin-bottom: var(--space-6);">
+            {plant.description}
+          </p>
+        )}
+
+        <!-- Add to garden CTA -->
+        <div style="margin-top: var(--space-6);">
+          <button
+            class="btn btn-accent"
+            type="button"
+            data-plant-slug={slug}
+            data-plant-name={plant.common_name}
+            aria-label={`Add ${plant.common_name} to your garden`}
+            style="width: 100%; max-width: 320px;"
+          >
+            Add to My Garden
+          </button>
+        </div>
+      </div>
+
+      <!-- Sidebar: birds attracted -->
+      <aside class="detail-sidebar" aria-labelledby="birds-heading">
+        <h2 id="birds-heading" style="font-family: var(--font-display); font-size: var(--text-xl); margin-bottom: var(--space-4);">
+          Birds Attracted
+        </h2>
+
+        {birds.length === 0 ? (
+          <p style="color: var(--color-text-muted); font-size: var(--text-sm);">
+            No bird associations recorded yet.
+          </p>
+        ) : (
+          <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+            {birds.map((bird, i) => (
+              <BirdCard
+                slug={bird.slug}
+                commonName={bird.common_name}
+                scientificName={bird.scientific_name}
+                attractionType={bird.attraction_type}
+                animationDelay={i * 40}
+              />
+            ))}
+          </div>
+        )}
+
+        <!-- Back link -->
+        <div style="margin-top: var(--space-8);">
+          <a href="/plants" class="btn btn-outline" style="width: 100%;">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M11 7H3M6 3L2 7l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            All Plants
+          </a>
+        </div>
+      </aside>
+    </div>
   </div>
 </Base>

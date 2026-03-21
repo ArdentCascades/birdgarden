@@ -1,21 +1,270 @@
 ---
 /**
- * /birds/[slug] — Bird detail page
+ * /birds/[slug] — Bird detail page (SSG)
  *
- * SSG. Implemented in Task 9.
+ * Task 9: Static paths from DB + full bird detail with AudioPlayer island.
  */
 import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import SeasonIndicator from '../../components/SeasonIndicator.astro';
+import AudioPlayer from '../../components/AudioPlayer.tsx';
 
-export function getStaticPaths() {
-  // TODO: Implement in Task 9 — query all bird slugs from DB for SSG
-  return [];
+export async function getStaticPaths() {
+  try {
+    const { getDb } = await import('../../lib/db.ts');
+    const db = getDb();
+    const rows = (db as any)
+      .prepare('SELECT slug FROM bird ORDER BY slug')
+      .all() as { slug: string }[];
+    return rows.map(({ slug }) => ({ params: { slug } }));
+  } catch {
+    return [];
+  }
 }
 
 const { slug } = Astro.params;
+
+let bird: any = null;
+let songs: any[] = [];
+let images: any[] = [];
+let plants: any[] = [];
+let seasonData: { month: number; presence: string }[] = [];
+
+try {
+  const { getDb } = await import('../../lib/db.ts');
+  const { getBirdBySlug, getSongsForBird, getImagesForEntity } = await import('../../lib/queries.ts');
+  const db = getDb();
+
+  bird = getBirdBySlug(db, slug!);
+
+  if (bird) {
+    songs = getSongsForBird(db, bird.id);
+    images = getImagesForEntity(db, 'bird', bird.id);
+
+    // Get all plants this bird is attracted to
+    plants = (db as any).prepare(`
+      SELECT DISTINCT p.id, p.slug, p.common_name, p.scientific_name, p.plant_type, bp.attraction_type
+      FROM plant p
+      JOIN bird_plant bp ON p.id = bp.plant_id
+      WHERE bp.bird_id = ?
+      ORDER BY p.common_name ASC
+    `).all(bird.id) as any[];
+
+    // Aggregate seasonal presence across all regions for the indicator
+    const rawSeason = (db as any).prepare(`
+      SELECT month, presence, COUNT(*) as cnt
+      FROM bird_region_season
+      WHERE bird_id = ?
+      GROUP BY month, presence
+      ORDER BY month ASC
+    `).all(bird.id) as { month: number; presence: string; cnt: number }[];
+
+    // For each month, pick the most common presence type
+    const byMonth = new Map<number, { presence: string; cnt: number }>();
+    for (const row of rawSeason) {
+      const existing = byMonth.get(row.month);
+      if (!existing || row.cnt > existing.cnt) {
+        byMonth.set(row.month, { presence: row.presence, cnt: row.cnt });
+      }
+    }
+    seasonData = Array.from(byMonth.entries()).map(([month, { presence }]) => ({
+      month,
+      presence,
+    }));
+  }
+} catch {
+  // Graceful degradation
+}
+
+if (!bird) {
+  return Astro.redirect('/birds', 307);
+}
+
+const primaryImage = images.find((img) => img.is_primary) ?? images[0] ?? null;
+
+const CONSERVATION_LABELS: Record<string, string> = {
+  LC: 'Least Concern',
+  NT: 'Near Threatened',
+  VU: 'Vulnerable',
+  EN: 'Endangered',
+  CR: 'Critically Endangered',
+};
+
+const conservationLabel = bird.conservation_status
+  ? (CONSERVATION_LABELS[bird.conservation_status] ?? bird.conservation_status)
+  : null;
 ---
 
-<Base title={`Bird: ${slug}`}>
+<Base
+  title={bird.common_name}
+  description={bird.description ?? `${bird.common_name} (${bird.scientific_name}) — bird attracted to native plants.`}
+>
   <div class="container">
-    <p style="color: var(--color-text-muted);">Bird detail page — implemented in Task 9.</p>
+    <Breadcrumb items={[
+      { label: 'Birds', href: '/birds' },
+      { label: bird.common_name },
+    ]} />
+
+    <div class="detail-layout">
+      <!-- Main content -->
+      <div class="detail-main">
+        <!-- Bird image -->
+        <div style="aspect-ratio: 3/2; border-radius: var(--radius-lg); overflow: hidden; background: var(--color-sage-100); margin-bottom: var(--space-6); display: flex; align-items: center; justify-content: center;">
+          {primaryImage ? (
+            <img
+              src={`/media/images/birds/${primaryImage.filename}`}
+              alt={primaryImage.alt_text}
+              style="width: 100%; height: 100%; object-fit: cover;"
+              loading="eager"
+            />
+          ) : (
+            <svg width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+              <path d="M12 60C12 60 26 40 40 33C54 26 66 33 66 46C66 60 54 66 40 66C33 66 20 63 12 60Z"
+                fill="var(--color-sage-300)"/>
+              <circle cx="50" cy="30" r="6.5" fill="var(--color-sage-400)"/>
+            </svg>
+          )}
+        </div>
+
+        <!-- Title block -->
+        <h1 style="font-family: var(--font-display); font-size: var(--text-3xl); line-height: var(--leading-tight); margin-bottom: var(--space-2);">
+          {bird.common_name}
+        </h1>
+        <p class="scientific-name" style="font-size: var(--text-xl); color: var(--color-text-subtle); margin-bottom: var(--space-4);">
+          {bird.scientific_name}
+        </p>
+
+        <!-- Meta badges -->
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-6);">
+          {bird.family && <span class="badge badge-neutral">{bird.family}</span>}
+          {conservationLabel && (
+            <span
+              class={`badge ${bird.conservation_status === 'LC' ? 'badge-green' : bird.conservation_status === 'NT' ? 'badge-neutral' : 'badge-sienna'}`}
+              title="IUCN conservation status"
+            >
+              {conservationLabel}
+            </span>
+          )}
+        </div>
+
+        <!-- Seasonal presence -->
+        {seasonData.length > 0 && (
+          <div style="margin-bottom: var(--space-6);">
+            <h2 style="font-family: var(--font-display); font-size: var(--text-lg); margin-bottom: var(--space-3);">
+              Seasonal Presence
+            </h2>
+            <SeasonIndicator months={seasonData as any} showLabels />
+            <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-3); font-size: var(--text-xs);">
+              <span><span class="season-dot presence-dot-resident" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--color-primary);vertical-align:middle;margin-right:4px;"></span>Resident</span>
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--color-sienna-500);vertical-align:middle;margin-right:4px;"></span>Breeding</span>
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--color-sage-500);vertical-align:middle;margin-right:4px;"></span>Wintering</span>
+              <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--color-parchment-500);vertical-align:middle;margin-right:4px;"></span>Migrating</span>
+            </div>
+          </div>
+        )}
+
+        <!-- Description -->
+        {bird.description && (
+          <p style="font-size: var(--text-lg); line-height: var(--leading-relaxed); color: var(--color-text); margin-bottom: var(--space-6);">
+            {bird.description}
+          </p>
+        )}
+
+        <!-- Songs -->
+        {songs.length > 0 && (
+          <div style="margin-bottom: var(--space-8);">
+            <h2 style="font-family: var(--font-display); font-size: var(--text-xl); margin-bottom: var(--space-4);">
+              Song Recordings
+            </h2>
+            <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+              {songs.map((song) => (
+                <div>
+                  <AudioPlayer
+                    client:visible
+                    songId={song.id}
+                    birdName={bird.common_name}
+                  />
+                  {(song.recording_loc || song.recordist) && (
+                    <p style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2);">
+                      {[song.recording_loc, song.recording_date, song.recordist].filter(Boolean).join(' · ')}
+                      {' '}
+                      {song.license && (
+                        <a
+                          href={song.source_url}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          style="color: var(--color-text-muted); text-decoration: underline;"
+                        >
+                          {song.license}
+                        </a>
+                      )}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <!-- Sidebar: plants that attract this bird -->
+      <aside class="detail-sidebar" aria-labelledby="plants-heading">
+        <h2 id="plants-heading" style="font-family: var(--font-display); font-size: var(--text-xl); margin-bottom: var(--space-4);">
+          Attracted to These Plants
+        </h2>
+
+        {plants.length === 0 ? (
+          <p style="color: var(--color-text-muted); font-size: var(--text-sm);">
+            No plant associations recorded yet.
+          </p>
+        ) : (
+          <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+            {plants.map((plant) => {
+              const typeLabel = plant.plant_type
+                ? plant.plant_type.charAt(0).toUpperCase() + plant.plant_type.slice(1)
+                : null;
+              return (
+                <a
+                  href={`/plants/${plant.slug}`}
+                  style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);background:var(--color-bg-card);border-radius:var(--radius-lg);border:1px solid var(--color-border);text-decoration:none;color:inherit;transition:border-color var(--transition-fast),box-shadow var(--transition-fast);"
+                  class="card"
+                >
+                  <div style="width:40px;height:40px;border-radius:var(--radius-md);background:var(--color-green-100);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                      <path d="M10 2C10 2 4 5.5 4 11C4 14.314 6.686 17 10 17C13.314 17 16 14.314 16 11C16 5.5 10 2 10 2Z"
+                        fill="var(--color-green-300)"/>
+                      <path d="M10 17V11" stroke="var(--color-green-600)" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div style="min-width:0;">
+                    <div style="font-weight:var(--font-semibold);font-size:var(--text-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                      {plant.common_name}
+                    </div>
+                    <div style="font-size:var(--text-xs);color:var(--color-text-muted);display:flex;gap:var(--space-2);margin-top:2px;">
+                      {typeLabel && <span>{typeLabel}</span>}
+                      {plant.attraction_type && (
+                        <span style="color:var(--color-sienna-600);">
+                          {plant.attraction_type.replace(/_/g, ' ')}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        )}
+
+        <!-- Back link -->
+        <div style="margin-top: var(--space-8);">
+          <a href="/birds" class="btn btn-outline" style="width: 100%;">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M11 7H3M6 3L2 7l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            All Birds
+          </a>
+        </div>
+      </aside>
+    </div>
   </div>
 </Base>
