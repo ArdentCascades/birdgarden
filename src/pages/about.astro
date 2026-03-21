@@ -2,29 +2,162 @@
 /**
  * /about — About page with data sources and attribution
  *
- * SSG. Content populated in Task 12.
+ * SSG. Static content describing the project, its data sources,
+ * and Creative Commons media attribution requirements.
  */
 import Base from '../layouts/Base.astro';
 ---
 
-<Base title="About" description="About Bird Garden — data sources, attribution, and the project behind the site.">
+<Base
+  title="About"
+  description="About Bird Garden — data sources, media attribution, and the project behind the site."
+>
   <div class="container">
     <div class="page-header">
       <h1 class="page-title">About Bird Garden</h1>
+      <p class="page-subtitle">Native plants, local birds, and the data behind the garden</p>
     </div>
 
-    <div class="prose-layout" style="padding-bottom: var(--space-16);">
-      <p>
-        Bird Garden helps you discover native plants that attract birds to your garden.
-        All plant and bird data, recordings, and images are from public-domain or
-        Creative Commons sources.
+    <div class="prose-layout" style="padding-bottom: var(--space-16); max-width: 72ch;">
+
+      <p style="font-size: var(--text-lg); line-height: var(--leading-relaxed); color: var(--color-text);">
+        Bird Garden helps you discover which native plants attract birds to your garden, filtered
+        by your region and the current season. All plant and bird data, song recordings, and
+        images are sourced from public-domain or Creative Commons–licensed datasets.
       </p>
 
-      <h2 id="data-sources" style="margin-top: var(--space-10);">Data Sources</h2>
-      <p style="color: var(--color-text-muted);">Full data source attribution added in Task 12.</p>
+      <!-- How it works -->
+      <h2 style="font-family: var(--font-display); font-size: var(--text-2xl); margin-top: var(--space-10); margin-bottom: var(--space-4);">
+        How it works
+      </h2>
+      <ol style="line-height: var(--leading-relaxed); display: flex; flex-direction: column; gap: var(--space-3); padding-left: var(--space-6);">
+        <li>
+          <strong>Choose your region.</strong> The region selector on the homepage uses your
+          browser's geolocation (if permitted) to find the nearest region, or you can browse
+          the hierarchical list. Your choice is stored locally in your browser — nothing is
+          sent to the server.
+        </li>
+        <li>
+          <strong>Browse native plants.</strong> Plants are filtered to those native to your
+          region and, optionally, those blooming in the current month.
+        </li>
+        <li>
+          <strong>See which birds they attract.</strong> Each plant detail page lists the bird
+          species that visit that plant for nesting, berries, nectar, or insects.
+        </li>
+        <li>
+          <strong>Build your garden.</strong> Add plants to My Garden to see a combined bird list
+          for your entire planting plan and share it with others via a link.
+        </li>
+      </ol>
 
-      <h2 id="attribution" style="margin-top: var(--space-8);">Media Attribution</h2>
-      <p style="color: var(--color-text-muted);">Full media attribution added in Task 12.</p>
+      <!-- Data sources -->
+      <h2
+        id="data-sources"
+        style="font-family: var(--font-display); font-size: var(--text-2xl); margin-top: var(--space-10); margin-bottom: var(--space-4);"
+      >
+        Data Sources
+      </h2>
+
+      <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+        <div style="padding: var(--space-4); background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
+          <h3 style="font-size: var(--text-base); font-weight: var(--font-semibold); margin-bottom: var(--space-1);">
+            USDA PLANTS Database
+          </h3>
+          <p style="font-size: var(--text-sm); color: var(--color-text-muted); line-height: var(--leading-relaxed);">
+            Native plant species, common names, scientific names, USDA hardiness zones, plant
+            family, and regional occurrence data. Public domain (U.S. Government work).
+          </p>
+        </div>
+
+        <div style="padding: var(--space-4); background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
+          <h3 style="font-size: var(--text-base); font-weight: var(--font-semibold); margin-bottom: var(--space-1);">
+            eBird / Cornell Lab of Ornithology
+          </h3>
+          <p style="font-size: var(--text-sm); color: var(--color-text-muted); line-height: var(--leading-relaxed);">
+            Bird species occurrence by region and month (seasonal presence data). Bird–plant
+            association data derived from citizen-science observation records.
+          </p>
+        </div>
+
+        <div style="padding: var(--space-4); background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
+          <h3 style="font-size: var(--text-base); font-weight: var(--font-semibold); margin-bottom: var(--space-1);">
+            Xeno-canto
+          </h3>
+          <p style="font-size: var(--text-sm); color: var(--color-text-muted); line-height: var(--leading-relaxed);">
+            Bird song recordings. All recordings used under Creative Commons licenses
+            (CC BY, CC BY-NC, or CC BY-NC-SA). Recordist attribution is displayed on each
+            bird detail page next to the audio player.
+          </p>
+        </div>
+
+        <div style="padding: var(--space-4); background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
+          <h3 style="font-size: var(--text-base); font-weight: var(--font-semibold); margin-bottom: var(--space-1);">
+            Wikimedia Commons / iNaturalist
+          </h3>
+          <p style="font-size: var(--text-sm); color: var(--color-text-muted); line-height: var(--leading-relaxed);">
+            Plant and bird photographs used under Creative Commons licenses. Each image
+            includes a link to its source and license in the site database.
+          </p>
+        </div>
+
+        <div style="padding: var(--space-4); background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-lg);">
+          <h3 style="font-size: var(--text-base); font-weight: var(--font-semibold); margin-bottom: var(--space-1);">
+            IUCN Red List
+          </h3>
+          <p style="font-size: var(--text-sm); color: var(--color-text-muted); line-height: var(--leading-relaxed);">
+            Bird conservation status codes (LC, NT, VU, EN, CR) displayed on bird detail pages.
+          </p>
+        </div>
+      </div>
+
+      <!-- Attribution -->
+      <h2
+        id="attribution"
+        style="font-family: var(--font-display); font-size: var(--text-2xl); margin-top: var(--space-10); margin-bottom: var(--space-4);"
+      >
+        Media Attribution
+      </h2>
+      <p style="font-size: var(--text-base); line-height: var(--leading-relaxed); color: var(--color-text); margin-bottom: var(--space-4);">
+        All bird song recordings and images are used under Creative Commons licenses.
+        Individual attribution (recordist, photographer, license, source URL) is stored in the
+        Bird Garden database and displayed inline on each plant and bird detail page.
+      </p>
+      <p style="font-size: var(--text-base); line-height: var(--leading-relaxed); color: var(--color-text); margin-bottom: var(--space-4);">
+        If you are a rights holder and believe your work has been used incorrectly or you would
+        like it removed, please open an issue in the project repository.
+      </p>
+
+      <h3 style="font-size: var(--text-lg); font-weight: var(--font-semibold); margin-top: var(--space-6); margin-bottom: var(--space-2);">
+        License abbreviations used on this site
+      </h3>
+      <dl style="display: grid; grid-template-columns: max-content 1fr; gap: var(--space-1) var(--space-4); font-size: var(--text-sm);">
+        <dt style="font-weight: var(--font-semibold);">CC BY</dt>
+        <dd style="color: var(--color-text-muted);">Attribution required</dd>
+        <dt style="font-weight: var(--font-semibold);">CC BY-SA</dt>
+        <dd style="color: var(--color-text-muted);">Attribution + ShareAlike required</dd>
+        <dt style="font-weight: var(--font-semibold);">CC BY-NC</dt>
+        <dd style="color: var(--color-text-muted);">Attribution; non-commercial use only</dd>
+        <dt style="font-weight: var(--font-semibold);">CC BY-NC-SA</dt>
+        <dd style="color: var(--color-text-muted);">Attribution + ShareAlike; non-commercial only</dd>
+        <dt style="font-weight: var(--font-semibold);">CC0</dt>
+        <dd style="color: var(--color-text-muted);">Public domain dedication — no rights reserved</dd>
+      </dl>
+
+      <!-- Tech stack -->
+      <h2
+        style="font-family: var(--font-display); font-size: var(--text-2xl); margin-top: var(--space-10); margin-bottom: var(--space-4);"
+      >
+        Built with
+      </h2>
+      <ul style="line-height: var(--leading-relaxed); display: flex; flex-direction: column; gap: var(--space-2); padding-left: var(--space-6); font-size: var(--text-base); color: var(--color-text);">
+        <li><strong>Astro 5</strong> — static site generation + server-side rendering</li>
+        <li><strong>Preact</strong> — interactive islands (region selector, filters, audio player, garden builder)</li>
+        <li><strong>Bun</strong> — JavaScript runtime, test runner, and package manager</li>
+        <li><strong>SQLite</strong> (via better-sqlite3) — embedded database for plant, bird, and song data</li>
+        <li><strong>Xeno-canto API</strong> — bird song streaming and metadata</li>
+      </ul>
+
     </div>
   </div>
 </Base>

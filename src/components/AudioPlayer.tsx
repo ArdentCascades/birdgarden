@@ -93,13 +93,18 @@ export default function AudioPlayer({ songId, birdName }: Props) {
     const audio = audioRef.current;
     if (!audio) return;
     if (audio.paused) {
-      // Announce to other players
+      // Broadcast to MiniPlayer and other AudioPlayers
       window.dispatchEvent(
-        new CustomEvent('bird-garden:song-play', { detail: { songId } }),
+        new CustomEvent('bird-garden:song-play', {
+          detail: { songId, birdName: birdName ?? '', audioEl: audio },
+        }),
       );
       audio.play().catch(() => setLoadError('Playback failed. Please try again.'));
     } else {
       audio.pause();
+      window.dispatchEvent(
+        new CustomEvent('bird-garden:song-pause', { detail: { songId } }),
+      );
     }
   }
 
@@ -169,7 +174,12 @@ export default function AudioPlayer({ songId, birdName }: Props) {
         src={`/api/songs/${songId}`}
         preload="metadata"
         onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
+        onPause={() => {
+          setPlaying(false);
+          window.dispatchEvent(
+            new CustomEvent('bird-garden:song-pause', { detail: { songId } }),
+          );
+        }}
         onEnded={handleEnded}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
