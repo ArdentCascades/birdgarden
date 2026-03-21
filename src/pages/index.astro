@@ -2,13 +2,25 @@
 /**
  * index.astro — Landing page / region selector
  *
- * Implemented in Task 7.
- * This stub renders a placeholder that makes the dev server functional.
+ * Task 7: Hero + RegionSelector Preact island.
+ * Pre-selects region from URL param or localStorage cookie.
  */
 import Base from '../layouts/Base.astro';
+import RegionSelector from '../components/RegionSelector.tsx';
+
+// Read saved region from URL param (takes priority) then cookie header
+const urlRegion = Astro.url.searchParams.get('region') ?? undefined;
+
+// Validate the slug before passing it to the island (same pattern as validate.ts)
+const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,98}[a-z0-9]$|^[a-z0-9]$/;
+const safeRegion = urlRegion && SLUG_RE.test(urlRegion) ? urlRegion : undefined;
 ---
 
-<Base title="Bird Garden" description="Discover native plants that attract birds to your garden. Browse by region, season, and plant type.">
+<Base
+  title="Bird Garden"
+  description="Discover native plants that attract birds to your garden. Browse by region, season, and plant type."
+>
+  <!-- Hero -->
   <div class="hero">
     <div class="container">
       <h1 class="hero-title">Native Plants That Bring Birds to Your Garden</h1>
@@ -17,17 +29,86 @@ import Base from '../layouts/Base.astro';
       </p>
       <div class="hero-actions">
         <a href="/plants" class="btn btn-accent">Browse Native Plants</a>
-        <a href="/birds" class="btn btn-outline" style="border-color: white; color: white;">Explore Birds</a>
+        <a href="/birds" class="btn btn-outline" style="border-color: white; color: white;">
+          Explore Birds
+        </a>
       </div>
     </div>
   </div>
 
-  <section class="section">
+  <!-- Region selector section -->
+  <section class="section" aria-labelledby="region-heading">
     <div class="container">
-      <!-- Region Selector island will be mounted here in Task 7 -->
-      <p style="text-align: center; color: var(--color-text-muted);">
-        Region selector coming in Task 7.
-      </p>
+      <div style="max-width: 640px; margin-inline: auto; text-align: center;">
+        <h2 id="region-heading" class="section-title">Find Plants for Your Region</h2>
+        <p style="color: var(--color-text-muted); margin-bottom: var(--space-6);">
+          Select your region to see native plants and the birds they attract throughout the year.
+        </p>
+        <RegionSelector client:load initialRegion={safeRegion} />
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works section -->
+  <section class="section" style="background: var(--color-bg-subtle);" aria-labelledby="how-heading">
+    <div class="container">
+      <h2 id="how-heading" class="section-title" style="text-align: center;">How It Works</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-8); max-width: 800px; margin-inline: auto;">
+        <div style="text-align: center;">
+          <div style="font-size: var(--text-3xl); margin-bottom: var(--space-3);" aria-hidden="true">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="margin:auto;" aria-hidden="true">
+              <circle cx="24" cy="20" r="10" stroke="var(--color-primary)" stroke-width="2" fill="none"/>
+              <path d="M24 34C24 34 14 27 14 20C14 14.477 18.477 10 24 10C29.523 10 34 14.477 34 20C34 27 24 34 24 34Z"
+                stroke="var(--color-primary)" stroke-width="2" fill="var(--color-green-100)"/>
+              <circle cx="24" cy="20" r="3" fill="var(--color-primary)"/>
+            </svg>
+          </div>
+          <h3 style="font-family: var(--font-display); font-size: var(--text-lg); margin-bottom: var(--space-2);">Choose Your Region</h3>
+          <p style="font-size: var(--text-sm); color: var(--color-text-muted);">
+            Select your location to see plants native to your area.
+          </p>
+        </div>
+        <div style="text-align: center;">
+          <div style="margin-bottom: var(--space-3);" aria-hidden="true">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="margin:auto;" aria-hidden="true">
+              <path d="M24 6C24 6 10 14 10 28C10 36.837 16.268 44 24 44C31.732 44 38 36.837 38 28C38 14 24 6 24 6Z"
+                fill="var(--color-green-100)" stroke="var(--color-primary)" stroke-width="2"/>
+              <path d="M24 44V28" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round"/>
+              <path d="M24 28L30 22" stroke="var(--color-green-500)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M24 33L18 27" stroke="var(--color-green-500)" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 style="font-family: var(--font-display); font-size: var(--text-lg); margin-bottom: var(--space-2);">Browse Native Plants</h3>
+          <p style="font-size: var(--text-sm); color: var(--color-text-muted);">
+            Explore plants that thrive in your climate, filtered by bloom season and type.
+          </p>
+        </div>
+        <div style="text-align: center;">
+          <div style="margin-bottom: var(--space-3);" aria-hidden="true">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="margin:auto;" aria-hidden="true">
+              <path d="M8 36C8 36 16 24 24 20C32 16 40 20 40 28C40 36 32 40 24 40C20 40 12 38 8 36Z"
+                fill="var(--color-green-100)" stroke="var(--color-primary)" stroke-width="2"/>
+              <circle cx="30" cy="18" r="5" fill="var(--color-sienna-100)" stroke="var(--color-sienna-500)" stroke-width="2"/>
+              <path d="M22 26C22 26 26 22 30 20" stroke="var(--color-green-500)" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 style="font-family: var(--font-display); font-size: var(--text-lg); margin-bottom: var(--space-2);">Discover Birds</h3>
+          <p style="font-size: var(--text-sm); color: var(--color-text-muted);">
+            See which birds each plant attracts and listen to their songs.
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 </Base>
+
+<script>
+  // Restore saved region from localStorage for returning visitors
+  (function () {
+    const saved = localStorage.getItem('bird-garden-region');
+    const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,98}[a-z0-9]$|^[a-z0-9]$/;
+    if (saved && SLUG_RE.test(saved) && !location.search.includes('region=')) {
+      history.replaceState(null, '', `?region=${encodeURIComponent(saved)}`);
+    }
+  })();
+</script>

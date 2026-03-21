@@ -2,22 +2,57 @@
 /**
  * /plants — Plant browser
  *
- * SSR page with filterable grid of native plants.
- * Implemented fully in Task 8.
+ * SSR page. Server renders the page shell with initial filter state from URL
+ * params. FilterPanel Preact island takes over for subsequent filter changes.
  */
-export const prerender = false; // SSR — filters require dynamic rendering
+export const prerender = false;
 
 import Base from '../../layouts/Base.astro';
+import FilterPanel from '../../components/FilterPanel.tsx';
+
+// Read initial filter state from URL params
+const url = Astro.url;
+const region = url.searchParams.get('region') ?? '';
+const monthParam = url.searchParams.get('month');
+const type = url.searchParams.get('type') ?? '';
+const sort = url.searchParams.get('sort') ?? 'birds';
+const search = url.searchParams.get('q') ?? '';
+
+const SLUG_RE = /^[a-z0-9][a-z0-9-]{0,98}[a-z0-9]$|^[a-z0-9]$/;
+const safeRegion = region && SLUG_RE.test(region) ? region : '';
+
+const month = monthParam ? parseInt(monthParam, 10) : undefined;
+const safeMonth = month && month >= 1 && month <= 12 ? month : undefined;
+
+const pageTitle = safeRegion
+  ? `Native Plants — ${safeRegion.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}`
+  : 'Native Plants';
 ---
 
-<Base title="Native Plants" description="Browse plants native to your region that attract birds to your garden.">
+<Base
+  title={pageTitle}
+  description="Browse plants native to your region that attract birds to your garden."
+>
   <div class="container">
     <div class="page-header">
       <h1 class="page-title">Native Plants</h1>
       <p class="page-subtitle">Browse plants native to your region that attract birds</p>
+      {safeRegion && (
+        <p style="margin-top: var(--space-2); font-size: var(--text-sm); color: var(--color-text-muted);">
+          Showing plants for
+          <strong>{safeRegion.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}</strong>
+          — <a href="/">change region</a>
+        </p>
+      )}
     </div>
 
-    <!-- FilterPanel Preact island and card grid — implemented in Task 8 -->
-    <p style="color: var(--color-text-muted);">Plant browser implemented in Task 8.</p>
+    <FilterPanel
+      client:load
+      initialRegion={safeRegion}
+      initialMonth={safeMonth}
+      initialType={type}
+      initialSort={sort}
+      initialSearch={search}
+    />
   </div>
 </Base>
