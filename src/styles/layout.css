@@ -1,0 +1,319 @@
+/* =============================================================================
+   Bird Garden — Layout CSS
+   Site-wide structural layout primitives
+   ============================================================================= */
+
+@layer layout {
+  /* --- Site Shell --- */
+  .site-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+
+  .site-main {
+    flex: 1;
+    padding-block: var(--space-8);
+  }
+
+  .container {
+    width: 100%;
+    max-width: var(--max-width-site);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  @media (max-width: 640px) {
+    .container {
+      padding-inline: var(--space-4);
+    }
+  }
+
+  /* --- Navigation --- */
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    height: var(--nav-height);
+    background-color: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--color-primary);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    list-style: none;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: var(--font-medium);
+    color: var(--color-text-muted);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+    min-height: 2.75rem; /* Touch target */
+  }
+
+  .nav-link:hover,
+  .nav-link[aria-current="page"] {
+    color: var(--color-text);
+    background-color: var(--color-surface);
+  }
+
+  .nav-link[aria-current="page"] {
+    color: var(--color-primary);
+    font-weight: var(--font-semibold);
+  }
+
+  /* Region indicator chip in nav */
+  .nav-region-chip {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    background-color: var(--color-green-50);
+    color: var(--color-green-800);
+    border: 1px solid var(--color-green-200);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    text-decoration: none;
+    min-height: 2.75rem;
+    transition: background-color var(--transition-fast);
+  }
+
+  .nav-region-chip:hover {
+    background-color: var(--color-green-100);
+  }
+
+  /* Mobile nav toggle button */
+  .nav-mobile-toggle {
+    display: none;
+    padding: var(--space-2);
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .nav-mobile-toggle:hover {
+    color: var(--color-text);
+    background-color: var(--color-surface);
+  }
+
+  @media (max-width: 768px) {
+    .nav-links {
+      display: none; /* Hidden — shown in MobileNav island */
+    }
+
+    .nav-mobile-toggle {
+      display: flex;
+    }
+  }
+
+  /* --- Page Header (below nav, above content) --- */
+  .page-header {
+    padding-block: var(--space-8) var(--space-6);
+    border-bottom: 1px solid var(--color-border-subtle);
+    margin-bottom: var(--space-8);
+  }
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    color: var(--color-text);
+    line-height: var(--leading-tight);
+  }
+
+  .page-subtitle {
+    margin-top: var(--space-2);
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+    max-width: 48ch;
+  }
+
+  /* --- Card Grids --- */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--grid-gap);
+  }
+
+  .card-grid-sm {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .card-grid-lg {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+
+  /* --- Two-column detail layout (plant/bird detail pages) --- */
+  .detail-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    max-width: var(--max-width-site);
+    margin-inline: auto;
+  }
+
+  @media (min-width: 768px) {
+    .detail-layout {
+      grid-template-columns: 1fr 360px;
+    }
+  }
+
+  .detail-main {
+    max-width: var(--max-width-prose);
+  }
+
+  .detail-sidebar {
+    /* Sidebar with birds / related content */
+  }
+
+  /* --- Hero Section --- */
+  .hero {
+    background-color: var(--color-green-800);
+    color: #ffffff;
+    padding-block: var(--space-20) var(--space-16);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(var(--text-3xl), 5vw, var(--text-4xl));
+    font-weight: var(--font-bold);
+    line-height: var(--leading-tight);
+    color: #ffffff;
+    max-width: 20ch;
+    margin-inline: auto;
+  }
+
+  .hero-subtitle {
+    margin-top: var(--space-4);
+    font-size: var(--text-xl);
+    opacity: 0.85;
+    max-width: 40ch;
+    margin-inline: auto;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+    margin-top: var(--space-8);
+  }
+
+  /* --- Section layout --- */
+  .section {
+    padding-block: var(--space-12);
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    margin-bottom: var(--space-6);
+  }
+
+  /* --- Footer --- */
+  .site-footer {
+    background-color: var(--color-neutral-900);
+    color: var(--color-neutral-300);
+    padding-block: var(--space-12);
+    margin-top: auto;
+  }
+
+  .footer-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-8);
+    margin-bottom: var(--space-8);
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 640px) {
+    .footer-brand {
+      grid-column: auto;
+    }
+  }
+
+  .footer-heading {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-neutral-400);
+    margin-bottom: var(--space-4);
+  }
+
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    list-style: none;
+  }
+
+  .footer-links a {
+    color: var(--color-neutral-300);
+    text-decoration: none;
+    font-size: var(--text-sm);
+    transition: color var(--transition-fast);
+  }
+
+  .footer-links a:hover {
+    color: #ffffff;
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--color-neutral-700);
+    padding-top: var(--space-6);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--text-sm);
+    color: var(--color-neutral-500);
+  }
+
+  /* --- Sticky Mini Player spacing --- */
+  /* When mini player is visible, add bottom padding to main content */
+  body:has(.mini-player-visible) .site-main {
+    padding-bottom: calc(var(--space-8) + 5rem);
+  }
+}

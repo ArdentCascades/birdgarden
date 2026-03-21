@@ -1,0 +1,639 @@
+/* =============================================================================
+   Bird Garden — Global CSS
+   Design Direction: Naturalist Field Guide
+   Earthy, warm, botanical illustration aesthetic
+   ============================================================================= */
+
+/* CSS Layers — explicit ordering prevents specificity surprises */
+@layer reset, tokens, base, layout, components, utilities;
+
+/* =============================================================================
+   Design Tokens — CSS Custom Properties
+   ============================================================================= */
+@layer tokens {
+  :root {
+    /* --- Color Palette: Naturalist Field Guide --- */
+
+    /* Primary: Deep forest greens */
+    --color-green-900: #1a3009;
+    --color-green-800: #2d5016;
+    --color-green-700: #3d6b1f;
+    --color-green-600: #4e8828;
+    --color-green-500: #62a533;
+    --color-green-400: #83be56;
+    --color-green-300: #a8d47e;
+    --color-green-200: #cde8a9;
+    --color-green-100: #e8f5d4;
+    --color-green-50:  #f4fae9;
+
+    /* Background: Warm parchment/cream */
+    --color-parchment-900: #5c4a2a;
+    --color-parchment-800: #7a6340;
+    --color-parchment-700: #9a7e58;
+    --color-parchment-600: #b89a72;
+    --color-parchment-500: #d4b88e;
+    --color-parchment-400: #e8d5b4;
+    --color-parchment-300: #f0e4cc;
+    --color-parchment-200: #f5eedc;
+    --color-parchment-100: #f8f3ea;
+    --color-parchment-50:  #fdf9f3;
+
+    /* Accent: Burnt sienna — for CTAs, highlights, active states */
+    --color-sienna-900: #4a1a05;
+    --color-sienna-800: #7a2e0a;
+    --color-sienna-700: #a34012;
+    --color-sienna-600: #c9521c;
+    --color-sienna-500: #e06428;
+    --color-sienna-400: #e8834f;
+    --color-sienna-300: #f0a880;
+    --color-sienna-200: #f7ccb3;
+    --color-sienna-100: #fce8d9;
+    --color-sienna-50:  #fef5ef;
+
+    /* Secondary: Muted sage — for secondary elements, tags, chips */
+    --color-sage-900: #1e3020;
+    --color-sage-800: #2e4a30;
+    --color-sage-700: #426444;
+    --color-sage-600: #587e5a;
+    --color-sage-500: #6e9870;
+    --color-sage-400: #90b292;
+    --color-sage-300: #b2cbb4;
+    --color-sage-200: #d0e2d1;
+    --color-sage-100: #e8f1e8;
+    --color-sage-50:  #f4f9f4;
+
+    /* Neutral: Warm grays (no cold blue-grays) */
+    --color-neutral-900: #1c1916;
+    --color-neutral-800: #2e2b26;
+    --color-neutral-700: #443f38;
+    --color-neutral-600: #5e574e;
+    --color-neutral-500: #7a7168;
+    --color-neutral-400: #9e9589;
+    --color-neutral-300: #c0b9af;
+    --color-neutral-200: #dcd7d0;
+    --color-neutral-100: #eeebe6;
+    --color-neutral-50:  #f9f7f5;
+
+    /* Semantic color assignments */
+    --color-bg:          var(--color-parchment-50);
+    --color-bg-subtle:   var(--color-parchment-100);
+    --color-bg-card:     #ffffff;
+    --color-surface:     var(--color-parchment-200);
+
+    --color-text:        var(--color-neutral-900);
+    --color-text-muted:  var(--color-neutral-600);
+    --color-text-subtle: var(--color-neutral-400);
+
+    --color-primary:     var(--color-green-800);
+    --color-primary-hover: var(--color-green-700);
+    --color-primary-text: #ffffff;
+
+    --color-accent:      var(--color-sienna-600);
+    --color-accent-hover: var(--color-sienna-700);
+    --color-accent-text: #ffffff;
+
+    --color-border:      var(--color-neutral-200);
+    --color-border-subtle: var(--color-neutral-100);
+
+    --color-focus:       var(--color-sienna-500);
+    --color-error:       #c0392b;
+    --color-success:     var(--color-green-700);
+    --color-warning:     #d68910;
+
+    /* --- Typography --- */
+
+    /* Display font: Newsreader (serif) — self-hosted WOFF2 */
+    --font-display: 'Newsreader', 'Georgia', 'Times New Roman', serif;
+    /* Body font: Source Sans 3 (humanist sans) — self-hosted WOFF2 */
+    --font-body: 'Source Sans 3', 'Helvetica Neue', 'Arial', sans-serif;
+    /* Monospace: system mono for code */
+    --font-mono: 'Fira Code', 'Consolas', 'Monaco', monospace;
+
+    /* Type scale (Major Third, 1.25 ratio) */
+    --text-xs:   0.64rem;   /* 10.2px */
+    --text-sm:   0.8rem;    /* 12.8px */
+    --text-base: 1rem;      /* 16px */
+    --text-lg:   1.25rem;   /* 20px */
+    --text-xl:   1.563rem;  /* 25px */
+    --text-2xl:  1.953rem;  /* 31.25px */
+    --text-3xl:  2.441rem;  /* 39px */
+    --text-4xl:  3.052rem;  /* 48.8px */
+
+    /* Font weights */
+    --font-normal:    400;
+    --font-medium:    500;
+    --font-semibold:  600;
+    --font-bold:      700;
+
+    /* Line heights */
+    --leading-tight:  1.2;
+    --leading-snug:   1.375;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.625;
+    --leading-loose:  1.8;
+
+    /* --- Spacing Scale (8px base) --- */
+    --space-0:    0;
+    --space-1:    0.25rem;   /* 4px */
+    --space-2:    0.5rem;    /* 8px */
+    --space-3:    0.75rem;   /* 12px */
+    --space-4:    1rem;      /* 16px */
+    --space-5:    1.25rem;   /* 20px */
+    --space-6:    1.5rem;    /* 24px */
+    --space-8:    2rem;      /* 32px */
+    --space-10:   2.5rem;    /* 40px */
+    --space-12:   3rem;      /* 48px */
+    --space-16:   4rem;      /* 64px */
+    --space-20:   5rem;      /* 80px */
+    --space-24:   6rem;      /* 96px */
+
+    /* --- Border Radius --- */
+    --radius-sm:  0.25rem;
+    --radius-md:  0.5rem;
+    --radius-lg:  0.75rem;
+    --radius-xl:  1rem;
+    --radius-full: 9999px;
+
+    /* --- Shadows (warm, soft — no cold blue tints) --- */
+    --shadow-sm:  0 1px 2px 0 rgba(28, 25, 22, 0.06);
+    --shadow-md:  0 4px 6px -1px rgba(28, 25, 22, 0.08), 0 2px 4px -2px rgba(28, 25, 22, 0.05);
+    --shadow-lg:  0 10px 15px -3px rgba(28, 25, 22, 0.08), 0 4px 6px -4px rgba(28, 25, 22, 0.05);
+    --shadow-xl:  0 20px 25px -5px rgba(28, 25, 22, 0.08), 0 8px 10px -6px rgba(28, 25, 22, 0.04);
+
+    /* Card shadow with warm tint */
+    --shadow-card: 0 2px 8px -2px rgba(90, 60, 20, 0.10), 0 1px 3px -1px rgba(90, 60, 20, 0.08);
+    --shadow-card-hover: 0 8px 24px -4px rgba(90, 60, 20, 0.14), 0 2px 8px -2px rgba(90, 60, 20, 0.10);
+
+    /* --- Layout --- */
+    --max-width-prose: 42.5rem;   /* ~680px — single-column reading layout */
+    --max-width-content: 90rem;   /* ~1440px — wide content area */
+    --max-width-site: 80rem;      /* ~1280px — standard site width */
+
+    /* Card grid gap (minimum per spec) */
+    --grid-gap: var(--space-6);   /* 24px */
+
+    /* Nav height (used for scroll offsets) */
+    --nav-height: 4rem;
+
+    /* --- Transitions --- */
+    --transition-fast:   150ms ease;
+    --transition-base:   250ms ease;
+    --transition-slow:   400ms ease;
+
+    /* --- Z-index Scale --- */
+    --z-base:     0;
+    --z-raised:   10;
+    --z-dropdown: 100;
+    --z-sticky:   200;
+    --z-overlay:  300;
+    --z-modal:    400;
+    --z-toast:    500;
+  }
+
+  /* --- Dark Mode (warm charcoal, not pure black) --- */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-bg:          #1e1c19;
+      --color-bg-subtle:   #252320;
+      --color-bg-card:     #2c2a26;
+      --color-surface:     #333028;
+
+      --color-text:        #f0ece4;
+      --color-text-muted:  #b8b0a4;
+      --color-text-subtle: #7a7268;
+
+      --color-primary:     var(--color-green-400);
+      --color-primary-hover: var(--color-green-300);
+      --color-primary-text: var(--color-neutral-900);
+
+      --color-accent:      var(--color-sienna-400);
+      --color-accent-hover: var(--color-sienna-300);
+      --color-accent-text: var(--color-neutral-900);
+
+      --color-border:      #3a3730;
+      --color-border-subtle: #2e2c28;
+
+      --color-focus:       var(--color-sienna-400);
+
+      --shadow-card: 0 2px 8px -2px rgba(0, 0, 0, 0.3), 0 1px 3px -1px rgba(0, 0, 0, 0.2);
+      --shadow-card-hover: 0 8px 24px -4px rgba(0, 0, 0, 0.4), 0 2px 8px -2px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+/* =============================================================================
+   Reset
+   ============================================================================= */
+@layer reset {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    /* Prevent layout shift from scrollbar appearing/disappearing */
+    scrollbar-gutter: stable;
+    /* Smooth scroll for in-page anchors (respects prefers-reduced-motion below) */
+    scroll-behavior: smooth;
+    /* Allow text scaling — all sizes use rem */
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+    line-height: var(--leading-normal);
+  }
+
+  img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  input, button, textarea, select {
+    font: inherit;
+  }
+
+  p, h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+  }
+
+  /* Remove list styles only when role=list is not set */
+  ul:not([role='list']), ol:not([role='list']) {
+    list-style: none;
+  }
+
+  a {
+    color: inherit;
+    text-decoration-skip-ink: auto;
+  }
+
+  button {
+    cursor: pointer;
+    background: none;
+    border: none;
+  }
+
+  /* Honor reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* =============================================================================
+   Base — Global Typography & Defaults
+   ============================================================================= */
+@layer base {
+  html {
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background-color: var(--color-bg);
+  }
+
+  /* Establish a comfortable reading baseline */
+  body {
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    font-weight: var(--font-normal);
+  }
+
+  /* Display headings use the serif field-guide font */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    line-height: var(--leading-tight);
+    font-weight: var(--font-bold);
+    color: var(--color-text);
+  }
+
+  h4, h5, h6 {
+    font-family: var(--font-body);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-snug);
+  }
+
+  h1 { font-size: var(--text-4xl); }
+  h2 { font-size: var(--text-3xl); }
+  h3 { font-size: var(--text-2xl); }
+  h4 { font-size: var(--text-xl); }
+  h5 { font-size: var(--text-lg); }
+  h6 { font-size: var(--text-base); }
+
+  /* Links */
+  a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    transition: color var(--transition-fast);
+  }
+
+  a:hover {
+    color: var(--color-primary-hover);
+  }
+
+  /* Focus visible — accessible, on-brand */
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Scientific names — consistently italic throughout */
+  .scientific-name,
+  em.scientific {
+    font-style: italic;
+    font-size: 0.875em;
+    color: var(--color-text-muted);
+  }
+
+  /* Code */
+  code, pre {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  /* Horizontal rule with botanical feel */
+  hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: var(--space-8) 0;
+  }
+}
+
+/* =============================================================================
+   Paper Grain Texture — Applied to card backgrounds via class
+   ============================================================================= */
+@layer components {
+  /* Subtle paper-grain noise overlay.
+     Uses an SVG filter for zero extra HTTP requests.
+     Apply .texture-paper to elements needing the card texture. */
+  .texture-paper {
+    position: relative;
+  }
+
+  .texture-paper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.4;
+  }
+
+  /* Card baseline style */
+  .card {
+    background-color: var(--color-bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    transition: box-shadow var(--transition-base), transform var(--transition-base);
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+
+  /* Pulsing skeleton loading animation */
+  @keyframes skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+
+  .skeleton {
+    background-color: var(--color-surface);
+    border-radius: var(--radius-md);
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  /* Card fade-in stagger animation */
+  @keyframes card-appear {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-card-appear {
+    animation: card-appear 0.4s ease-out both;
+  }
+
+  /* Badge / chip */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .badge-green {
+    background-color: var(--color-green-100);
+    color: var(--color-green-800);
+  }
+
+  .badge-sienna {
+    background-color: var(--color-sienna-100);
+    color: var(--color-sienna-700);
+  }
+
+  .badge-sage {
+    background-color: var(--color-sage-100);
+    color: var(--color-sage-700);
+  }
+
+  .badge-neutral {
+    background-color: var(--color-neutral-100);
+    color: var(--color-neutral-700);
+  }
+
+  /* Dismissible filter chip */
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    background-color: var(--color-green-100);
+    color: var(--color-green-800);
+    border: 1px solid var(--color-green-200);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+    /* Minimum touch target */
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+
+  .filter-chip:hover {
+    background-color: var(--color-green-200);
+  }
+
+  /* Button base */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-semibold);
+    font-size: var(--text-base);
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+    /* Minimum touch target (WCAG 2.2 AA) */
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-primary-text);
+    border: 2px solid transparent;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-primary-hover);
+    color: var(--color-primary-text);
+  }
+
+  .btn-accent {
+    background-color: var(--color-accent);
+    color: var(--color-accent-text);
+    border: 2px solid transparent;
+  }
+
+  .btn-accent:hover {
+    background-color: var(--color-accent-hover);
+    color: var(--color-accent-text);
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+  }
+
+  .btn-outline:hover {
+    background-color: var(--color-green-50);
+  }
+
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--color-text-muted);
+    border: 2px solid transparent;
+  }
+
+  .btn-ghost:hover {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  /* Presence type badges */
+  .presence-resident  { background-color: var(--color-green-100);  color: var(--color-green-800); }
+  .presence-breeding  { background-color: var(--color-sienna-100); color: var(--color-sienna-700); }
+  .presence-wintering { background-color: var(--color-sage-100);   color: var(--color-sage-700); }
+  .presence-migrating { background-color: var(--color-parchment-300); color: var(--color-parchment-800); }
+
+  /* Botanical divider — a thin line with a centered leaf SVG icon */
+  .botanical-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    color: var(--color-border);
+    margin: var(--space-8) 0;
+  }
+
+  .botanical-divider::before,
+  .botanical-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: var(--color-border);
+  }
+}
+
+/* =============================================================================
+   Utilities
+   ============================================================================= */
+@layer utilities {
+  /* Skip-to-content link — accessibility */
+  .skip-link {
+    position: absolute;
+    left: var(--space-4);
+    top: var(--space-4);
+    padding: var(--space-3) var(--space-6);
+    background-color: var(--color-primary);
+    color: var(--color-primary-text);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-semibold);
+    text-decoration: none;
+    transform: translateY(-120%);
+    transition: transform var(--transition-fast);
+    z-index: var(--z-toast);
+  }
+
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+
+  /* Visually hidden but accessible to screen readers */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Prose reading layout */
+  .prose-layout {
+    max-width: var(--max-width-prose);
+    margin-inline: auto;
+  }
+
+  /* Text utilities */
+  .text-muted   { color: var(--color-text-muted); }
+  .text-subtle  { color: var(--color-text-subtle); }
+  .text-display { font-family: var(--font-display); }
+
+  /* High contrast mode — ensure critical UI elements remain visible */
+  @media (forced-colors: active) {
+    .badge, .filter-chip, .btn {
+      border: 2px solid ButtonText;
+      forced-color-adjust: none;
+    }
+
+    .skeleton {
+      background-color: GrayText;
+    }
+
+    .card {
+      border: 1px solid ButtonText;
+    }
+  }
+}

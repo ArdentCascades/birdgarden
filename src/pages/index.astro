@@ -1,0 +1,33 @@
+---
+/**
+ * index.astro — Landing page / region selector
+ *
+ * Implemented in Task 7.
+ * This stub renders a placeholder that makes the dev server functional.
+ */
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Bird Garden" description="Discover native plants that attract birds to your garden. Browse by region, season, and plant type.">
+  <div class="hero">
+    <div class="container">
+      <h1 class="hero-title">Native Plants That Bring Birds to Your Garden</h1>
+      <p class="hero-subtitle">
+        Discover which plants are native to your region, and which birds they attract — by season.
+      </p>
+      <div class="hero-actions">
+        <a href="/plants" class="btn btn-accent">Browse Native Plants</a>
+        <a href="/birds" class="btn btn-outline" style="border-color: white; color: white;">Explore Birds</a>
+      </div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <!-- Region Selector island will be mounted here in Task 7 -->
+      <p style="text-align: center; color: var(--color-text-muted);">
+        Region selector coming in Task 7.
+      </p>
+    </div>
+  </section>
+</Base>

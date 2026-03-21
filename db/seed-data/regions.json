@@ -1,0 +1,130 @@
+[
+  {
+    "slug": "americas",
+    "name": "Americas",
+    "level": "continent",
+    "parent_slug": null,
+    "latitude": 15.0,
+    "longitude": -80.0
+  },
+  {
+    "slug": "united-states",
+    "name": "United States",
+    "level": "country",
+    "parent_slug": "americas",
+    "latitude": 39.5,
+    "longitude": -98.35
+  },
+  {
+    "slug": "canada",
+    "name": "Canada",
+    "level": "country",
+    "parent_slug": "americas",
+    "latitude": 56.13,
+    "longitude": -106.35
+  },
+  {
+    "slug": "california",
+    "name": "California",
+    "level": "state_province",
+    "parent_slug": "united-states",
+    "latitude": 36.78,
+    "longitude": -119.42
+  },
+  {
+    "slug": "texas",
+    "name": "Texas",
+    "level": "state_province",
+    "parent_slug": "united-states",
+    "latitude": 31.97,
+    "longitude": -99.90
+  },
+  {
+    "slug": "florida",
+    "name": "Florida",
+    "level": "state_province",
+    "parent_slug": "united-states",
+    "latitude": 27.99,
+    "longitude": -81.76
+  },
+  {
+    "slug": "new-york",
+    "name": "New York",
+    "level": "state_province",
+    "parent_slug": "united-states",
+    "latitude": 43.0,
+    "longitude": -75.0
+  },
+  {
+    "slug": "illinois",
+    "name": "Illinois",
+    "level": "state_province",
+    "parent_slug": "united-states",
+    "latitude": 40.0,
+    "longitude": -89.0
+  },
+  {
+    "slug": "oregon",
+    "name": "Oregon",
+    "level": "state_province",
+    "parent_slug": "united-states",
+    "latitude": 44.0,
+    "longitude": -120.5
+  },
+  {
+    "slug": "washington",
+    "name": "Washington",
+    "level": "state_province",
+    "parent_slug": "united-states",
+    "latitude": 47.75,
+    "longitude": -120.74
+  },
+  {
+    "slug": "colorado",
+    "name": "Colorado",
+    "level": "state_province",
+    "parent_slug": "united-states",
+    "latitude": 39.0,
+    "longitude": -105.55
+  },
+  {
+    "slug": "georgia-us",
+    "name": "Georgia",
+    "level": "state_province",
+    "parent_slug": "united-states",
+    "latitude": 32.16,
+    "longitude": -82.9
+  },
+  {
+    "slug": "pennsylvania",
+    "name": "Pennsylvania",
+    "level": "state_province",
+    "parent_slug": "united-states",
+    "latitude": 41.2,
+    "longitude": -77.19
+  },
+  {
+    "slug": "michigan",
+    "name": "Michigan",
+    "level": "state_province",
+    "parent_slug": "united-states",
+    "latitude": 44.18,
+    "longitude": -84.51
+  },
+  {
+    "slug": "ontario",
+    "name": "Ontario",
+    "level": "state_province",
+    "parent_slug": "canada",
+    "latitude": 51.25,
+    "longitude": -85.32
+  },
+  {
+    "slug": "british-columbia",
+    "name": "British Columbia",
+    "level": "state_province",
+    "parent_slug": "canada",
+    "latitude": 53.73,
+    "longitude": -127.65
+  }
+]

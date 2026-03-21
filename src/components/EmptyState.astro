@@ -1,0 +1,45 @@
+---
+/**
+ * EmptyState.astro — Illustrated fallback for empty search/filter results
+ *
+ * Shows a friendly message and a "clear filters" action.
+ */
+
+interface Props {
+  title?: string;
+  message: string;
+  /** URL or handler for the primary action */
+  actionLabel?: string;
+  actionHref?: string;
+}
+
+const {
+  title = 'No results found',
+  message,
+  actionLabel,
+  actionHref,
+} = Astro.props;
+---
+
+<div class="empty-state">
+  <!-- Botanical illustration — leaf with question mark -->
+  <svg class="empty-state-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+    <path d="M32 8C32 8 12 18 12 36C12 47.046 21.507 56 32 56C42.493 56 52 47.046 52 36C52 18 32 8 32 8Z"
+      fill="var(--color-green-100)" stroke="var(--color-green-300)" stroke-width="2"/>
+    <path d="M32 56L32 38" stroke="var(--color-green-400)" stroke-width="2" stroke-linecap="round"/>
+    <!-- Question mark icon centered -->
+    <text x="32" y="40" text-anchor="middle" font-size="18" font-weight="bold"
+      fill="var(--color-green-500)" font-family="serif">?</text>
+  </svg>
+
+  <h2 class="empty-state-title">{title}</h2>
+  <p class="empty-state-message">{message}</p>
+
+  {actionLabel && actionHref && (
+    <a href={actionHref} class="btn btn-outline" style="margin-top: var(--space-4);">
+      {actionLabel}
+    </a>
+  )}
+
+  <slot />
+</div>

@@ -1,0 +1,36 @@
+---
+/**
+ * SkeletonCard.astro — Pulsing loading placeholder
+ *
+ * Matches the dimensions of PlantCard / BirdCard to prevent layout shift
+ * during filter-triggered fetches.
+ */
+
+interface Props {
+  /** Card variant — affects aspect ratio of image placeholder */
+  variant?: 'plant' | 'bird';
+}
+
+const { variant = 'plant' } = Astro.props;
+const imageRatio = variant === 'plant' ? '4 / 3' : '3 / 2';
+---
+
+<div class="skeleton-card" aria-hidden="true" role="presentation">
+  <div class="skeleton-image" style={`aspect-ratio: ${imageRatio};`}></div>
+  <div class="skeleton-body">
+    <!-- Common name -->
+    <div class="skeleton-line skeleton-line-medium"></div>
+    <!-- Scientific name -->
+    <div class="skeleton-line skeleton-line-short" style="height: 0.75rem;"></div>
+    <!-- Badge -->
+    <div class="skeleton-line" style="width: 5rem; height: 1.5rem; border-radius: var(--radius-full);"></div>
+    <!-- Meta row -->
+    <div style="display: flex; gap: var(--space-2); margin-top: auto;">
+      <div class="skeleton-line" style="width: 4rem; height: 0.75rem;"></div>
+      <div class="skeleton-line" style="width: 5rem; height: 0.75rem;"></div>
+    </div>
+  </div>
+  <div style="padding: var(--space-3) var(--space-4);">
+    <div class="skeleton-line skeleton-line-full" style="height: 2.75rem; border-radius: var(--radius-md);"></div>
+  </div>
+</div>

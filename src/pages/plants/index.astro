@@ -1,0 +1,23 @@
+---
+/**
+ * /plants — Plant browser
+ *
+ * SSR page with filterable grid of native plants.
+ * Implemented fully in Task 8.
+ */
+export const prerender = false; // SSR — filters require dynamic rendering
+
+import Base from '../../layouts/Base.astro';
+---
+
+<Base title="Native Plants" description="Browse plants native to your region that attract birds to your garden.">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">Native Plants</h1>
+      <p class="page-subtitle">Browse plants native to your region that attract birds</p>
+    </div>
+
+    <!-- FilterPanel Preact island and card grid — implemented in Task 8 -->
+    <p style="color: var(--color-text-muted);">Plant browser implemented in Task 8.</p>
+  </div>
+</Base>

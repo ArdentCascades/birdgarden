@@ -1,0 +1,51 @@
+---
+/**
+ * Attribution.astro — Media credit display
+ *
+ * Renders attribution for audio recordings and images.
+ * Always shown below media elements.
+ */
+
+interface Props {
+  author?: string | null;
+  sourceUrl: string;
+  license: string;
+  recordingLoc?: string | null;
+  recordingDate?: string | null;
+}
+
+const { author, sourceUrl, license, recordingLoc, recordingDate } = Astro.props;
+
+// Map license identifiers to human-readable labels and URLs
+const licenseInfo: Record<string, { label: string; url: string }> = {
+  'CC0': { label: 'CC0 Public Domain', url: 'https://creativecommons.org/publicdomain/zero/1.0/' },
+  'CC-BY': { label: 'CC BY', url: 'https://creativecommons.org/licenses/by/4.0/' },
+  'CC-BY-SA': { label: 'CC BY-SA', url: 'https://creativecommons.org/licenses/by-sa/4.0/' },
+  'CC-BY-NC': { label: 'CC BY-NC', url: 'https://creativecommons.org/licenses/by-nc/4.0/' },
+  'PD': { label: 'Public Domain', url: 'https://creativecommons.org/publicdomain/mark/1.0/' },
+};
+
+const licenseData = licenseInfo[license] ?? { label: license, url: sourceUrl };
+---
+
+<div class="attribution" role="note" aria-label="Media attribution">
+  {author && (
+    <span>© {author}</span>
+  )}
+
+  {(recordingLoc || recordingDate) && (
+    <span class="text-subtle">
+      {[recordingLoc, recordingDate].filter(Boolean).join(', ')}
+    </span>
+  )}
+
+  <a
+    href={sourceUrl}
+    class="attribution-license"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={`Source: ${licenseData.label}`}
+  >
+    {licenseData.label}
+  </a>
+</div>
