@@ -1,67 +1,136 @@
 # Bird Garden — Session Notes
 
-## Branch
-`claude/continue-bird-garden-k3V3Z`
+---
+
+## Session 1 — Architecture & scaffolding
+Branch: `claude/setup-bird-garden-architecture-cfZtT`
+Session: https://claude.ai/code/session_01YGJVkyaR1L7oeGa9HbEXSV
+
+### Commit 1 — Task 1: Project scaffolding (Bun + Astro 5 + Preact)
+
+Full directory structure and foundational files. Most page/API implementations are stubs awaiting later tasks.
+
+**Stack:** Bun · Astro 5 (SSG/SSR hybrid) · Preact islands · SQLite via `better-sqlite3` · `@astrojs/node` adapter
+
+**Files created (68 files, +6 370 lines):**
+
+| Area | What was built |
+|------|---------------|
+| Config | `astro.config.mjs`, `tsconfig.json`, `package.json`, `.env.example`, `.gitignore` |
+| CSS | Full design-token system (`global.css`), site shell (`layout.css`), component styles (`components.css`) — Naturalist Field Guide aesthetic, WCAG AA, dark mode, `forced-colors` |
+| Layout | `src/layouts/Base.astro` — HTML shell with skip-to-content, aria-live region, mobile nav toggle, semantic nav/footer, persistent region chip |
+| Components | 15 components: `BirdCard`, `PlantCard`, `SeasonIndicator`, `Picture`, `Breadcrumb`, `Attribution`, `EmptyState`, `SkeletonCard` (fully styled); `RegionSelector`, `FilterPanel`, `AudioPlayer`, `MiniPlayer`, `MobileNav`, `GardenBuilder` (Preact stubs) |
+| Lib | `validate.ts` (full), `media.ts` (path-traversal prevention), `seasonality.ts` (bloom + temp filtering with month wrap-around), `db.ts` (SQLite singleton + security pragmas), `queries.ts` (typed interface, stub), `rateLimit.ts` (sliding-window in-memory) |
+| Database | `db/schema.sql` — full DDL: `region`, `bird`, `plant`, `bird_plant`, `bird_region_season`, `song`, `image` tables; FTS5 virtual tables; triggers; indices |
+| Seed data | Initial JSON: 16 regions, 19 birds, 15 plants, 51 bird-plant relations |
+| Pages | 9 routes (`/`, `/plants`, `/plants/[slug]`, `/birds`, `/birds/[slug]`, `/garden`, `/about`, `/404`, `/500`) |
+| API | 5 routes: `/api/regions`, `/api/plants`, `/api/birds`, `/api/songs/[id]`, `/api/garden/birds` |
+| Tests | `seasonality.test.ts` (33 tests), `validate.test.ts` (62 tests) — **95/95 passing** |
+| Deploy | `Caddyfile` (reverse proxy + full security headers), `bird-garden.service` (systemd with sandboxing), `install.sh` (single-command Debian deploy) |
+
+### Commit 2 — Tasks 2+3 (partial): Seed infrastructure + expanded dataset
+
+**Files changed (+1 929 lines across 6 files):**
+
+`scripts/seed-db.ts` — full implementation: reads all JSON, inserts in dependency order, multi-pass parent resolution, `INSERT OR IGNORE` idempotency, single transaction per table, `PRAGMA integrity_check` on completion.
+
+`scripts/validate-data.ts` — referential integrity validator (note: later found to be a stub in the repo; fully implemented in session 3).
+
+`db/seed-data/birds.json` — 19 → 72 birds across all major backyard families (cardinals, finches, thrushes, warblers, sparrows, woodpeckers, swallows, orioles, hummingbirds, chickadees, nuthatches, wrens, vireos, etc.)
+
+`db/seed-data/plants.json` — 16 → 51 native plants (trees, shrubs, perennials, grasses, vines) with USDA hardiness zones and bloom months.
+
+`db/seed-data/bird-plant.json` — 51 → 231 relations with `relation_type` (food/nesting/shelter/foraging).
+
+`db/seed-data/plant-region.json` — new file (53 entries) mapping plants to their native regions.
 
 ---
 
-## What was done in this session
+## Session 2 — Queries, APIs, pages, and Preact islands
+Branch: `claude/continue-bird-garden-jHbft`
 
-### Commit 1: Stub components, garden coverage API, and component tests
+### Commit 3 — Tasks 5: DB queries, API routes, seed script
+`3c445bb`
+
+- `src/lib/queries.ts` — full SQL implementations: `getRegions`, `getPlants` (FTS5 search, pagination, sort, bloom filter), `getPlantBySlug`, `getBirdsForPlant`, `getBirdBySlug`, `getSongsForBird`, `getSongById`, `getImagesForEntity`, `getBirdsForGarden`
+- All API routes wired to queries with validation and rate limiting: `/api/regions`, `/api/plants`, `/api/birds`, `/api/songs/[id]` (HTTP Range streaming), `/api/garden/birds`
+- `scripts/seed-db.ts` fully implemented
+- `db/seed-data/` populated: 19 birds, 15 plants, 16 regions, 31 songs, 34 images, 53 bird-plant pairs, 1 992 bird-region-season rows
+
+### Commit 4 — Task 6: API endpoint tests
+`5a7d007`
+
+- `tests/api.test.ts` — 34 previously-stubbed tests now passing
+- `tests/queries.test.ts` — full query test coverage with in-memory bun:sqlite fixture
+- Total: **159 tests passing**
+
+### Commits 5–7 — Tasks 7–9: Landing page, plant browser, bird browser, detail pages
+`87146b5`
+
+- `src/pages/index.astro` — hero + RegionSelector island
+- `src/pages/plants/index.astro` + `src/pages/plants/[slug].astro` — FilterPanel island, plant detail with JSON-LD, images, bird list, season indicators
+- `src/pages/birds/index.astro` + `src/pages/birds/[slug].astro` — bird list, bird detail with AudioPlayer islands, songs list
+- `src/components/RegionSelector.tsx` — full implementation: hierarchical dropdowns (continent→country→state), "Use my location" geolocation, localStorage persistence, URL param sync
+- `src/components/FilterPanel.tsx` — full implementation: search (debounced), plant type filter, sort controls, Blooming now toggle, active filter chips, load more, skeleton loading
+- `src/components/AudioPlayer.tsx` — full implementation: waveform SVG visualisation, play/pause, progress bar, speed controls (0.5×/0.75×/1×), keyboard nav (Space/Enter/Arrow keys), singleton via CustomEvent, aria-live announcements
+- `src/pages/sitemap.xml.ts` — dynamic sitemap endpoint
+- JSON-LD structured data on bird and plant detail pages
+
+---
+
+## Session 3 — Stub components, test infrastructure, CI, hardening
+Branch: `claude/continue-bird-garden-k3V3Z`
+
+### Commit 1 — Stub components, garden coverage API, component tests
 `19f18ad`
 
-#### Missing components implemented
-Three Preact islands that were stubs got full implementations:
+#### Components implemented (were stubs)
 
 **`src/components/MobileNav.tsx`**
 - Slide-out drawer using native `<dialog>` element
-- All five nav links (Home, Plants, Birds, My Garden, About)
-- `aria-expanded` on hamburger button, `aria-current="page"` on active link
+- All five nav links; `aria-expanded` on hamburger; `aria-current="page"` on active link
 - Closes on close-button click or backdrop click; body scroll locked when open
 
 **`src/components/MiniPlayer.tsx`**
-- Sticky bottom "now playing" bar
-- Driven entirely by custom events: `bird-garden:song-play` (show + mark playing), `bird-garden:song-pause` / `bird-garden:song-end` (pause), `bird-garden:mini-pause` (outgoing signal to AudioPlayer)
-- Dismiss button hides it; reappears when a new song fires
-- Renders `null` by default (no layout shift)
+- Sticky bottom "now playing" bar; renders `null` by default
+- Driven by custom events: `bird-garden:song-play` (show/play), `bird-garden:song-pause`/`song-end` (pause), `bird-garden:mini-pause` (outgoing to AudioPlayer)
+- Dismiss hides it; reappears on next `song-play` event
 
 **`src/components/GardenBuilder.tsx`**
-- Full garden feature replacing the "Task 10 stub"
 - `localStorage` persistence with JSON validation on read
 - Shared garden URL: `?plants=slug:Name,slug:Name&region=slug`
-- 12-month bird activity coverage chart (`CoverageChart` sub-component with bar visualisation, current month highlighted)
+- 12-month bird activity coverage chart (`CoverageChart` sub-component, current month highlighted)
 - Month selector drives bird list re-fetch
-- Share button writes URL to clipboard, shows "Link copied!" feedback
+- Share button → clipboard, shows "Link copied!" feedback
 - Listens for `bird-garden:add-plant` custom event (fired by plant card buttons)
-- Onboarding empty state with link to `/plants`
-- Summary stats: plant count + bird species this month
+- Onboarding empty state; summary stats: plant count + bird species this month
 
-#### New component created
+#### New component
+
 **`src/components/ErrorBoundary.tsx`**
-- Preact class component implementing `getDerivedStateFromError` + `componentDidCatch`
-- Shows SVG exclamation icon, error message, and "Try again" button that resets state
-- Accepts optional `fallback` prop for custom heading text
+- Preact class component with `getDerivedStateFromError` + `componentDidCatch`
+- SVG icon, error message, optional `fallback` prop, "Try again" reset button
 
-#### New API endpoint + query
-**`src/lib/queries.ts` — `getGardenCoverage()`**
-- Returns `MonthCoverage[]` (12 entries, one per month) with `bird_count` for a set of plant slugs + region
-- Fills months with no data as `{ bird_count: 0 }` so callers always get 12 entries
+#### New API + query
 
-**`src/pages/api/garden/coverage.ts` — `GET /api/garden/coverage`**
-- Params: `plants` (comma-separated slugs), `region` (slug)
-- Rate-limited, validated, same error shape as other API routes
+**`getGardenCoverage(db, { plantSlugs, regionSlug })`** in `src/lib/queries.ts`
+- Returns `MonthCoverage[12]` — always 12 entries, missing months filled with `bird_count: 0`
 
-#### Garden page wired up
-`src/pages/garden.astro` now renders `<GardenBuilder client:load />` instead of a placeholder paragraph.
+**`GET /api/garden/coverage`** — `src/pages/api/garden/coverage.ts`
+- Params: `plants` (comma-separated slugs), `region`
+- Rate-limited, validated, consistent error shape
 
-#### Test infrastructure created
-**`tests/setup.ts`**
-- Manually instantiates `new Window()` from happy-dom and assigns everything to `globalThis` — required because Bun 1.3.9's `environment = "happy-dom"` in bunfig.toml does NOT inject DOM globals automatically
-- Also assigns `window.SyntaxError`, `window.TypeError`, `window.Error` (required for happy-dom's `querySelectorAll` to work)
-- Sets a no-op `fetch` stub; tests override both `globalThis.fetch` and `(window as any).fetch`
+**`src/pages/garden.astro`** — now renders `<GardenBuilder client:load />` instead of a placeholder.
 
-**`bunfig.toml`**
-- `preload = ["./tests/setup.ts"]` so the DOM setup runs before every test file
+#### Test infrastructure
+
+**`tests/setup.ts`** (new)
+- Manually instantiates `new Window()` from happy-dom and assigns to `globalThis`
+- Required because Bun 1.3.9's `environment = "happy-dom"` in bunfig.toml does NOT inject DOM globals
+- Also assigns `window.SyntaxError/TypeError/Error` (needed by happy-dom's `querySelectorAll` parser)
+- Sets a no-op `fetch` stub; tests must override both `globalThis.fetch` AND `(window as any).fetch`
+
+**`bunfig.toml`** (new) — `preload = ["./tests/setup.ts"]`
 
 **`tests/components/` — 6 new test files (66 tests)**
 
@@ -71,103 +140,90 @@ Three Preact islands that were stubs got full implementations:
 | `FilterPanel.test.tsx` | 11 | Region prompt, filter controls, plant cards, skeletons, error state, empty state, filter chips, clear all, load more, sort options, Blooming now toggle |
 | `AudioPlayer.test.tsx` | 10 | `aria-label`, play button state, progress bar ARIA, speed controls, `src` attribute, singleton `song-play` event, `sr-only` live region |
 | `MiniPlayer.test.tsx` | 8 | Hidden by default, appears on event, bird name, Playing status, dismiss, play/pause toggle, default name, reappear after dismiss |
-| `MobileNav.test.tsx` | 7 | Hamburger renders, `aria-expanded`, dialog present, all nav links, close button, `aria-label`, link labels |
-| `ErrorBoundary.test.tsx` | 7 | Safe children render, fallback on throw, error message, custom fallback prop, Try again button, reset on click, no alert for safe children |
+| `MobileNav.test.tsx` | 7 | Hamburger, `aria-expanded`, dialog, all nav links, close button, `aria-label`, link labels |
+| `ErrorBoundary.test.tsx` | 7 | Safe children, fallback on throw, error message, custom fallback prop, Try again button, reset, no alert for safe children |
 
-**`tests/queries.test.ts`** — 6 new tests for `getGardenCoverage`:
-- Returns exactly 12 months
-- Bird count > 0 for seeded data
-- All-zero for empty plant list
-- All-zero for unknown region
-- Multi-plant ≥ single-plant total birds
-- Summer months have birds
+**`tests/queries.test.ts`** — 6 new `getGardenCoverage` tests added.
 
 **Test count after this commit:** 231 pass, 0 fail (up from 159)
 
 ---
 
-### Commit 2: CI, rate limiter hardening, E2E tests, validate-data
+### Commit 2 — CI, rate limiter hardening, E2E tests, validate-data
 `33da519`
 
-#### `scripts/validate-data.ts` — implemented (was a stub)
-Validates referential integrity of all seed JSON files before a seed or deploy:
-- **Slug format**: all slugs must match `^[a-z0-9]+(?:-[a-z0-9]+)*$`
-- **birds.json**: required `slug`, `common_name`, `scientific_name`; duplicate slug detection
-- **plants.json**: required fields, valid `plant_type`, valid month range (1–12), `usda_zone_min ≤ usda_zone_max`
-- **regions.json**: valid `level` enum, all `parent_slug` references point to a known region slug (two-pass to handle ordering)
-- **bird-plant.json**: both `bird_slug` and `plant_slug` must exist; duplicate `(bird, plant, attraction_type)` triples flagged as errors (matching DB primary key)
-- **songs.json / images.json**: validated if non-empty, skipped gracefully if empty (both are `[]` currently)
-- Exits 0 on success, 1 on any error; prints summary counts and warning/error lists
+#### `scripts/validate-data.ts` — fully implemented (was a stub)
+- Slug format (`^[a-z0-9]+(?:-[a-z0-9]+)*$`), required fields, month ranges, USDA zone ordering, parent references, duplicate detection
+- Duplicate-pair key uses full `(bird_slug, plant_slug, attraction_type)` matching the DB primary key
+- Exits 1 on error, 0 on success; prints summary + warning/error lists
+- **Bugs found and fixed:** duplicate `american-goldfinch` in birds.json removed (now 19 birds); incorrect duplicate-pair key fixed
 
-**Bug found and fixed during implementation:**
-- `db/seed-data/birds.json` had a duplicate `american-goldfinch` entry (indices 1 and 8). Index 8 removed; count is now 19 birds as intended.
-- The original duplicate-pair check used only `(bird_slug, plant_slug)` as the key, incorrectly flagging `black-capped-chickadee`/`red-oak` with different `attraction_type` values. Fixed to use the full triple.
+#### `src/middleware/rateLimit.ts` — SQLite-on-disk with in-memory fallback
+- **Production (Node.js):** `better-sqlite3`, persists to `./db/rate-limit.sqlite` (overrideable via `RL_DB_PATH`)
+- **Bun/test runtime:** `better-sqlite3` is a native Node.js addon and fails in Bun; caught silently, falls back to in-memory `Map`
+- Same public interface — no changes to API routes
+- Upsert uses `ON CONFLICT DO UPDATE … RETURNING` for atomicity (no read-after-write race)
+- Periodic cleanup `setInterval` with `unref()`
 
-#### `src/middleware/rateLimit.ts` — SQLite-on-disk backend
-- **Production (Node.js)**: uses `better-sqlite3` to persist counters in `./db/rate-limit.sqlite` (path overrideable via `RL_DB_PATH` env var). Survives process restarts; visible to multiple workers sharing a filesystem.
-- **Bun / test runtime**: `better-sqlite3` is a native Node.js addon unsupported in Bun. The module catches the load error silently and falls back to the previous in-memory `Map` implementation.
-- Public interface (`rateLimit(ip, type)` and `getRateLimitHeaders(ip, type)`) is unchanged — no API route edits needed.
-- SQLite upsert uses `ON CONFLICT DO UPDATE` with a `CASE` expression to atomically reset the counter when the window has expired.
-- `RETURNING count, reset_at` gives the new value in a single statement (no read-after-write race).
-- Periodic `setInterval` purges expired rows; interval is `unref()`'d so it doesn't keep the process alive.
+#### `.github/workflows/ci.yml` — two-job CI pipeline
 
-#### `.github/workflows/ci.yml` — CI pipeline
-Two jobs:
-
-**`test` job** (runs on every push/PR to main):
-1. Checkout + setup Bun 1.3.9
+**`test` job** (every push/PR to main):
+1. Setup Bun 1.3.9
 2. `bun install --frozen-lockfile`
-3. `bun run validate-data` — fails fast if seed JSON is broken
-4. `bun run test` — runs all unit + integration tests
+3. `bun run validate-data`
+4. `bun run test`
 
-**`e2e` job** (runs only after `test` passes):
-1. Install Playwright + Chromium with OS dependencies
-2. `bun run seed` — seed the in-memory test DB
-3. `bun run build` — build the Astro site
-4. `bunx playwright test` — run E2E suite
+**`e2e` job** (after `test` passes):
+1. Install Playwright + Chromium (`--with-deps`)
+2. `bun run seed`
+3. `bun run build`
+4. `bunx playwright test`
 
 #### `.github/dependabot.yml` — fixed
-Was broken (empty `package-ecosystem: ""`). Now correctly set to `"npm"` with grouped updates for Astro, Preact, and Playwright.
+Was broken (`package-ecosystem: ""`). Now `"npm"` with grouped updates for Astro, Preact, Playwright.
 
 #### `package.json` — script changes
-- `"test"` changed from `"bun test"` to `"bun test tests/"` — prevents Playwright `.spec.ts` files in `e2e/` being picked up by bun:test (which doesn't understand Playwright's test runner API)
+- `"test"` → `"bun test tests/"` (prevents Playwright `.spec.ts` files being picked up by bun:test)
 - Added `"test:e2e": "bunx playwright test"`
 
-#### `playwright.config.ts` — Playwright configuration
-- Test dir: `e2e/`
-- Base URL: `http://localhost:4321` (overrideable via `BASE_URL` env var)
-- Single project: Chromium desktop
-- `webServer`: starts `bun run start`, reuses existing server outside CI
-- CI mode: 2 retries, 1 worker, GitHub reporter, `forbidOnly`
-
-#### `e2e/*.spec.ts` — 5 E2E test files
+#### `playwright.config.ts` + `e2e/*.spec.ts` — Playwright E2E setup
 
 | File | Flow tested |
 |------|-------------|
-| `home.spec.ts` | Page title, nav links present, region selector hydrates, continent options load, country dropdown appears on selection, Browse button starts disabled |
-| `plants.spec.ts` | Page loads, region prompt, filter controls, plant cards with `?region=`, card links to detail page, search narrows results, type filter chip appears |
-| `birds.spec.ts` | Page loads, bird cards visible, detail page title + scientific name + back link, 404 for unknown slug |
-| `garden.spec.ts` | Page loads, empty state with `localStorage.clear()`, empty state link to `/plants`, shared URL loads plants, coverage chart present, remove button works, share copies to clipboard |
-| `navigation.spec.ts` | Home→Plants/Birds/Garden navigation, about page, 404, sitemap.xml reachable; plant detail Add to Garden button stores slug in localStorage |
+| `home.spec.ts` | Page title, nav links, region selector hydrates, continent options, country dropdown on selection, Browse button disabled |
+| `plants.spec.ts` | Region prompt, filter controls, plant cards, card links, search narrows results, type filter chip |
+| `birds.spec.ts` | Bird list, detail page title + scientific name + breadcrumb, 404 for unknown slug |
+| `garden.spec.ts` | Empty state, empty state link, shared URL, coverage chart, remove plant, share to clipboard |
+| `navigation.spec.ts` | Cross-page nav, about, 404, sitemap.xml, Add to Garden → localStorage |
 
 ---
 
-## Current test counts
-| Suite | Count |
-|-------|-------|
-| Unit + integration (`bun run test`) | **231 pass, 0 fail** |
-| E2E (`bun run test:e2e`) | 28 tests — require live server to run |
+## Current state
+
+| Metric | Value |
+|--------|-------|
+| Unit + integration tests (`bun run test`) | **231 pass, 0 fail** |
+| E2E tests (`bun run test:e2e`) | 28 tests — require live server |
+| Seed data | 19 birds, 15 plants, 16 regions, 31 songs, 34 images, 53 bird-plant pairs, 1 992 bird-region-season rows |
+| API endpoints | `/api/regions`, `/api/plants`, `/api/birds`, `/api/songs/[id]`, `/api/garden/birds`, `/api/garden/coverage` |
+| Pages | `/`, `/plants`, `/plants/[slug]`, `/birds`, `/birds/[slug]`, `/garden`, `/about`, `/404`, `/500` |
 
 ---
 
 ## What still needs doing
-1. **Real media files** — `public/media/` doesn't exist. `fetch-media.ts` and `optimize-images.ts` are fully implemented but need real network access to Xeno-canto and Wikimedia Commons. Every `<img>` and `AudioPlayer` 404s on a live site.
-2. **GardenBuilder jukebox mode** — the component spec mentioned a visual playlist; current implementation only has a single play button per bird row.
-3. **MiniPlayer ↔ AudioPlayer coordination** — `bird-garden:mini-pause` is dispatched but AudioPlayer doesn't listen for it yet (it only fires `bird-garden:song-play` outward).
+1. **Real media files** — `public/media/` doesn't exist. `fetch-media.ts` and `optimize-images.ts` are fully implemented but need real network access to Xeno-canto and Wikimedia Commons. Every `<img>` and `AudioPlayer` will 404 on a live site.
+2. **GardenBuilder jukebox mode** — the original spec mentioned a visual playlist; current implementation has a single play button per bird row.
+3. **MiniPlayer ↔ AudioPlayer coordination** — `bird-garden:mini-pause` is dispatched by MiniPlayer but AudioPlayer doesn't listen for it yet.
+
+---
 
 ## Key quirks to remember
-- **Bun 1.3.9 + happy-dom**: `environment = "happy-dom"` in bunfig.toml does NOT inject globals. `tests/setup.ts` must be preloaded and does it manually. Do not remove or "simplify" this.
+
+- **Bun 1.3.9 + happy-dom**: `environment = "happy-dom"` in bunfig.toml does NOT inject DOM globals. `tests/setup.ts` must be preloaded and does it manually. Do not remove or "simplify" this.
 - **Fetch mocking**: must set both `globalThis.fetch` AND `(window as any).fetch`. The happy-dom Window instance shadows `globalThis.fetch` in component code.
 - **`querySelectorAll` in happy-dom**: requires `window.SyntaxError` to be the native `SyntaxError`. Set in `tests/setup.ts`.
-- **Rate limiter under Bun**: `better-sqlite3` fails silently; in-memory fallback activates automatically. Rate limit tests in `api.test.ts` pass because they use the memory backend.
+- **ARIA role+name queries**: `screen.getByRole('link', { name: 'Plants' })` generates CSS selectors happy-dom's parser rejects. Use `container.querySelector('a[href="/plants"]')` or `screen.getByText()` instead.
+- **Rate limiter under Bun**: `better-sqlite3` fails silently; in-memory fallback activates automatically. Rate limit tests in `api.test.ts` use the memory backend and pass.
 - **`bun test` vs `bun run test`**: bare `bun test` scans the whole project and picks up Playwright `.spec.ts` files. Always use `bun run test` (or `bun test tests/`) for unit tests.
+- **DB alias**: `@lib/` → `src/lib/`, `@/middleware/` → `src/middleware/` via tsconfig path aliases. Used in all API routes.
+- **Seed script uses `bun:sqlite`**, not `better-sqlite3`, because it runs directly under Bun. Production code uses `better-sqlite3` (loaded by Astro's Node adapter).
