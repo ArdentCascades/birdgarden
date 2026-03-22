@@ -204,19 +204,18 @@ Was broken (`package-ecosystem: ""`). Now `"npm"` with grouped updates for Astro
 - Downloads CC0/CC-BY bird song recordings from **Xeno-canto API v2** using bird scientific names
 - Downloads bird and plant images from **Wikimedia Commons** (Wikipedia page → `pageimages` API → imageinfo for license)
 - Reads `db/seed-data/birds.json` and `plants.json`; writes `songs.json` and `images.json` manifests
-- Downloads audio to `public/audio/{bird-slug}/` and images to `public/images/{bird|plant}/{slug}/`
 - Exponential backoff retry (1s→2s→4s→8s) for 429/5xx; polite sleep between requests
 - `DRY_RUN=1` mode logs URLs without downloading
 - License verification: only downloads CC0 (`publicdomain/zero/1.0`) and CC-BY 3.0/4.0 recordings from Xeno-canto
+- **Note:** initial output paths and manifest field names had a mismatch with `media.ts`/`seed-db.ts`; corrected in Commit 4
 
 #### `scripts/optimize-images.ts` — fully implemented (was a stub)
-- Walks `public/images/{type}/{slug}/` for source images
-- For each image: generates AVIF at 400/800/1200w; WebP at 400/800/1200w; JPEG at 800w (fallback)
+- For each source image: generates AVIF at 400/800/1200w; WebP at 400/800/1200w; JPEG at 800w (fallback)
 - LQIP: 20px-wide WebP encoded as base64 data URI (stored in manifest for inline CSS)
 - Subtle warm color grade via `sharp().tint({ r: 4, g: 2, b: -3 })` for visual cohesion
-- Outputs to `public/images-opt/{type}/{slug}/`; writes `db/seed-data/images-opt.json` manifest
 - Skips already-processed images unless `FORCE=1`
 - Graceful error if `sharp` not installed or source directory doesn't exist
+- **Note:** initial paths were wrong; corrected in Commit 4
 
 #### `src/components/AudioPlayer.tsx` — event coordination fixes
 - Now listens for `bird-garden:mini-pause` event; pauses audio when `detail.songId` matches
@@ -298,7 +297,9 @@ Was broken (`package-ecosystem: ""`). Now `"npm"` with grouped updates for Astro
 - **Fetch mocking**: must set both `globalThis.fetch` AND `(window as any).fetch`. The happy-dom Window instance shadows `globalThis.fetch` in component code.
 - **`querySelectorAll` in happy-dom**: requires `window.SyntaxError` to be the native `SyntaxError`. Set in `tests/setup.ts`.
 - **ARIA role+name queries**: `screen.getByRole('link', { name: 'Plants' })` generates CSS selectors happy-dom's parser rejects. Use `container.querySelector('a[href="/plants"]')` or `screen.getByText()` instead.
+- **Testing negative fetch outcomes** (loading disappears after failure): `waitFor` polling is unreliable in full-suite runs because parallel test files can race on `globalThis.fetch` between `render()` and the component's `useEffect`. Use `act(async () => { await new Promise(r => setTimeout(r, 50)) })` to flush the microtask queue synchronously instead. Also prefer `Promise.reject()` over throwing inside `.then()`.
 - **Rate limiter under Bun**: `better-sqlite3` fails silently; in-memory fallback activates automatically. Rate limit tests in `api.test.ts` use the memory backend and pass.
 - **`bun test` vs `bun run test`**: bare `bun test` scans the whole project and picks up Playwright `.spec.ts` files. Always use `bun run test` (or `bun test tests/`) for unit tests.
 - **DB alias**: `@lib/` → `src/lib/`, `@/middleware/` → `src/middleware/` via tsconfig path aliases. Used in all API routes.
 - **Seed script uses `bun:sqlite`**, not `better-sqlite3`, because it runs directly under Bun. Production code uses `better-sqlite3` (loaded by Astro's Node adapter).
+- **Media file paths**: audio at `media/songs/{filename}`, images at `media/images/birds/{filename}` and `media/images/plants/{filename}`. The `media/` root is configurable via `MEDIA_PATH` env var. `src/lib/media.ts` is the single source of truth for path resolution — do not hardcode `/media/` elsewhere.
