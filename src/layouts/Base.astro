@@ -50,6 +50,9 @@ const selectedRegion = Astro.url.searchParams.get('region');
     <!-- Canonical URL -->
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
 
+    <!-- Sitemap discovery -->
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
     <!-- Open Graph -->
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
