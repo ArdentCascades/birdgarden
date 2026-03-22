@@ -272,6 +272,63 @@ Was broken (`package-ecosystem: ""`). Now `"npm"` with grouped updates for Astro
 
 ---
 
+---
+
+## Session 4 — Full assessment and bug fixes
+Branch: `claude/continue-bird-garden-k3V3Z`
+
+### Assessment findings (all files reviewed)
+
+#### Fixed — Critical
+
+**1. "Add to My Garden" button had no JS handler (`src/pages/plants/[slug].astro`)**
+- The button had `data-plant-slug` / `data-plant-name` attributes but no `onclick` or `<script>`.
+- `GardenBuilder` listens for `bird-garden:add-plant` CustomEvent but nothing ever dispatched it from the plant detail page.
+- **Fix:** Added a `<script>` block that attaches a click listener to `[data-plant-slug]` buttons and dispatches `bird-garden:add-plant` with `{ slug, name }` in the detail.
+- **E2E test affected:** `navigation.spec.ts` — "clicking Add to Garden stores plant in localStorage" — now passes.
+
+**2. E2E `garden.spec.ts` used non-existent plant slugs**
+- Four tests used `red-maple` and `black-cherry`, which are not in the seed data.
+- Actual seed slugs: `eastern-redbud`, `purple-coneflower`, etc.
+- **Fix:** Replaced all occurrences (`red-maple:Red%20Maple` → `eastern-redbud:Eastern%20Redbud`, `black-cherry:Black%20Cherry` → `purple-coneflower:Purple%20Coneflower`) and updated all text/aria-label assertions to match.
+
+#### Fixed — Major
+
+**3. Slug regex mismatch between `validate.ts` and `validate-data.ts`**
+- Runtime validator (`src/lib/validate.ts`): `/^[a-z0-9][a-z0-9-]{0,98}[a-z0-9]$|^[a-z0-9]$/`
+- Seed validator (`scripts/validate-data.ts`): `/^[a-z0-9]+(?:-[a-z0-9]+)*$/` — different: no length limit, disallows consecutive hyphens
+- A slug valid at runtime could be invalid in seed validation (or vice versa).
+- **Fix:** Updated `validate-data.ts` to use the exact same pattern as `validate.ts` with a comment pointing to the source of truth.
+
+#### Fixed — Minor / Cleanup
+
+**4. `MONTH_NAMES` array duplicated in 4 places**
+- Declared locally in `GardenBuilder.tsx`, `FilterPanel.tsx`, `birds/index.astro`, and inside `getMonthName()` in `seasonality.ts`.
+- **Fix:** Exported `MONTH_NAMES as const` from `seasonality.ts`. Simplified `getMonthName()` to index into it. Updated `FilterPanel.tsx` and `birds/index.astro` to import it. `GardenBuilder.tsx` derives abbreviated names via `.map(m => m.slice(0, 3))` imported as `MONTH_NAMES_FULL`.
+
+**5. `AudioPlayer.tsx` dead code and stale comment**
+- `song` state was always `null` (set to `null` in a `useEffect` that existed only to note "will be populated by parent"); the `{song && ...}` attribution block at the bottom of the render was unreachable.
+- Attribution is correctly rendered server-side in `birds/[slug].astro` — no client-side fetch needed.
+- **Fix:** Removed the `Song` interface, `parseWaveform` helper, `song`/`setSong` state, the no-op `useEffect`, and the dead attribution JSX block. Updated the docstring to accurately describe what the component does and note that attribution is server-rendered by the parent.
+
+**6. `AudioPlayer` not wrapped in `ErrorBoundary`**
+- All other major islands (`GardenBuilder`, `FilterPanel`, `RegionSelector`) had `ErrorBoundary` defined but none were actually wrapped in any page.
+- **Fix:** Wrapped `AudioPlayer` with `<ErrorBoundary client:visible fallback="Audio player unavailable">` at the usage site in `birds/[slug].astro`. MobileNav and MiniPlayer are still commented out in `Base.astro` so they don't need wrapping yet.
+
+### Not changed (documented as intentional)
+
+- **AudioPlayer waveform SVG** — `waveform` is always `[]` because waveform data comes from song `metadata` field populated only after `fetch-media.ts + optimize-images.ts` runs. The progress-fill fallback renders instead. Once media is fetched, waveform data will be in the DB and can be passed via a prop. Left as-is per original design intent.
+- **MobileNav / MiniPlayer commented out** in `Base.astro` — intentional stubs per task notes ("will be added in Task 6 / Task 9"). Not yet integrated.
+
+### Test results after fixes
+
+```
+237 pass, 0 fail  (bun run test)
+validate-data: Validation passed ✓
+```
+
+---
+
 ## Current state
 
 | Metric | Value |

@@ -160,6 +160,18 @@ const typeLabel = plant.plant_type
             Add to My Garden
           </button>
         </div>
+
+        <script>
+          document.querySelectorAll<HTMLButtonElement>('[data-plant-slug]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              window.dispatchEvent(
+                new CustomEvent('bird-garden:add-plant', {
+                  detail: { slug: btn.dataset.plantSlug, name: btn.dataset.plantName },
+                }),
+              );
+            });
+          });
+        </script>
       </div>
 
       <!-- Sidebar: birds attracted -->

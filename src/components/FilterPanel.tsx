@@ -9,6 +9,7 @@
  *   - Empty state with "clear filters" action
  */
 import { useState, useEffect, useRef } from 'preact/hooks';
+import { MONTH_NAMES } from '../lib/seasonality.ts';
 
 interface Plant {
   id: number;
@@ -32,11 +33,6 @@ interface Props {
   initialSort?: string;
   initialSearch?: string;
 }
-
-const MONTH_NAMES = [
-  'January','February','March','April','May','June',
-  'July','August','September','October','November','December',
-];
 
 const PLANT_TYPES = ['tree','shrub','perennial','grass','vine'];
 const SORT_OPTIONS = [

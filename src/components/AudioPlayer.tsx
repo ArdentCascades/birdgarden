@@ -2,31 +2,16 @@
  * AudioPlayer.tsx — Preact island for bird song playback
  *
  * Features:
- *   - SVG waveform visualization (from song.metadata.waveform amplitude array)
- *   - Play/pause, progress bar, volume
- *   - Playback speed control: 0.5x / 0.75x / 1x
- *   - Song context line below player (recording location, date/season)
+ *   - Play/pause, progress bar, playback speed control (0.5×/0.75×/1×)
  *   - Duration display (e.g., "0:22")
- *   - Attribution display beneath player
  *   - Full keyboard navigation (Space/Enter: play/pause, Arrow keys: seek ±5s)
  *   - aria-live announcements for play/stop state
  *   - Singleton: only one song plays at a time via CustomEvent
+ *
+ * Attribution (recordist, location, license) is rendered server-side by the
+ * parent Astro template so it is available before the island hydrates.
  */
 import { useState, useEffect, useRef } from 'preact/hooks';
-
-interface Song {
-  id: number;
-  bird_id: number;
-  filename: string;
-  format: 'opus' | 'mp3';
-  duration_sec: number | null;
-  source_url: string;
-  license: string;
-  recordist: string | null;
-  recording_date: string | null;
-  recording_loc: string | null;
-  metadata: string | null;
-}
 
 interface Props {
   songId: number;
@@ -41,41 +26,16 @@ function formatTime(sec: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-/** Decode waveform amplitude array from song.metadata JSON */
-function parseWaveform(metadata: string | null): number[] {
-  if (!metadata) return [];
-  try {
-    const obj = JSON.parse(metadata);
-    if (Array.isArray(obj.waveform)) return obj.waveform as number[];
-  } catch {
-    // ignore malformed metadata
-  }
-  return [];
-}
-
 export default function AudioPlayer({ songId, birdName }: Props) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
 
-  const [song, setSong] = useState<Song | null>(null);
   const [loadError, setLoadError] = useState('');
 
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [speed, setSpeed] = useState<0.5 | 0.75 | 1>(1);
-
-  // Fetch song metadata once
-  useEffect(() => {
-    // The audio element uses the API streaming endpoint directly;
-    // we only need the metadata for display (duration, attribution, waveform).
-    // We read it from a data-* attribute set by the server or fetch it.
-    // For simplicity, use a lightweight fetch against the regions/birds API
-    // — actually the song metadata is embedded via props by the Astro parent.
-    // Since this island only receives songId, nothing more needed; the <audio>
-    // src points directly to the API stream.
-    setSong(null); // will be populated by parent if passed as prop
-  }, [songId]);
 
   // Coordinate with other players and MiniPlayer via CustomEvents
   useEffect(() => {
@@ -164,7 +124,9 @@ export default function AudioPlayer({ songId, birdName }: Props) {
   }
 
   const progress = duration > 0 ? currentTime / duration : 0;
-  const waveform = parseWaveform(song?.metadata ?? null);
+  // Waveform data is unavailable without server-side metadata; the player
+  // falls back to a simple progress fill when the array is empty.
+  const waveform: number[] = [];
 
   // Announce state changes
   const liveMessage = playing
@@ -317,28 +279,6 @@ export default function AudioPlayer({ songId, birdName }: Props) {
         </p>
       )}
 
-      {/* Attribution / meta */}
-      {song && (
-        <div class="audio-player-meta">
-          <span>
-            {song.recording_loc && `${song.recording_loc}${song.recording_date ? ` · ${song.recording_date}` : ''}`}
-            {song.recordist && ` · ${song.recordist}`}
-          </span>
-          <span class="audio-file-size">
-            {song.license && (
-              <a
-                href={song.source_url}
-                rel="noopener noreferrer"
-                target="_blank"
-                style="color:var(--color-text-muted);text-decoration:underline;"
-                aria-label={`Song source (${song.license})`}
-              >
-                {song.license}
-              </a>
-            )}
-          </span>
-        </div>
-      )}
     </div>
   );
 }

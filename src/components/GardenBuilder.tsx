@@ -11,15 +11,14 @@
  *   - localStorage persistence with validation
  */
 import { useState, useEffect } from 'preact/hooks';
+import { MONTH_NAMES as MONTH_NAMES_FULL } from '../lib/seasonality.ts';
 
 const STORAGE_KEY = 'bird-garden-plants';
 const REGION_KEY = 'bird-garden-region';
 const MAX_PLANTS = 50;
 
-const MONTH_NAMES = [
-  'Jan','Feb','Mar','Apr','May','Jun',
-  'Jul','Aug','Sep','Oct','Nov','Dec',
-];
+// 3-character abbreviated month names derived from the canonical list in seasonality.ts
+const MONTH_NAMES = MONTH_NAMES_FULL.map((m) => m.slice(0, 3));
 
 interface PlantEntry {
   slug: string;

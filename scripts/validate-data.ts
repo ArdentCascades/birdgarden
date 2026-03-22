@@ -17,7 +17,8 @@ import { readFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 
 const SEED_DIR = resolve('./db/seed-data');
-const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+// Must match the runtime pattern in src/lib/validate.ts exactly
+const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]{0,98}[a-z0-9]$|^[a-z0-9]$/;
 
 // ---------------------------------------------------------------------------
 // Types (matching seed JSON shapes)

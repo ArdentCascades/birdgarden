@@ -56,16 +56,17 @@ export function getCurrentMonth(): number {
   return new Date().getMonth() + 1;
 }
 
+/** Full month names, index 0 = January. */
+export const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+] as const;
+
 /**
  * Get a human-readable month name from a month number (1–12).
  */
 export function getMonthName(month: number): string {
-  const names = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
-  ];
-  const name = names[month - 1];
-  return name ?? 'Unknown';
+  return MONTH_NAMES[month - 1] ?? 'Unknown';
 }
 
 /**

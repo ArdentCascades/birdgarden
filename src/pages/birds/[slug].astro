@@ -8,6 +8,7 @@ import Base from '../../layouts/Base.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import SeasonIndicator from '../../components/SeasonIndicator.astro';
 import AudioPlayer from '../../components/AudioPlayer.tsx';
+import ErrorBoundary from '../../components/ErrorBoundary.tsx';
 
 export async function getStaticPaths() {
   try {
@@ -179,11 +180,13 @@ const conservationLabel = bird.conservation_status
             <div style="display: flex; flex-direction: column; gap: var(--space-4);">
               {songs.map((song) => (
                 <div>
-                  <AudioPlayer
-                    client:visible
-                    songId={song.id}
-                    birdName={bird.common_name}
-                  />
+                  <ErrorBoundary client:visible fallback="Audio player unavailable">
+                    <AudioPlayer
+                      client:visible
+                      songId={song.id}
+                      birdName={bird.common_name}
+                    />
+                  </ErrorBoundary>
                   {(song.recording_loc || song.recordist) && (
                     <p style="font-size: var(--text-xs); color: var(--color-text-muted); margin-top: var(--space-2);">
                       {[song.recording_loc, song.recording_date, song.recordist].filter(Boolean).join(' · ')}

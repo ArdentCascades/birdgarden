@@ -28,33 +28,33 @@ test.describe('Garden page', () => {
   });
 
   test('shared garden URL loads plants from params', async ({ page }) => {
-    // Simulate a shared garden link
-    await page.goto('/garden?plants=red-maple:Red%20Maple&region=new-york');
+    // Simulate a shared garden link using real seed-data slugs
+    await page.goto('/garden?plants=eastern-redbud:Eastern%20Redbud&region=new-york');
     await expect(page.locator('[data-testid="garden-builder"]')).toBeVisible({ timeout: 10_000 });
-    await expect(page.locator('text=Red Maple')).toBeVisible();
+    await expect(page.locator('text=Eastern Redbud')).toBeVisible();
   });
 
   test('garden with region shows bird coverage chart', async ({ page }) => {
-    await page.goto('/garden?plants=red-maple:Red%20Maple&region=new-york');
+    await page.goto('/garden?plants=eastern-redbud:Eastern%20Redbud&region=new-york');
     await expect(
       page.locator('[aria-label*="month bird coverage"]'),
     ).toBeVisible({ timeout: 10_000 });
   });
 
   test('remove button removes plant', async ({ page }) => {
-    await page.goto('/garden?plants=red-maple:Red%20Maple,black-cherry:Black%20Cherry&region=new-york');
+    await page.goto('/garden?plants=eastern-redbud:Eastern%20Redbud,purple-coneflower:Purple%20Coneflower&region=new-york');
     await page.locator('[data-testid="garden-builder"]').waitFor({ timeout: 10_000 });
 
-    const removeBtn = page.locator('[aria-label^="Remove Red Maple"]');
+    const removeBtn = page.locator('[aria-label^="Remove Eastern Redbud"]');
     await removeBtn.click();
 
-    await expect(page.locator('text=Red Maple')).toHaveCount(0);
+    await expect(page.locator('text=Eastern Redbud')).toHaveCount(0);
   });
 
   test('share button copies link (clipboard mock)', async ({ page }) => {
     // Grant clipboard permissions
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-    await page.goto('/garden?plants=red-maple:Red%20Maple&region=new-york');
+    await page.goto('/garden?plants=eastern-redbud:Eastern%20Redbud&region=new-york');
     await page.locator('[data-testid="garden-builder"]').waitFor({ timeout: 10_000 });
 
     const shareBtn = page.locator('[aria-label="Copy shareable link to this garden"]');
