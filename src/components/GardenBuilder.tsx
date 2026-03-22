@@ -147,6 +147,10 @@ export default function GardenBuilder() {
   const [shareMsg, setShareMsg] = useState('');
   const [initialized, setInitialized] = useState(false);
 
+  // Jukebox mode: auto-advance through all birds with songs
+  const [jukeboxActive, setJukeboxActive] = useState(false);
+  const [jukeboxIndex, setJukeboxIndex] = useState(0);
+
   // Load from localStorage + URL params on mount
   useEffect(() => {
     const stored = loadPlants();
@@ -252,6 +256,70 @@ export default function GardenBuilder() {
 
     return () => controller.abort();
   }, [plants, region, initialized]);
+
+  // Jukebox: list of birds that have songs
+  const birdsWithSongs = birds.filter((b) => b.songs && b.songs.length > 0);
+
+  // Start jukebox from given index
+  function jukeboxPlay(index: number) {
+    const bird = birdsWithSongs[index];
+    if (!bird || !bird.songs?.length) {
+      setJukeboxActive(false);
+      return;
+    }
+    setJukeboxIndex(index);
+    window.dispatchEvent(
+      new CustomEvent('bird-garden:song-play', {
+        detail: { songId: bird.songs[0]!.id, birdName: bird.common_name },
+      }),
+    );
+  }
+
+  function startJukebox() {
+    if (birdsWithSongs.length === 0) return;
+    setJukeboxActive(true);
+    jukeboxPlay(0);
+  }
+
+  function stopJukebox() {
+    setJukeboxActive(false);
+    // Pause any playing song via mini-pause
+    const current = birdsWithSongs[jukeboxIndex];
+    if (current?.songs?.length) {
+      window.dispatchEvent(
+        new CustomEvent('bird-garden:mini-pause', {
+          detail: { songId: current.songs[0]!.id },
+        }),
+      );
+    }
+  }
+
+  // Listen for song-end to auto-advance jukebox
+  useEffect(() => {
+    if (!jukeboxActive) return;
+    function onSongEnd() {
+      setJukeboxIndex((prev) => {
+        const next = prev + 1;
+        if (next < birdsWithSongs.length) {
+          // defer to avoid React batching issues
+          setTimeout(() => jukeboxPlay(next), 200);
+          return next;
+        } else {
+          setJukeboxActive(false);
+          return 0;
+        }
+      });
+    }
+    window.addEventListener('bird-garden:song-end', onSongEnd);
+    return () => window.removeEventListener('bird-garden:song-end', onSongEnd);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jukeboxActive, birdsWithSongs.length]);
+
+  // Reset jukebox when birds change (month/region switch)
+  useEffect(() => {
+    setJukeboxActive(false);
+    setJukeboxIndex(0);
+  }, [birds]);
 
   function removePlant(slug: string) {
     setPlants((prev) => prev.filter((p) => p.slug !== slug));
@@ -463,14 +531,59 @@ export default function GardenBuilder() {
 
         {/* Birds list */}
         <section aria-label="Birds attracted to your garden">
-          <h2 style="font-size:var(--text-lg);font-weight:var(--font-semibold);margin:0 0 var(--space-3);">
-            Birds This Month
-            {!loadingBirds && region && (
-              <span style="font-size:var(--text-sm);font-weight:var(--font-normal);color:var(--color-text-muted);margin-left:var(--space-2);">
-                ({totalBirds})
-              </span>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin-bottom:var(--space-3);flex-wrap:wrap;">
+            <h2 style="font-size:var(--text-lg);font-weight:var(--font-semibold);margin:0;">
+              Birds This Month
+              {!loadingBirds && region && (
+                <span style="font-size:var(--text-sm);font-weight:var(--font-normal);color:var(--color-text-muted);margin-left:var(--space-2);">
+                  ({totalBirds})
+                </span>
+              )}
+            </h2>
+
+            {/* Jukebox controls */}
+            {!loadingBirds && birdsWithSongs.length > 0 && (
+              <div style="display:flex;align-items:center;gap:var(--space-2);" data-testid="jukebox-controls">
+                {jukeboxActive ? (
+                  <button
+                    type="button"
+                    class="btn btn-outline"
+                    onClick={stopJukebox}
+                    aria-label="Stop jukebox"
+                    style="font-size:var(--text-xs);display:flex;align-items:center;gap:var(--space-1);padding:var(--space-1) var(--space-3);"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+                      <rect x="2" y="2" width="8" height="8" rx="1"/>
+                    </svg>
+                    Stop
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    class="btn btn-ghost"
+                    onClick={startJukebox}
+                    aria-label={`Play all ${birdsWithSongs.length} bird songs`}
+                    style="font-size:var(--text-xs);display:flex;align-items:center;gap:var(--space-1);padding:var(--space-1) var(--space-3);"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
+                      <path d="M2 1.5L10 6L2 10.5V1.5Z"/>
+                    </svg>
+                    Play All ({birdsWithSongs.length})
+                  </button>
+                )}
+
+                {jukeboxActive && (
+                  <span
+                    role="status"
+                    aria-live="polite"
+                    style="font-size:var(--text-xs);color:var(--color-text-muted);"
+                  >
+                    {jukeboxIndex + 1} / {birdsWithSongs.length}
+                  </span>
+                )}
+              </div>
             )}
-          </h2>
+          </div>
 
           {!region && (
             <p style="color:var(--color-text-muted);font-size:var(--text-sm);">
@@ -498,10 +611,14 @@ export default function GardenBuilder() {
 
           {!loadingBirds && birds.length > 0 && (
             <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2);" role="list">
-              {birds.map((bird) => (
+              {birds.map((bird) => {
+                const jukeboxPos = birdsWithSongs.indexOf(bird);
+                const isJukeboxCurrent = jukeboxActive && jukeboxPos === jukeboxIndex;
+                return (
                 <li
                   key={bird.slug}
-                  style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--color-bg-card);border-radius:var(--radius-md);border:1px solid var(--color-border);"
+                  data-jukebox-current={isJukeboxCurrent ? 'true' : undefined}
+                  style={`display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);background:var(--color-bg-card);border-radius:var(--radius-md);border:1px solid ${isJukeboxCurrent ? 'var(--color-primary)' : 'var(--color-border)'};transition:border-color 0.2s;`}
                 >
                   <a
                     href={`/birds/${bird.slug}`}
@@ -529,7 +646,7 @@ export default function GardenBuilder() {
                       aria-label={`Play ${bird.common_name} song`}
                       style="flex-shrink:0;display:flex;align-items:center;justify-content:center;width:2rem;height:2rem;border:1px solid var(--color-border);background:var(--color-bg-card);cursor:pointer;border-radius:var(--radius-full);color:var(--color-primary);"
                       onClick={() => {
-                        const song = bird.songs![0];
+                        const song = bird.songs![0]!;
                         window.dispatchEvent(
                           new CustomEvent('bird-garden:song-play', {
                             detail: { songId: song.id, birdName: bird.common_name },
@@ -543,7 +660,8 @@ export default function GardenBuilder() {
                     </button>
                   )}
                 </li>
-              ))}
+              );
+              })}
             </ul>
           )}
         </section>

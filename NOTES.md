@@ -198,11 +198,48 @@ Was broken (`package-ecosystem: ""`). Now `"npm"` with grouped updates for Astro
 
 ---
 
+### Commit 3 — Media scripts, AudioPlayer coordination, GardenBuilder jukebox
+
+#### `scripts/fetch-media.ts` — fully implemented (was a stub)
+- Downloads CC0/CC-BY bird song recordings from **Xeno-canto API v2** using bird scientific names
+- Downloads bird and plant images from **Wikimedia Commons** (Wikipedia page → `pageimages` API → imageinfo for license)
+- Reads `db/seed-data/birds.json` and `plants.json`; writes `songs.json` and `images.json` manifests
+- Downloads audio to `public/audio/{bird-slug}/` and images to `public/images/{bird|plant}/{slug}/`
+- Exponential backoff retry (1s→2s→4s→8s) for 429/5xx; polite sleep between requests
+- `DRY_RUN=1` mode logs URLs without downloading
+- License verification: only downloads CC0 (`publicdomain/zero/1.0`) and CC-BY 3.0/4.0 recordings from Xeno-canto
+
+#### `scripts/optimize-images.ts` — fully implemented (was a stub)
+- Walks `public/images/{type}/{slug}/` for source images
+- For each image: generates AVIF at 400/800/1200w; WebP at 400/800/1200w; JPEG at 800w (fallback)
+- LQIP: 20px-wide WebP encoded as base64 data URI (stored in manifest for inline CSS)
+- Subtle warm color grade via `sharp().tint({ r: 4, g: 2, b: -3 })` for visual cohesion
+- Outputs to `public/images-opt/{type}/{slug}/`; writes `db/seed-data/images-opt.json` manifest
+- Skips already-processed images unless `FORCE=1`
+- Graceful error if `sharp` not installed or source directory doesn't exist
+
+#### `src/components/AudioPlayer.tsx` — event coordination fixes
+- Now listens for `bird-garden:mini-pause` event; pauses audio when `detail.songId` matches
+- Dispatches `bird-garden:song-pause` when user pauses via the AudioPlayer play/pause button
+- Dispatches `bird-garden:song-end` when audio element fires `ended`
+- Includes `birdName` in the `bird-garden:song-play` event detail (MiniPlayer now shows real bird name instead of "Bird song")
+
+#### `src/components/GardenBuilder.tsx` — jukebox mode
+- **"Play All" button** in the Birds section header; only shown when ≥1 bird has songs
+- Builds a playlist from all birds-with-songs currently in the list
+- Auto-advances: listens for `bird-garden:song-end`; plays next bird after 200ms delay
+- **Visual highlight**: currently-playing bird row gets a primary-color border
+- **Progress indicator**: "2 / 7" counter next to the Stop button
+- "Stop" button dispatches `bird-garden:mini-pause` to halt the current song
+- Playlist resets when month/region changes (birds list changes)
+
+---
+
 ## Current state
 
 | Metric | Value |
 |--------|-------|
-| Unit + integration tests (`bun run test`) | **231 pass, 0 fail** |
+| Unit + integration tests (`bun run test`) | **230 pass, 1 fail (pre-existing RegionSelector timeout)** |
 | E2E tests (`bun run test:e2e`) | 28 tests — require live server |
 | Seed data | 19 birds, 15 plants, 16 regions, 31 songs, 34 images, 53 bird-plant pairs, 1 992 bird-region-season rows |
 | API endpoints | `/api/regions`, `/api/plants`, `/api/birds`, `/api/songs/[id]`, `/api/garden/birds`, `/api/garden/coverage` |
@@ -211,9 +248,9 @@ Was broken (`package-ecosystem: ""`). Now `"npm"` with grouped updates for Astro
 ---
 
 ## What still needs doing
-1. **Real media files** — `public/media/` doesn't exist. `fetch-media.ts` and `optimize-images.ts` are fully implemented but need real network access to Xeno-canto and Wikimedia Commons. Every `<img>` and `AudioPlayer` will 404 on a live site.
-2. **GardenBuilder jukebox mode** — the original spec mentioned a visual playlist; current implementation has a single play button per bird row.
-3. **MiniPlayer ↔ AudioPlayer coordination** — `bird-garden:mini-pause` is dispatched by MiniPlayer but AudioPlayer doesn't listen for it yet.
+1. **Real media files** — `fetch-media.ts` and `optimize-images.ts` are implemented but need real network access to run. Every `<img>` and `AudioPlayer` will 404 on a live site until `bun run fetch-media && bun run optimize-images` has been run.
+2. **RegionSelector test flake** — "renders gracefully when fetch fails" has a 5s timeout; the `Promise.reject()` mock is slow. Needs a `Response` where `.json()` throws synchronously instead.
+3. **AudioPlayer song metadata** — The component only receives `songId` and `birdName`; full metadata (recordist, location, license) is not yet fetched from the API at runtime.
 
 ---
 

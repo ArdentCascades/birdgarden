@@ -77,7 +77,7 @@ export default function AudioPlayer({ songId, birdName }: Props) {
     setSong(null); // will be populated by parent if passed as prop
   }, [songId]);
 
-  // Stop this player when another starts (singleton pattern)
+  // Coordinate with other players and MiniPlayer via CustomEvents
   useEffect(() => {
     function onOtherPlay(e: Event) {
       const other = (e as CustomEvent<{ songId: number }>).detail.songId;
@@ -85,21 +85,36 @@ export default function AudioPlayer({ songId, birdName }: Props) {
         audioRef.current.pause();
       }
     }
+
+    function onMiniPause(e: Event) {
+      const target = (e as CustomEvent<{ songId: number }>).detail.songId;
+      if (target === songId && audioRef.current && !audioRef.current.paused) {
+        audioRef.current.pause();
+      }
+    }
+
     window.addEventListener('bird-garden:song-play', onOtherPlay);
-    return () => window.removeEventListener('bird-garden:song-play', onOtherPlay);
+    window.addEventListener('bird-garden:mini-pause', onMiniPause);
+    return () => {
+      window.removeEventListener('bird-garden:song-play', onOtherPlay);
+      window.removeEventListener('bird-garden:mini-pause', onMiniPause);
+    };
   }, [songId]);
 
   function togglePlay() {
     const audio = audioRef.current;
     if (!audio) return;
     if (audio.paused) {
-      // Announce to other players
+      // Announce to other players and MiniPlayer
       window.dispatchEvent(
-        new CustomEvent('bird-garden:song-play', { detail: { songId } }),
+        new CustomEvent('bird-garden:song-play', { detail: { songId, birdName } }),
       );
       audio.play().catch(() => setLoadError('Playback failed. Please try again.'));
     } else {
       audio.pause();
+      window.dispatchEvent(
+        new CustomEvent('bird-garden:song-pause', { detail: { songId } }),
+      );
     }
   }
 
@@ -114,6 +129,9 @@ export default function AudioPlayer({ songId, birdName }: Props) {
   function handleEnded() {
     setPlaying(false);
     setCurrentTime(0);
+    window.dispatchEvent(
+      new CustomEvent('bird-garden:song-end', { detail: { songId } }),
+    );
   }
 
   function handleProgressClick(e: MouseEvent) {
