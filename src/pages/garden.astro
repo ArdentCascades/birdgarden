@@ -1,10 +1,9 @@
 ---
 /**
  * /garden — My Garden feature
- *
- * CSR via Preact island. Implemented in Task 10.
  */
 import Base from '../layouts/Base.astro';
+import GardenBuilder from '../components/GardenBuilder.tsx';
 ---
 
 <Base title="My Garden" description="Build your bird-friendly garden with native plants.">
@@ -13,7 +12,6 @@ import Base from '../layouts/Base.astro';
       <h1 class="page-title">My Garden</h1>
       <p class="page-subtitle">Your collection of native plants and the birds they attract</p>
     </div>
-    <!-- GardenBuilder Preact island — implemented in Task 10 -->
-    <p style="color: var(--color-text-muted);">Garden builder implemented in Task 10.</p>
+    <GardenBuilder client:load />
   </div>
 </Base>

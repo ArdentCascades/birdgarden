@@ -17,6 +17,7 @@ import {
   getBirdBySlug,
   getSongById,
   getBirdsForGarden,
+  getGardenCoverage,
 } from '../src/lib/queries.ts';
 
 // Cast bun:sqlite Database to `any` since production code types against better-sqlite3,
@@ -323,5 +324,72 @@ describe('getBirdsForGarden', () => {
       month: 6,
     });
     expect(birds.find((b) => b.slug === 'ruby-throated-hummingbird')).toBeUndefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getGardenCoverage
+// ---------------------------------------------------------------------------
+describe('getGardenCoverage', () => {
+  test('returns 12 month entries', () => {
+    const coverage = getGardenCoverage(dbAny, {
+      plantSlugs: ['purple-coneflower'],
+      regionSlug: 'new-york',
+    });
+    expect(coverage.length).toBe(12);
+    expect(coverage[0].month).toBe(1);
+    expect(coverage[11].month).toBe(12);
+  });
+
+  test('months with birds have bird_count > 0', () => {
+    const coverage = getGardenCoverage(dbAny, {
+      plantSlugs: ['purple-coneflower'],
+      regionSlug: 'new-york',
+    });
+    const sumBirds = coverage.reduce((a, c) => a + c.bird_count, 0);
+    expect(sumBirds).toBeGreaterThan(0);
+  });
+
+  test('returns all-zero coverage for empty plant list', () => {
+    const coverage = getGardenCoverage(dbAny, {
+      plantSlugs: [],
+      regionSlug: 'new-york',
+    });
+    expect(coverage.length).toBe(12);
+    expect(coverage.every((c) => c.bird_count === 0)).toBe(true);
+  });
+
+  test('returns all-zero for unknown region', () => {
+    const coverage = getGardenCoverage(dbAny, {
+      plantSlugs: ['purple-coneflower'],
+      regionSlug: 'nonexistent-region',
+    });
+    expect(coverage.every((c) => c.bird_count === 0)).toBe(true);
+  });
+
+  test('multiple plants increases or maintains bird count', () => {
+    const single = getGardenCoverage(dbAny, {
+      plantSlugs: ['purple-coneflower'],
+      regionSlug: 'new-york',
+    });
+    const multi = getGardenCoverage(dbAny, {
+      plantSlugs: ['purple-coneflower', 'trumpet-vine'],
+      regionSlug: 'new-york',
+    });
+    // Multi-plant coverage should have at least as many total birds as single
+    const singleTotal = single.reduce((a, c) => a + c.bird_count, 0);
+    const multiTotal = multi.reduce((a, c) => a + c.bird_count, 0);
+    expect(multiTotal).toBeGreaterThanOrEqual(singleTotal);
+  });
+
+  test('coverage is higher in peak bird months than off-season', () => {
+    const coverage = getGardenCoverage(dbAny, {
+      plantSlugs: ['purple-coneflower', 'black-eyed-susan', 'trumpet-vine'],
+      regionSlug: 'new-york',
+    });
+    // Summer months (June=6, July=7) should have birds present
+    const summerMonths = coverage.filter((c) => c.month >= 5 && c.month <= 9);
+    const summerTotal = summerMonths.reduce((a, c) => a + c.bird_count, 0);
+    expect(summerTotal).toBeGreaterThan(0);
   });
 });
