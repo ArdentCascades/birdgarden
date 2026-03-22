@@ -64,14 +64,6 @@
     "conservation_status": "LC"
   },
   {
-    "slug": "american-goldfinch",
-    "common_name": "American Goldfinch",
-    "scientific_name": "Spinus tristis",
-    "family": "Fringillidae",
-    "description": "Small, bright finch. Highly attracted to native coneflowers and black-eyed Susan seed heads in late summer and fall.",
-    "conservation_status": "LC"
-  },
-  {
     "slug": "house-finch",
     "common_name": "House Finch",
     "scientific_name": "Haemorhous mexicanus",
@@ -132,7 +124,7 @@
     "common_name": "Indigo Bunting",
     "scientific_name": "Passerina cyanea",
     "family": "Cardinalidae",
-    "description": "Males are a stunning, deep sky-blue — one of the most brilliantly colored birds in North America. Attracted to native grasses and weedy seeds.",
+    "description": "Males are a stunning, deep sky-blue \u2014 one of the most brilliantly colored birds in North America. Attracted to native grasses and weedy seeds.",
     "conservation_status": "LC"
   },
   {
