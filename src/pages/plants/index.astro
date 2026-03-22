@@ -9,6 +9,7 @@ export const prerender = false;
 
 import Base from '../../layouts/Base.astro';
 import FilterPanel from '../../components/FilterPanel.tsx';
+import { ErrorBoundary } from '../../components/ErrorBoundary.tsx';
 
 // Read initial filter state from URL params
 const url = Astro.url;
@@ -46,13 +47,14 @@ const pageTitle = safeRegion
       )}
     </div>
 
-    <FilterPanel
-      client:load
-      initialRegion={safeRegion}
-      initialMonth={safeMonth}
-      initialType={type}
-      initialSort={sort}
-      initialSearch={search}
-    />
+    <ErrorBoundary label="Plant browser" client:load>
+      <FilterPanel
+        initialRegion={safeRegion}
+        initialMonth={safeMonth}
+        initialType={type}
+        initialSort={sort}
+        initialSearch={search}
+      />
+    </ErrorBoundary>
   </div>
 </Base>

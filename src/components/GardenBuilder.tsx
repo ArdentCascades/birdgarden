@@ -82,6 +82,7 @@ export default function GardenBuilder() {
   const [birdsLoading, setBirdsLoading] = useState(false);
   const [birdsError, setBirdsError] = useState('');
   const [shareMsg, setShareMsg] = useState('');
+  const [coverage, setCoverage] = useState<{ month: number; count: number }[]>([]);
 
   // On mount: load from localStorage; check URL for shared garden
   useEffect(() => {
@@ -122,6 +123,21 @@ export default function GardenBuilder() {
     window.addEventListener('bird-garden:add-plant', onAddPlant);
     return () => window.removeEventListener('bird-garden:add-plant', onAddPlant);
   }, []);
+
+  // Fetch 12-month coverage whenever plants or region changes
+  useEffect(() => {
+    if (!region || plants.length === 0) {
+      setCoverage([]);
+      return;
+    }
+    const slugs = plants.map((p) => p.slug).join(',');
+    fetch(`/api/garden/coverage?plants=${encodeURIComponent(slugs)}&region=${encodeURIComponent(region)}`)
+      .then((res) => res.json())
+      .then((data: { coverage?: { month: number; count: number }[] }) => {
+        if (data.coverage) setCoverage(data.coverage);
+      })
+      .catch(() => {/* ignore — chart is progressive enhancement */});
+  }, [plants, region]);
 
   // Fetch birds whenever plants, region, or month changes
   useEffect(() => {
@@ -268,6 +284,63 @@ export default function GardenBuilder() {
           </span>
         )}
       </div>
+
+      {/* 12-month bird coverage chart */}
+      {coverage.length === 12 && region && (
+        <div
+          aria-label="12-month bird activity chart"
+          style="margin-bottom:var(--space-6);padding:var(--space-4) var(--space-6);background:var(--color-bg-card);border:1px solid var(--color-border);border-radius:var(--radius-xl);"
+        >
+          <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-bottom:var(--space-3);font-weight:var(--font-semibold);text-transform:uppercase;letter-spacing:0.05em;">
+            Bird Activity by Month
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:4px;align-items:end;height:48px;">
+            {(() => {
+              const max = Math.max(...coverage.map((c) => c.count), 1);
+              return coverage.map(({ month: m, count }) => {
+                const pct = Math.round((count / max) * 100);
+                const isActive = m === month;
+                return (
+                  <button
+                    key={m}
+                    type="button"
+                    title={`${MONTH_NAMES[m - 1]}: ${count} bird${count !== 1 ? 's' : ''}`}
+                    onClick={() => setMonth(m)}
+                    aria-pressed={isActive}
+                    style={[
+                      'display:flex;flex-direction:column;align-items:center;gap:2px;',
+                      'background:none;border:none;padding:0;cursor:pointer;',
+                      'height:100%;justify-content:flex-end;',
+                    ].join('')}
+                  >
+                    <div
+                      style={[
+                        `height:${Math.max(pct, 8)}%;`,
+                        'width:100%;border-radius:2px 2px 0 0;transition:height 0.3s ease;',
+                        isActive
+                          ? 'background:var(--color-primary);'
+                          : count === 0
+                            ? 'background:var(--color-border);'
+                            : 'background:var(--color-sage-300);',
+                      ].join('')}
+                    />
+                    <div
+                      style={[
+                        'font-size:9px;line-height:1;',
+                        isActive
+                          ? 'color:var(--color-primary);font-weight:var(--font-semibold);'
+                          : 'color:var(--color-text-muted);',
+                      ].join('')}
+                    >
+                      {MONTH_NAMES[m - 1]!.slice(0, 1)}
+                    </div>
+                  </button>
+                );
+              });
+            })()}
+          </div>
+        </div>
+      )}
 
       {/* No region warning */}
       {!region && (

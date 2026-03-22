@@ -377,3 +377,50 @@ export function getBirdsForGarden(
     ORDER BY b.common_name ASC
   `).all(...params) as BirdWithPresence[];
 }
+
+// ---------------------------------------------------------------------------
+// Garden 12-month bird coverage
+// ---------------------------------------------------------------------------
+
+export interface MonthCoverage {
+  month: number;   // 1–12
+  count: number;   // distinct bird species present
+}
+
+/**
+ * Returns distinct bird species counts for each of the 12 months given
+ * a set of plant slugs and a region. Used by the garden coverage chart.
+ */
+export function getGardenCoverage(
+  _db: Database,
+  opts: { plantSlugs: string[]; regionSlug: string },
+): MonthCoverage[] {
+  const db = (_db ?? getDb()) as any;
+  const { plantSlugs, regionSlug } = opts;
+
+  if (plantSlugs.length === 0) {
+    return Array.from({ length: 12 }, (_, i) => ({ month: i + 1, count: 0 }));
+  }
+
+  const slugPlaceholders = plantSlugs.map(() => '?').join(', ');
+
+  const rows = db.prepare(`
+    SELECT brs.month, COUNT(DISTINCT b.id) AS count
+    FROM bird b
+    JOIN bird_plant bp ON b.id = bp.bird_id
+    JOIN plant p ON bp.plant_id = p.id
+    JOIN bird_region_season brs ON b.id = brs.bird_id
+    JOIN region r ON brs.region_id = r.id
+    WHERE p.slug IN (${slugPlaceholders})
+      AND r.slug = ?
+    GROUP BY brs.month
+    ORDER BY brs.month ASC
+  `).all(...plantSlugs, regionSlug) as { month: number; count: number }[];
+
+  // Fill in months with zero count
+  const byMonth = new Map(rows.map((r) => [r.month, r.count]));
+  return Array.from({ length: 12 }, (_, i) => ({
+    month: i + 1,
+    count: byMonth.get(i + 1) ?? 0,
+  }));
+}

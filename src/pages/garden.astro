@@ -7,6 +7,7 @@
  */
 import Base from '../layouts/Base.astro';
 import GardenBuilder from '../components/GardenBuilder.tsx';
+import { ErrorBoundary } from '../components/ErrorBoundary.tsx';
 ---
 
 <Base title="My Garden" description="Build your bird-friendly garden with native plants and see which birds visit.">
@@ -15,6 +16,8 @@ import GardenBuilder from '../components/GardenBuilder.tsx';
       <h1 class="page-title">My Garden</h1>
       <p class="page-subtitle">Your collection of native plants and the birds they attract</p>
     </div>
-    <GardenBuilder client:load />
+    <ErrorBoundary label="Garden builder" client:load>
+      <GardenBuilder />
+    </ErrorBoundary>
   </div>
 </Base>

@@ -7,6 +7,7 @@
  */
 import Base from '../layouts/Base.astro';
 import RegionSelector from '../components/RegionSelector.tsx';
+import { ErrorBoundary } from '../components/ErrorBoundary.tsx';
 
 // Read saved region from URL param (takes priority) then cookie header
 const urlRegion = Astro.url.searchParams.get('region') ?? undefined;
@@ -44,7 +45,9 @@ const safeRegion = urlRegion && SLUG_RE.test(urlRegion) ? urlRegion : undefined;
         <p style="color: var(--color-text-muted); margin-bottom: var(--space-6);">
           Select your region to see native plants and the birds they attract throughout the year.
         </p>
-        <RegionSelector client:load initialRegion={safeRegion} />
+        <ErrorBoundary label="Region selector" client:load>
+          <RegionSelector initialRegion={safeRegion} />
+        </ErrorBoundary>
       </div>
     </div>
   </section>
