@@ -93,12 +93,35 @@ const CONSERVATION_LABELS: Record<string, string> = {
 const conservationLabel = bird.conservation_status
   ? (CONSERVATION_LABELS[bird.conservation_status] ?? bird.conservation_status)
   : null;
+
+const canonicalUrl = `${Astro.site ?? 'https://birdgarden.app'}/birds/${slug}`;
+
+// JSON-LD: Animal / Thing schema for the bird
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Thing',
+  name: bird.common_name,
+  alternateName: bird.scientific_name,
+  description: bird.description ?? `${bird.common_name} (${bird.scientific_name}) — bird attracted to native plants.`,
+  url: canonicalUrl,
+  ...(primaryImage && {
+    image: {
+      '@type': 'ImageObject',
+      url: `${Astro.site ?? 'https://birdgarden.app'}/media/images/birds/${primaryImage.filename}`,
+      description: primaryImage.alt_text,
+    },
+  }),
+  ...(bird.family && { additionalType: `https://www.wikidata.org/wiki/Special:Search?search=${encodeURIComponent(bird.scientific_name)}` }),
+};
 ---
 
 <Base
   title={bird.common_name}
   description={bird.description ?? `${bird.common_name} (${bird.scientific_name}) — bird attracted to native plants.`}
+  canonicalUrl={canonicalUrl}
 >
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
   <div class="container">
     <Breadcrumb items={[
       { label: 'Birds', href: '/birds' },

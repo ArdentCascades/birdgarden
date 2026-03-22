@@ -528,3 +528,88 @@ describe('GET /api/garden/birds', () => {
     expect(body.code).toBe('VALIDATION_ERROR');
   });
 });
+
+// ── GET /api/garden/coverage ───────────────────────────────────────────────
+const { GET: gardenCoverageGET } = await import('../src/pages/api/garden/coverage.ts');
+
+describe('GET /api/garden/coverage', () => {
+  test('returns 12 monthly entries for valid plants + region', async () => {
+    const res = await gardenCoverageGET(
+      ctx('http://test/api/garden/coverage?plants=purple-coneflower,black-eyed-susan&region=new-york'),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json() as any;
+    expect(Array.isArray(body.coverage)).toBe(true);
+    expect(body.coverage).toHaveLength(12);
+    for (const entry of body.coverage) {
+      expect(typeof entry.month).toBe('number');
+      expect(entry.month).toBeGreaterThanOrEqual(1);
+      expect(entry.month).toBeLessThanOrEqual(12);
+      expect(typeof entry.count).toBe('number');
+      expect(entry.count).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  test('months with resident birds have non-zero count', async () => {
+    // Goldfinch is year-round resident in new-york, attracted to purple-coneflower
+    const res = await gardenCoverageGET(
+      ctx('http://test/api/garden/coverage?plants=purple-coneflower&region=new-york'),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json() as any;
+    const monthCounts = Object.fromEntries(body.coverage.map((c: any) => [c.month, c.count]));
+    // All 12 months should have goldfinch (it's resident year-round)
+    for (let m = 1; m <= 12; m++) {
+      expect(monthCounts[m]).toBeGreaterThan(0);
+    }
+  });
+
+  test('breeding-only bird appears in summer months only', async () => {
+    // trumpet-vine attracts only the hummingbird, which breeds Apr–Sep in new-york
+    const res = await gardenCoverageGET(
+      ctx('http://test/api/garden/coverage?plants=trumpet-vine&region=new-york'),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json() as any;
+    const byMonth = Object.fromEntries(body.coverage.map((c: any) => [c.month, c.count]));
+    // June: hummingbird is breeding — count >= 1
+    expect(byMonth[6]).toBeGreaterThanOrEqual(1);
+    // January: hummingbird is absent — count = 0
+    expect(byMonth[1]).toBe(0);
+  });
+
+  test('returns 400 when plants param is missing', async () => {
+    const res = await gardenCoverageGET(
+      ctx('http://test/api/garden/coverage?region=new-york'),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  test('returns 400 when region param is missing', async () => {
+    const res = await gardenCoverageGET(
+      ctx('http://test/api/garden/coverage?plants=purple-coneflower'),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  test('returns 400 for invalid slug in plant list', async () => {
+    const res = await gardenCoverageGET(
+      ctx('http://test/api/garden/coverage?plants=INVALID!!&region=new-york'),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  test('empty coverage (all zeros) when no plants match region', async () => {
+    // Use a region that has no bird_region_season data for these plants
+    const res = await gardenCoverageGET(
+      ctx('http://test/api/garden/coverage?plants=trumpet-vine&region=california'),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json() as any;
+    expect(body.coverage).toHaveLength(12);
+    // Hummingbird has no entries for california in the test DB — all zeros
+    for (const entry of body.coverage) {
+      expect(entry.count).toBe(0);
+    }
+  });
+});

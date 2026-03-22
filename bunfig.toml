@@ -1,0 +1,5 @@
+[test]
+# Use happy-dom for component tests that need browser globals
+# (localStorage, CustomEvent, HTMLElement, etc.)
+environment = "happy-dom"
+preload = ["./tests/setup.ts"]

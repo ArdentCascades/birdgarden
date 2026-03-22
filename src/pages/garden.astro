@@ -2,18 +2,22 @@
 /**
  * /garden — My Garden feature
  *
- * CSR via Preact island. Implemented in Task 10.
+ * CSR via Preact island. GardenBuilder manages plant list, bird display,
+ * and share functionality via localStorage and the /api/garden/birds endpoint.
  */
 import Base from '../layouts/Base.astro';
+import GardenBuilder from '../components/GardenBuilder.tsx';
+import { ErrorBoundary } from '../components/ErrorBoundary.tsx';
 ---
 
-<Base title="My Garden" description="Build your bird-friendly garden with native plants.">
+<Base title="My Garden" description="Build your bird-friendly garden with native plants and see which birds visit.">
   <div class="container">
     <div class="page-header">
       <h1 class="page-title">My Garden</h1>
       <p class="page-subtitle">Your collection of native plants and the birds they attract</p>
     </div>
-    <!-- GardenBuilder Preact island — implemented in Task 10 -->
-    <p style="color: var(--color-text-muted);">Garden builder implemented in Task 10.</p>
+    <ErrorBoundary label="Garden builder" client:load>
+      <GardenBuilder />
+    </ErrorBoundary>
   </div>
 </Base>

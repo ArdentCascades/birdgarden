@@ -69,12 +69,55 @@ const primaryImage = images.find((img) => img.is_primary) ?? images[0] ?? null;
 const typeLabel = plant.plant_type
   ? plant.plant_type.charAt(0).toUpperCase() + plant.plant_type.slice(1)
   : null;
+
+const canonicalUrl = `${Astro.site ?? 'https://birdgarden.app'}/plants/${slug}`;
+
+// JSON-LD: Product/Thing schema for the plant
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Thing',
+  name: plant.common_name,
+  alternateName: plant.scientific_name,
+  description: plant.description ?? `${plant.common_name} (${plant.scientific_name}) — native plant that attracts birds.`,
+  url: canonicalUrl,
+  ...(primaryImage && {
+    image: {
+      '@type': 'ImageObject',
+      url: `${Astro.site ?? 'https://birdgarden.app'}/media/images/plants/${primaryImage.filename}`,
+      description: primaryImage.alt_text,
+    },
+  }),
+  ...(plant.bloom_start !== null && plant.bloom_end !== null && {
+    additionalProperty: {
+      '@type': 'PropertyValue',
+      name: 'Bloom Period',
+      value: bloomLabel,
+    },
+  }),
+  ...(plant.usda_zone_min !== null && plant.usda_zone_max !== null && {
+    additionalProperty: [
+      {
+        '@type': 'PropertyValue',
+        name: 'USDA Zone Minimum',
+        value: String(plant.usda_zone_min),
+      },
+      {
+        '@type': 'PropertyValue',
+        name: 'USDA Zone Maximum',
+        value: String(plant.usda_zone_max),
+      },
+    ],
+  }),
+};
 ---
 
 <Base
   title={plant.common_name}
   description={plant.description ?? `${plant.common_name} (${plant.scientific_name}) — native plant that attracts birds.`}
+  canonicalUrl={canonicalUrl}
 >
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
   <div class="container">
     <Breadcrumb items={[
       { label: 'Plants', href: '/plants' },

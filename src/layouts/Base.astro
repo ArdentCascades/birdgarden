@@ -7,6 +7,8 @@
 import '../styles/global.css';
 import '../styles/layout.css';
 import '../styles/components.css';
+import MobileNav from '../components/MobileNav.tsx';
+import MiniPlayer from '../components/MiniPlayer.tsx';
 
 interface Props {
   /** Page title — will be prefixed with site name */
@@ -47,6 +49,9 @@ const selectedRegion = Astro.url.searchParams.get('region');
 
     <!-- Canonical URL -->
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+    <!-- Sitemap discovery -->
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
     <!-- Open Graph -->
     <meta property="og:title" content={fullTitle} />
@@ -182,8 +187,8 @@ const selectedRegion = Astro.url.searchParams.get('region');
         </div>
       </nav>
 
-      <!-- Mobile navigation drawer island — loaded as Preact client component -->
-      <!-- <MobileNav client:load /> — will be added in Task 6 -->
+      <!-- Mobile navigation drawer — Preact island, native <dialog> focus-trap -->
+      <MobileNav client:load />
     </header>
 
     <!-- Main content area -->
@@ -245,9 +250,57 @@ const selectedRegion = Astro.url.searchParams.get('region');
     <div id="aria-live-assertive" aria-live="assertive" aria-atomic="true" class="sr-only"></div>
 
     <!--
-      Mini player island — sticky bottom bar when audio is playing.
-      Rendered here so it sits above all page content in the stacking context.
-      <MiniPlayer client:load /> — will be wired up in Task 9
+      MiniPlayer — sticky bottom bar when audio is playing.
+      Rendered here so it stacks above all page content at z-index 200.
     -->
+    <MiniPlayer client:load />
+
+    <!--
+      Global "Add to My Garden" handler.
+      Plant detail pages render a button with data-plant-slug + data-plant-name.
+      This inline script intercepts clicks anywhere in the document and dispatches
+      the bird-garden:add-plant event that GardenBuilder listens to.
+      The confirmation message is shown via the polite aria-live region.
+    -->
+    <script>
+      document.addEventListener('click', (e: Event) => {
+        const btn = (e.target as Element).closest<HTMLElement>('[data-plant-slug]');
+        if (!btn) return;
+        const slug = btn.dataset.plantSlug;
+        const name = btn.dataset.plantName ?? slug;
+        if (!slug) return;
+
+        // Dispatch to GardenBuilder (if mounted) or let it queue for next load
+        window.dispatchEvent(
+          new CustomEvent('bird-garden:add-plant', { detail: { slug, name } }),
+        );
+
+        // Also persist directly (in case GardenBuilder isn't mounted on this page)
+        try {
+          const raw = localStorage.getItem('bird-garden-plants');
+          const plants: { slug: string; name: string }[] = raw ? JSON.parse(raw) : [];
+          if (!plants.some((p) => p.slug === slug) && plants.length < 50) {
+            plants.push({ slug: slug!, name: name! });
+            localStorage.setItem('bird-garden-plants', JSON.stringify(plants));
+          }
+        } catch {
+          // Storage unavailable
+        }
+
+        // Announce to screen reader
+        const live = document.getElementById('aria-live-polite');
+        if (live) live.textContent = `${name} added to your garden.`;
+        setTimeout(() => { if (live) live.textContent = ''; }, 3000);
+
+        // Visual feedback on the button
+        const original = btn.textContent;
+        btn.textContent = '✓ Added';
+        btn.setAttribute('disabled', '');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.removeAttribute('disabled');
+        }, 2000);
+      });
+    </script>
   </body>
 </html>
