@@ -1,8 +1,6 @@
 ---
 /**
- * /about — About page with data sources and attribution
- *
- * SSG. Content populated in Task 12.
+ * /about — About page with data sources and full attribution
  */
 import Base from '../layouts/Base.astro';
 ---
@@ -14,17 +12,129 @@ import Base from '../layouts/Base.astro';
     </div>
 
     <div class="prose-layout" style="padding-bottom: var(--space-16);">
+      <p style="font-size: var(--text-lg); color: var(--color-text-muted); line-height: 1.7;">
+        Bird Garden helps you discover native plants that attract birds to your garden throughout
+        the year. Plan your plantings by region and month, listen to recordings, and share your
+        garden with others.
+      </p>
       <p>
-        Bird Garden helps you discover native plants that attract birds to your garden.
-        All plant and bird data, recordings, and images are from public-domain or
-        Creative Commons sources.
+        All plant and bird data, song recordings, and photographs are sourced from freely-licensed,
+        public-domain or Creative Commons datasets. Nothing is behind a paywall, and nothing is sent
+        to any third-party server — region detection happens entirely in your browser.
       </p>
 
       <h2 id="data-sources" style="margin-top: var(--space-10);">Data Sources</h2>
-      <p style="color: var(--color-text-muted);">Full data source attribution added in Task 12.</p>
 
-      <h2 id="attribution" style="margin-top: var(--space-8);">Media Attribution</h2>
-      <p style="color: var(--color-text-muted);">Full media attribution added in Task 12.</p>
+      <div style="display: flex; flex-direction: column; gap: var(--space-6); margin-top: var(--space-6);">
+
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
+          <h3 style="font-size: var(--text-base); margin: 0 0 var(--space-2);">
+            <a href="https://xeno-canto.org" rel="noopener noreferrer" target="_blank"
+               style="color: var(--color-primary); text-decoration: underline;">
+              Xeno-canto
+            </a>
+          </h3>
+          <p style="margin: 0; font-size: var(--text-sm); color: var(--color-text-muted);">
+            Community-built database of bird sound recordings from around the world.
+            Bird Garden uses only recordings shared under CC0 (public domain) and CC-BY 3.0/4.0 licenses.
+            Individual recordist attribution is displayed on each bird's detail page.
+          </p>
+          <p style="margin: var(--space-2) 0 0; font-size: var(--text-xs); color: var(--color-text-subtle);">
+            License: CC0 · CC-BY 3.0 · CC-BY 4.0 — per recording
+          </p>
+        </div>
+
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
+          <h3 style="font-size: var(--text-base); margin: 0 0 var(--space-2);">
+            <a href="https://commons.wikimedia.org" rel="noopener noreferrer" target="_blank"
+               style="color: var(--color-primary); text-decoration: underline;">
+              Wikimedia Commons
+            </a>
+          </h3>
+          <p style="margin: 0; font-size: var(--text-sm); color: var(--color-text-muted);">
+            Free media repository used for bird and plant photographs.
+            Images are fetched via the Wikipedia API and filtered to permissively-licensed works.
+            Photographer attribution and license links appear on each species page.
+          </p>
+          <p style="margin: var(--space-2) 0 0; font-size: var(--text-xs); color: var(--color-text-subtle);">
+            License: varies — CC-BY, CC-BY-SA, CC0 — per image
+          </p>
+        </div>
+
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
+          <h3 style="font-size: var(--text-base); margin: 0 0 var(--space-2);">
+            Bird and Plant Data
+          </h3>
+          <p style="margin: 0; font-size: var(--text-sm); color: var(--color-text-muted);">
+            Species lists, habitat preferences, seasonal presence, and plant-bird attraction data
+            were compiled from publicly available ornithological and horticultural literature,
+            including USDA PLANTS Database taxonomy and eBird occurrence data.
+            Conservation status designations follow the
+            <a href="https://www.iucnredlist.org" rel="noopener noreferrer" target="_blank"
+               style="color: var(--color-primary);">IUCN Red List</a>.
+          </p>
+        </div>
+
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
+          <h3 style="font-size: var(--text-base); margin: 0 0 var(--space-2);">
+            USDA Hardiness Zones
+          </h3>
+          <p style="margin: 0; font-size: var(--text-sm); color: var(--color-text-muted);">
+            Plant hardiness zone ranges follow the
+            <a href="https://planthardiness.ars.usda.gov" rel="noopener noreferrer" target="_blank"
+               style="color: var(--color-primary);">USDA Plant Hardiness Zone Map</a>
+            (2023 edition). Zones are used to indicate geographic suitability, not climate predictions.
+          </p>
+        </div>
+
+      </div>
+
+      <h2 id="attribution" style="margin-top: var(--space-10);">Media Attribution</h2>
+      <p>
+        Every song recording and photograph displayed on Bird Garden carries attribution to its
+        creator. Attribution is shown:
+      </p>
+      <ul style="margin-top: var(--space-3); padding-left: var(--space-6); display: flex; flex-direction: column; gap: var(--space-2);">
+        <li>
+          On bird detail pages, below each AudioPlayer: recordist name, recording location and date,
+          and a link to the original Xeno-canto page with the full license text.
+        </li>
+        <li>
+          On bird and plant detail pages, in the image caption: photographer name (from Wikimedia
+          Commons <code>extmetadata.Artist</code>) and license name.
+        </li>
+      </ul>
+      <p style="margin-top: var(--space-4);">
+        If you believe a piece of media has been included in error or with incorrect attribution,
+        please
+        <a href="https://github.com/ArdentCascades/birdgarden/issues" rel="noopener noreferrer"
+           target="_blank" style="color: var(--color-primary);">open an issue on GitHub</a>.
+      </p>
+
+      <h2 id="privacy" style="margin-top: var(--space-10);">Privacy</h2>
+      <p>
+        Bird Garden does not collect, store, or transmit any personal data. Your selected region
+        is saved in your browser's <code>localStorage</code> and never leaves your device.
+        Garden plant lists are stored locally and optionally shared via URL — no account is required.
+      </p>
+      <p>
+        Geolocation (the "Use my location" button) is browser-initiated, requires explicit user
+        permission, and coordinates are used only client-side to identify the nearest region.
+        Coordinates are never sent to the Bird Garden server.
+      </p>
+
+      <h2 id="open-source" style="margin-top: var(--space-10);">Open Source</h2>
+      <p>
+        Bird Garden is open source. The code is available on
+        <a href="https://github.com/ArdentCascades/birdgarden" rel="noopener noreferrer"
+           target="_blank" style="color: var(--color-primary);">GitHub</a>.
+        Built with <a href="https://astro.build" rel="noopener noreferrer" target="_blank"
+          style="color: var(--color-primary);">Astro</a>,
+        <a href="https://preactjs.com" rel="noopener noreferrer" target="_blank"
+          style="color: var(--color-primary);">Preact</a>,
+        and <a href="https://bun.sh" rel="noopener noreferrer" target="_blank"
+          style="color: var(--color-primary);">Bun</a>.
+      </p>
     </div>
   </div>
 </Base>

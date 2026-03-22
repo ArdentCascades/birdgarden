@@ -6,7 +6,7 @@
  * unsupported in happy-dom. Use container.querySelector() or getByText().
  */
 import { describe, test, expect, beforeEach, mock } from 'bun:test';
-import { render, screen, fireEvent, waitFor } from '@testing-library/preact';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/preact';
 import RegionSelector from '../../src/components/RegionSelector.tsx';
 
 const REGIONS = [
@@ -181,23 +181,20 @@ describe('RegionSelector', () => {
   });
 
   test('renders gracefully when fetch fails', async () => {
-    // Return a response where .json() throws, simulating a parse error.
-    // This hits the .catch() in the component and clears the loading state.
-    const fn = mock(() =>
-      Promise.resolve({
-        ok: false,
-        json: () => { throw new Error('parse error'); },
-      } as unknown as Response),
-    );
+    // Use a directly-rejected Promise. Then flush with act() + a settled
+    // promise rather than polling with waitFor — more reliable in full-suite
+    // runs where parallel test files can race on globalThis.fetch.
+    const fn = mock(() => Promise.reject(new Error('network error')));
     globalThis.fetch = fn as unknown as typeof fetch;
     (window as any).fetch = fn;
 
     const { container } = render(<RegionSelector />);
-    await waitFor(
-      () => {
-        expect(container.querySelector('[aria-busy="true"]')).toBeNull();
-      },
-      { timeout: 3000 },
-    );
+
+    // Flush the useEffect + promise chain + Preact re-render
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 50));
+    });
+
+    expect(container.querySelector('[aria-busy="true"]')).toBeNull();
   });
 });

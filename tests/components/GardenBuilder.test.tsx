@@ -277,4 +277,158 @@ describe('GardenBuilder', () => {
       expect(container.querySelector('[data-testid="garden-builder"]')).not.toBeNull();
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // Jukebox mode
+  // ---------------------------------------------------------------------------
+
+  test('Play All button appears when birds with songs are loaded', async () => {
+    localStorage.setItem(
+      'bird-garden-plants',
+      JSON.stringify([{ slug: 'red-maple', name: 'Red Maple' }]),
+    );
+    localStorage.setItem('bird-garden-region', 'california');
+    mockFetchWith(MOCK_BIRDS, MOCK_COVERAGE);
+
+    const { container } = render(<GardenBuilder />);
+
+    await waitFor(() => {
+      const controls = container.querySelector('[data-testid="jukebox-controls"]');
+      expect(controls).not.toBeNull();
+      // Should show "Play All" button
+      expect(controls!.textContent).toContain('Play All');
+    });
+  });
+
+  test('Play All button is absent when no birds have songs', async () => {
+    localStorage.setItem(
+      'bird-garden-plants',
+      JSON.stringify([{ slug: 'red-maple', name: 'Red Maple' }]),
+    );
+    localStorage.setItem('bird-garden-region', 'california');
+
+    const birdsWithoutSongs = [{ ...MOCK_BIRDS[0], songs: [] }];
+    mockFetchWith(birdsWithoutSongs, MOCK_COVERAGE);
+
+    const { container } = render(<GardenBuilder />);
+
+    await waitFor(() => {
+      expect(container.innerHTML).toContain('American Robin');
+    });
+
+    expect(container.querySelector('[data-testid="jukebox-controls"]')).toBeNull();
+  });
+
+  test('clicking Play All dispatches song-play event', async () => {
+    localStorage.setItem(
+      'bird-garden-plants',
+      JSON.stringify([{ slug: 'red-maple', name: 'Red Maple' }]),
+    );
+    localStorage.setItem('bird-garden-region', 'california');
+    mockFetchWith(MOCK_BIRDS, MOCK_COVERAGE);
+
+    const dispatchedEvents: CustomEvent[] = [];
+    window.addEventListener('bird-garden:song-play', (e) => {
+      dispatchedEvents.push(e as CustomEvent);
+    });
+
+    const { container } = render(<GardenBuilder />);
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="jukebox-controls"]')).not.toBeNull();
+    });
+
+    const playAllBtn = container.querySelector('[aria-label^="Play all"]') as HTMLButtonElement;
+    expect(playAllBtn).not.toBeNull();
+    fireEvent.click(playAllBtn);
+
+    await waitFor(() => {
+      expect(dispatchedEvents.length).toBeGreaterThan(0);
+    });
+    expect(dispatchedEvents[0].detail.songId).toBe(1);
+    expect(dispatchedEvents[0].detail.birdName).toBe('American Robin');
+
+    window.removeEventListener('bird-garden:song-play', () => {});
+  });
+
+  test('Stop button appears after Play All is clicked', async () => {
+    localStorage.setItem(
+      'bird-garden-plants',
+      JSON.stringify([{ slug: 'red-maple', name: 'Red Maple' }]),
+    );
+    localStorage.setItem('bird-garden-region', 'california');
+    mockFetchWith(MOCK_BIRDS, MOCK_COVERAGE);
+
+    const { container } = render(<GardenBuilder />);
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="jukebox-controls"]')).not.toBeNull();
+    });
+
+    const playAllBtn = container.querySelector('[aria-label^="Play all"]') as HTMLButtonElement;
+    fireEvent.click(playAllBtn);
+
+    await waitFor(() => {
+      expect(container.querySelector('[aria-label="Stop jukebox"]')).not.toBeNull();
+    });
+  });
+
+  test('Stop button dispatches mini-pause and hides itself', async () => {
+    localStorage.setItem(
+      'bird-garden-plants',
+      JSON.stringify([{ slug: 'red-maple', name: 'Red Maple' }]),
+    );
+    localStorage.setItem('bird-garden-region', 'california');
+    mockFetchWith(MOCK_BIRDS, MOCK_COVERAGE);
+
+    const pauseEvents: CustomEvent[] = [];
+    window.addEventListener('bird-garden:mini-pause', (e) => {
+      pauseEvents.push(e as CustomEvent);
+    });
+
+    const { container } = render(<GardenBuilder />);
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="jukebox-controls"]')).not.toBeNull();
+    });
+
+    fireEvent.click(container.querySelector('[aria-label^="Play all"]') as HTMLButtonElement);
+
+    await waitFor(() => {
+      expect(container.querySelector('[aria-label="Stop jukebox"]')).not.toBeNull();
+    });
+
+    fireEvent.click(container.querySelector('[aria-label="Stop jukebox"]') as HTMLButtonElement);
+
+    await waitFor(() => {
+      expect(container.querySelector('[aria-label="Stop jukebox"]')).toBeNull();
+      expect(container.querySelector('[aria-label^="Play all"]')).not.toBeNull();
+    });
+
+    expect(pauseEvents.length).toBeGreaterThan(0);
+
+    window.removeEventListener('bird-garden:mini-pause', () => {});
+  });
+
+  test('currently playing bird row gets highlighted border', async () => {
+    localStorage.setItem(
+      'bird-garden-plants',
+      JSON.stringify([{ slug: 'red-maple', name: 'Red Maple' }]),
+    );
+    localStorage.setItem('bird-garden-region', 'california');
+    mockFetchWith(MOCK_BIRDS, MOCK_COVERAGE);
+
+    const { container } = render(<GardenBuilder />);
+
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="jukebox-controls"]')).not.toBeNull();
+    });
+
+    fireEvent.click(container.querySelector('[aria-label^="Play all"]') as HTMLButtonElement);
+
+    await waitFor(() => {
+      const highlighted = container.querySelector('[data-jukebox-current="true"]');
+      expect(highlighted).not.toBeNull();
+    });
+  });
 });

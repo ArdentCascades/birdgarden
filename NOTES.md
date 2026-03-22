@@ -235,11 +235,49 @@ Was broken (`package-ecosystem: ""`). Now `"npm"` with grouped updates for Astro
 
 ---
 
+### Commit 4 — Media path fixes, RegionSelector test fix, jukebox tests, about page
+
+#### `scripts/fetch-media.ts` — paths and manifest fields corrected
+- Output audio files to `media/songs/` (matches `src/lib/media.ts` `getSongPath`)
+- Output images to `media/images/{birds|plants}/` (matches `getImagePath`)
+- `songs.json` now outputs `SongRecord` fields: `bird_slug`, `filename`, `format`, `duration_sec`, `source_url`, `license`, `recordist`, `recording_date`, `recording_loc`
+- `images.json` now outputs `ImageRecord` fields: `entity_type`, `entity_slug`, `filename`, `alt_text`, `width`, `height`, `source_url`, `license`, `author`, `is_primary`
+- Both match the schema expected by `scripts/seed-db.ts`
+
+#### `scripts/optimize-images.ts` — path convention fixed
+- Reads from `media/images/{birds|plants}/` (flat files, not slug subdirectories)
+- Writes optimized variants to `media/images/{birds|plants}/opt/`
+- Manifest field names updated to `entity_slug`, `entity_type` to align with seed-db
+
+#### `tests/components/RegionSelector.test.tsx` — flake fixed (**0 fail now**)
+- "renders gracefully when fetch fails" was timing out in full-suite runs (parallel test files racing on `globalThis.fetch`)
+- Fix: use `act(async () => { await new Promise(r => setTimeout(r, 50)) })` to explicitly flush the useEffect + promise chain + Preact re-render, instead of `waitFor` polling which was susceptible to timing races
+- Also switched mock to `Promise.reject()` (direct rejection, no synchronous throw inside `.then()`)
+
+#### `tests/components/GardenBuilder.test.tsx` — 6 jukebox tests added (18 total)
+- "Play All button appears when birds with songs are loaded"
+- "Play All button is absent when no birds have songs"
+- "clicking Play All dispatches song-play event" — verifies `songId` and `birdName` in event detail
+- "Stop button appears after Play All is clicked"
+- "Stop button dispatches mini-pause and hides itself"
+- "currently playing bird row gets highlighted border" — checks `data-jukebox-current="true"`
+
+#### `src/pages/about.astro` — full content (was stub)
+- Xeno-canto: CC0/CC-BY licensing, per-recording attribution
+- Wikimedia Commons: image sourcing, photographer attribution
+- Bird/plant data: USDA PLANTS, eBird, IUCN Red List conservation status
+- USDA Hardiness Zones explanation
+- Media attribution section: explains where recordist/photographer credit appears in the UI
+- Privacy section: localStorage, geolocation (never sent to server), no accounts required
+- Open source section: links to GitHub, Astro, Preact, Bun
+
+---
+
 ## Current state
 
 | Metric | Value |
 |--------|-------|
-| Unit + integration tests (`bun run test`) | **230 pass, 1 fail (pre-existing RegionSelector timeout)** |
+| Unit + integration tests (`bun run test`) | **237 pass, 0 fail** |
 | E2E tests (`bun run test:e2e`) | 28 tests — require live server |
 | Seed data | 19 birds, 15 plants, 16 regions, 31 songs, 34 images, 53 bird-plant pairs, 1 992 bird-region-season rows |
 | API endpoints | `/api/regions`, `/api/plants`, `/api/birds`, `/api/songs/[id]`, `/api/garden/birds`, `/api/garden/coverage` |
@@ -248,9 +286,9 @@ Was broken (`package-ecosystem: ""`). Now `"npm"` with grouped updates for Astro
 ---
 
 ## What still needs doing
-1. **Real media files** — `fetch-media.ts` and `optimize-images.ts` are implemented but need real network access to run. Every `<img>` and `AudioPlayer` will 404 on a live site until `bun run fetch-media && bun run optimize-images` has been run.
-2. **RegionSelector test flake** — "renders gracefully when fetch fails" has a 5s timeout; the `Promise.reject()` mock is slow. Needs a `Response` where `.json()` throws synchronously instead.
-3. **AudioPlayer song metadata** — The component only receives `songId` and `birdName`; full metadata (recordist, location, license) is not yet fetched from the API at runtime.
+1. **Real media files** — `fetch-media.ts` and `optimize-images.ts` are implemented but need actual network access. Run `bun run fetch-media && bun run optimize-images && bun run seed` on a machine with internet access to populate `media/` and the DB.
+2. **AudioPlayer song metadata** — The component only receives `songId` and `birdName`; full metadata (recordist, location, license) is displayed server-side on the bird detail page below each player, but not fetched client-side. This is intentional (reduces API calls) but means the AudioPlayer attribution block inside the component is never populated.
+3. **`about.astro` live data** — The About page's "Media Attribution" section describes where attribution appears in the UI, but doesn't generate a live list of all sources. This could be a future enhancement once media is fetched.
 
 ---
 

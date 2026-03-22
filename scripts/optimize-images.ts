@@ -1,15 +1,16 @@
 /**
  * optimize-images.ts — Image optimization pipeline
  *
- * For each source image in public/images/:
+ * Source images: media/images/{birds|plants}/ (downloaded by fetch-media.ts)
+ * For each source image:
  *   - Generates AVIF at 400w, 800w, 1200w
  *   - Generates WebP at 400w, 800w, 1200w
  *   - Generates JPEG at 800w (fallback)
  *   - Generates 20px LQIP as base64 data URI
  *   - Applies subtle warm color grade for visual cohesion
  *
- * Output written to public/images-opt/{type}/{slug}/
- * Manifest written to db/seed-data/images-opt.json
+ * Output written alongside source: media/images/{birds|plants}/opt/
+ * Manifest written to db/seed-data/images-opt.json (LQIP data URIs for inline use)
  *
  * Uses: sharp
  *
@@ -18,7 +19,7 @@
  *   FORCE=1 bun run scripts/optimize-images.ts   # re-generate existing outputs
  */
 
-import { existsSync, mkdirSync, readdirSync, writeFileSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, writeFileSync, statSync, readFileSync } from 'node:fs';
 import { join, resolve, extname, basename } from 'node:path';
 
 // Dynamic import so the script fails gracefully if sharp isn't installed
@@ -31,13 +32,13 @@ try {
 }
 
 const FORCE = process.env['FORCE'] === '1';
-const IMAGES_DIR = resolve('./public/images');
-const OUT_DIR = resolve('./public/images-opt');
+const MEDIA_ROOT = resolve(process.env['MEDIA_PATH'] ?? './media');
+const IMAGES_DIR = join(MEDIA_ROOT, 'images');
 const SEED_DIR = resolve('./db/seed-data');
 const WIDTHS = [400, 800, 1200] as const;
 const LQIP_WIDTH = 20;
 
-// Warm color grade: very subtle orange lift in shadows/midtones
+// Warm color grade: subtle orange lift
 const WARM_TINT = { r: 4, g: 2, b: -3 };
 
 // ---------------------------------------------------------------------------
@@ -57,10 +58,10 @@ function toBase64DataUri(buf: Buffer, mime: string): string {
 // ---------------------------------------------------------------------------
 
 interface OptimizedImageEntry {
-  subject_slug: string;
-  subject_type: string;
-  source_path: string;
-  lqip: string; // base64 data URI
+  entity_slug: string;    // matches ImageRecord.entity_slug in seed-db.ts
+  entity_type: string;    // 'bird' or 'plant'
+  source_filename: string;
+  lqip: string;           // base64 data URI for inline CSS blur-up
   avif: { w400: string; w800: string; w1200: string };
   webp: { w400: string; w800: string; w1200: string };
   jpeg_800: string;
@@ -68,76 +69,74 @@ interface OptimizedImageEntry {
 
 async function processImage(
   sourcePath: string,
-  slug: string,
-  type: string,
+  typeDir: string,   // e.g. "birds" or "plants"
 ): Promise<OptimizedImageEntry | null> {
-  const outDir = join(OUT_DIR, type, slug);
+  const file = basename(sourcePath);
+  const base = basename(sourcePath, extname(sourcePath));
+  // slug = filename without extension (e.g. "northern-cardinal")
+  const slug = base;
+
+  const outDir = join(typeDir, 'opt');
   ensureDir(outDir);
 
-  const base = basename(sourcePath, extname(sourcePath));
+  // Public URL base: served by Caddy at /media/images/{type}/opt/
+  const relType = typeDir.replace(IMAGES_DIR + '/', '');
+  const publicBase = `/media/images/${relType}/opt/${base}`;
 
   // Check if already processed (unless FORCE)
   const lqipPath = join(outDir, `${base}-lqip.webp`);
   if (!FORCE && existsSync(lqipPath)) {
-    console.log(`  Skipping (already optimized): ${slug}`);
-
-    // Re-read existing LQIP for manifest
-    const lqipBuf = require('node:fs').readFileSync(lqipPath) as Buffer;
-    const lqipUri = toBase64DataUri(lqipBuf, 'image/webp');
-
-    const publicBase = `/images-opt/${type}/${slug}/${base}`;
+    console.log(`  Skipping (already optimized): ${file}`);
+    const lqipBuf = readFileSync(lqipPath);
     return {
-      subject_slug: slug,
-      subject_type: type,
-      source_path: sourcePath.replace(resolve('./public'), ''),
-      lqip: lqipUri,
-      avif: { w400: `${publicBase}-400.avif`, w800: `${publicBase}-800.avif`, w1200: `${publicBase}-1200.avif` },
-      webp: { w400: `${publicBase}-400.webp`, w800: `${publicBase}-800.webp`, w1200: `${publicBase}-1200.webp` },
+      entity_slug: slug,
+      entity_type: relType.replace(/s$/, ''), // "birds" → "bird"
+      source_filename: file,
+      lqip: toBase64DataUri(lqipBuf, 'image/webp'),
+      avif: {
+        w400: `${publicBase}-400.avif`,
+        w800: `${publicBase}-800.avif`,
+        w1200: `${publicBase}-1200.avif`,
+      },
+      webp: {
+        w400: `${publicBase}-400.webp`,
+        w800: `${publicBase}-800.webp`,
+        w1200: `${publicBase}-1200.webp`,
+      },
       jpeg_800: `${publicBase}-800.jpg`,
     };
   }
 
   try {
     const img = sharp(sourcePath).tint(WARM_TINT);
-
-    const publicBase = `/images-opt/${type}/${slug}/${base}`;
     const avif: Record<string, string> = {};
     const webp: Record<string, string> = {};
     let jpeg800 = '';
 
-    // Generate AVIF + WebP at each width
     for (const w of WIDTHS) {
       const resized = img.clone().resize(w);
 
-      const avifFilename = `${base}-${w}.avif`;
-      const avifPath = join(outDir, avifFilename);
-      await resized.clone().avif({ quality: 65, effort: 4 }).toFile(avifPath);
+      await resized.clone().avif({ quality: 65, effort: 4 }).toFile(join(outDir, `${base}-${w}.avif`));
       avif[`w${w}`] = `${publicBase}-${w}.avif`;
 
-      const webpFilename = `${base}-${w}.webp`;
-      const webpPath = join(outDir, webpFilename);
-      await resized.clone().webp({ quality: 75 }).toFile(webpPath);
+      await resized.clone().webp({ quality: 75 }).toFile(join(outDir, `${base}-${w}.webp`));
       webp[`w${w}`] = `${publicBase}-${w}.webp`;
 
-      // JPEG fallback at 800 only
       if (w === 800) {
-        const jpegFilename = `${base}-${w}.jpg`;
-        const jpegPath = join(outDir, jpegFilename);
-        await resized.clone().jpeg({ quality: 80, mozjpeg: true }).toFile(jpegPath);
+        await resized.clone().jpeg({ quality: 80, mozjpeg: true }).toFile(join(outDir, `${base}-${w}.jpg`));
         jpeg800 = `${publicBase}-${w}.jpg`;
       }
     }
 
-    // LQIP — 20px wide, blurry WebP encoded as base64
+    // LQIP
     const lqipBuf = await img.clone().resize(LQIP_WIDTH).webp({ quality: 20 }).toBuffer();
     writeFileSync(lqipPath, lqipBuf);
-    const lqipUri = toBase64DataUri(lqipBuf, 'image/webp');
 
     return {
-      subject_slug: slug,
-      subject_type: type,
-      source_path: sourcePath.replace(resolve('./public'), ''),
-      lqip: lqipUri,
+      entity_slug: slug,
+      entity_type: relType.replace(/s$/, ''),
+      source_filename: file,
+      lqip: toBase64DataUri(lqipBuf, 'image/webp'),
       avif: avif as OptimizedImageEntry['avif'],
       webp: webp as OptimizedImageEntry['webp'],
       jpeg_800: jpeg800,
@@ -155,65 +154,59 @@ async function processImage(
 async function main() {
   console.log('Bird Garden — optimize-images');
   console.log('─'.repeat(50));
+  console.log(`Media root: ${MEDIA_ROOT}`);
 
   if (!existsSync(IMAGES_DIR)) {
-    console.error(`Source images directory not found: ${IMAGES_DIR}`);
+    console.error(`\nSource images directory not found: ${IMAGES_DIR}`);
     console.error('Run `bun run fetch-media` first.');
     process.exit(1);
   }
 
-  ensureDir(OUT_DIR);
-
   const manifest: OptimizedImageEntry[] = [];
   let total = 0;
-  let processed = 0;
-  let skipped = 0;
   let errors = 0;
 
-  // Walk public/images/{type}/{slug}/
-  const types = readdirSync(IMAGES_DIR).filter((d) => statSync(join(IMAGES_DIR, d)).isDirectory());
+  // Walk media/images/{type}/ directories (birds, plants)
+  const typeDirs = readdirSync(IMAGES_DIR)
+    .map((d) => join(IMAGES_DIR, d))
+    .filter((d) => statSync(d).isDirectory() && !basename(d).startsWith('opt'));
 
-  for (const type of types) {
-    const typeDir = join(IMAGES_DIR, type);
-    const slugs = readdirSync(typeDir).filter((d) => statSync(join(typeDir, d)).isDirectory());
+  for (const typeDir of typeDirs) {
+    const typeName = basename(typeDir);
+    const files = readdirSync(typeDir).filter((f) =>
+      /\.(jpe?g|png|webp|avif|gif)$/i.test(f) && statSync(join(typeDir, f)).isFile(),
+    );
 
-    for (const slug of slugs) {
-      const slugDir = join(typeDir, slug);
-      const files = readdirSync(slugDir).filter((f) => /\.(jpe?g|png|webp|avif|gif)$/i.test(f));
+    if (files.length === 0) {
+      console.log(`\n[${typeName}] No images found.`);
+      continue;
+    }
 
-      for (const file of files) {
-        total++;
-        const sourcePath = join(slugDir, file);
-        console.log(`\n[${type}] ${slug}/${file}`);
+    console.log(`\n[${typeName}] ${files.length} images`);
 
-        const entry = await processImage(sourcePath, slug, type);
-        if (entry) {
-          manifest.push(entry);
-          // Check if it was skipped or newly processed
-          const lqipPath = join(OUT_DIR, type, slug, `${basename(file, extname(file))}-lqip.webp`);
-          if (entry.lqip && FORCE) {
-            processed++;
-          } else {
-            processed++;
-          }
-        } else {
-          errors++;
-        }
+    for (const file of files) {
+      total++;
+      const sourcePath = join(typeDir, file);
+      console.log(`  ${file}`);
+      const entry = await processImage(sourcePath, typeDir);
+      if (entry) {
+        manifest.push(entry);
+      } else {
+        errors++;
       }
     }
   }
 
   if (total === 0) {
-    console.log('\nNo source images found in public/images/');
+    console.log('\nNo source images found.');
     console.log('Run `bun run fetch-media` first to download images.');
   }
 
-  // Write manifest
   const manifestPath = join(SEED_DIR, 'images-opt.json');
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
 
   console.log('\n─'.repeat(50));
-  console.log(`Total: ${total} | Processed: ${processed} | Errors: ${errors}`);
+  console.log(`Total: ${total} | OK: ${total - errors} | Errors: ${errors}`);
   console.log(`Manifest written to db/seed-data/images-opt.json`);
   console.log('Done.');
 }

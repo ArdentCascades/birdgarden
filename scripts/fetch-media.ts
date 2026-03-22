@@ -6,9 +6,11 @@
  *   - Images: Wikimedia Commons REST API
  *
  * Reads bird/plant slugs from db/seed-data/birds.json and db/seed-data/plants.json.
- * Writes manifest to db/seed-data/songs.json and db/seed-data/images.json.
- * Downloads audio to public/audio/{bird-slug}/ and images to public/images/{type}/{slug}/
- * Implements exponential backoff/retry for API rate limits.
+ * Writes manifests compatible with scripts/seed-db.ts:
+ *   - db/seed-data/songs.json  (SongRecord[] format)
+ *   - db/seed-data/images.json (ImageRecord[] format)
+ * Downloads audio to media/songs/ and images to media/images/{birds|plants}/
+ * (paths match src/lib/media.ts conventions used by the Caddy reverse proxy)
  *
  * Usage:
  *   bun run scripts/fetch-media.ts
@@ -20,8 +22,10 @@ import { join, resolve } from 'node:path';
 
 const DRY_RUN = process.env['DRY_RUN'] === '1';
 const SEED_DIR = resolve('./db/seed-data');
-const AUDIO_DIR = resolve('./public/audio');
-const IMAGES_DIR = resolve('./public/images');
+// Match the MEDIA_ROOT convention in src/lib/media.ts
+const MEDIA_ROOT = resolve(process.env['MEDIA_PATH'] ?? './media');
+const AUDIO_DIR = join(MEDIA_ROOT, 'songs');
+const IMAGES_DIR = join(MEDIA_ROOT, 'images');
 const MAX_SONGS_PER_BIRD = 3;
 const MAX_RETRIES = 4;
 
@@ -75,12 +79,17 @@ interface XenoCantoRecording {
   id: string;
   gen: string;
   sp: string;
-  en: string; // English name
-  lic: string; // license URL
-  file: string; // direct audio URL
+  en: string;      // English name
+  lic: string;     // license URL
+  file: string;    // direct audio URL
   'file-name': string;
-  length: string; // "mm:ss"
-  q: string; // quality A/B/C/D/E
+  length: string;  // "mm:ss"
+  q: string;       // quality A/B/C/D/E
+  rec: string;     // recordist name
+  cnt: string;     // country
+  loc: string;     // locality
+  date: string;    // recording date
+  type: string;    // sound type (call/song)
 }
 
 interface XenoCantoResponse {
@@ -91,26 +100,44 @@ interface XenoCantoResponse {
   recordings: XenoCantoRecording[];
 }
 
-interface SongManifestEntry {
+/** Matches the SongRecord interface in seed-db.ts */
+interface SongRecord {
   bird_slug: string;
-  xeno_canto_id: string;
-  license: string;
   filename: string;
-  path: string; // public path
-  length: string;
-  quality: string;
+  format: string;
+  duration_sec?: number;
+  source_url: string;
+  license: string;
+  recordist?: string;
+  recording_date?: string;
+  recording_loc?: string;
 }
 
-const CC_LICENSES = ['//creativecommons.org/licenses/by/4.0', '//creativecommons.org/licenses/by/3.0', '//creativecommons.org/publicdomain/zero/1.0'];
+const CC_LICENSES = [
+  '//creativecommons.org/licenses/by/4.0',
+  '//creativecommons.org/licenses/by/3.0',
+  '//creativecommons.org/publicdomain/zero/1.0',
+];
 
 function isPermissiveLicense(licUrl: string): boolean {
   return CC_LICENSES.some((cc) => licUrl.includes(cc));
 }
 
+/** Parse "mm:ss" → seconds */
+function parseLength(length: string): number | undefined {
+  const parts = length.split(':');
+  if (parts.length === 2) {
+    const m = parseInt(parts[0] ?? '0', 10);
+    const s = parseInt(parts[1] ?? '0', 10);
+    if (!isNaN(m) && !isNaN(s)) return m * 60 + s;
+  }
+  return undefined;
+}
+
 async function fetchSongsForBird(
   slug: string,
   scientificName: string,
-): Promise<SongManifestEntry[]> {
+): Promise<SongRecord[]> {
   const query = encodeURIComponent(`"${scientificName}"`);
   const apiUrl = `https://xeno-canto.org/api/2/recordings?query=${query}+q:A&page=1`;
 
@@ -138,16 +165,17 @@ async function fetchSongsForBird(
     return [];
   }
 
-  const birdAudioDir = join(AUDIO_DIR, slug);
-  ensureDir(birdAudioDir);
+  ensureDir(AUDIO_DIR);
 
-  const entries: SongManifestEntry[] = [];
+  const records: SongRecord[] = [];
 
   for (const rec of eligible) {
-    const ext = rec['file-name']?.split('.').pop() ?? 'mp3';
-    const filename = `xc${rec.id}.${ext}`;
-    const localPath = join(birdAudioDir, filename);
-    const publicPath = `/audio/${slug}/${filename}`;
+    const ext = (rec['file-name']?.split('.').pop() ?? 'mp3').toLowerCase();
+    const format = ext === 'opus' ? 'opus' : 'mp3';
+    // Flat filename: bird-slug_xcID.ext (matches media.ts getSongPath)
+    const filename = `${slug}_xc${rec.id}.${ext}`;
+    const localPath = join(AUDIO_DIR, filename);
+    const xcUrl = `https://xeno-canto.org/${rec.id}`;
 
     if (!DRY_RUN && !existsSync(localPath)) {
       try {
@@ -165,93 +193,123 @@ async function fetchSongsForBird(
         continue;
       }
     } else if (DRY_RUN) {
-      console.log(`  [DRY RUN] Would download ${publicPath}`);
+      console.log(`  [DRY RUN] Would download → media/songs/${filename}`);
     } else {
       console.log(`  Already exists: ${filename}`);
     }
 
-    entries.push({
+    records.push({
       bird_slug: slug,
-      xeno_canto_id: rec.id,
-      license: rec.lic,
       filename,
-      path: publicPath,
-      length: rec.length,
-      quality: rec.q,
+      format,
+      duration_sec: parseLength(rec.length),
+      source_url: xcUrl,
+      license: rec.lic,
+      recordist: rec.rec || undefined,
+      recording_date: rec.date || undefined,
+      recording_loc: [rec.loc, rec.cnt].filter(Boolean).join(', ') || undefined,
     });
   }
 
-  return entries;
+  return records;
 }
 
 // ---------------------------------------------------------------------------
 // Wikimedia Commons image fetching
 // ---------------------------------------------------------------------------
 
-interface WikimediaImageInfo {
-  url: string;
-  descriptionurl: string;
-  extmetadata?: {
-    License?: { value: string };
-    LicenseUrl?: { value: string };
-    Artist?: { value: string };
-  };
+/** Matches the ImageRecord interface in seed-db.ts */
+interface ImageRecord {
+  entity_type: 'bird' | 'plant';
+  entity_slug: string;
+  filename: string;
+  alt_text: string;
+  width?: number;
+  height?: number;
+  source_url: string;
+  license: string;
+  author?: string;
+  is_primary: 0 | 1;
 }
 
-interface WikimediaResponse {
+interface WikiPageImageResponse {
   query?: {
     pages?: Record<string, {
-      imageinfo?: WikimediaImageInfo[];
+      thumbnail?: { source: string; width: number; height: number };
+      pageimage?: string;
     }>;
   };
 }
 
-interface ImageManifestEntry {
-  subject_slug: string;
-  subject_type: 'bird' | 'plant';
-  license: string;
-  filename: string;
-  path: string; // public path
-  source_url: string;
-  attribution: string;
+interface WikiImageInfoResponse {
+  query?: {
+    pages?: Record<string, {
+      imageinfo?: Array<{
+        url: string;
+        width: number;
+        height: number;
+        extmetadata?: {
+          License?: { value: string };
+          LicenseUrl?: { value: string };
+          Artist?: { value: string };
+        };
+      }>;
+    }>;
+  };
 }
 
 async function fetchWikimediaImage(
   searchTerm: string,
-): Promise<{ url: string; license: string; attribution: string } | null> {
-  // First search for the image
-  const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(searchTerm)}&prop=pageimages&pithumbsize=1200&format=json&origin=*`;
+): Promise<{
+  url: string;
+  width: number;
+  height: number;
+  license: string;
+  attribution: string;
+} | null> {
+  const pageUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(searchTerm)}&prop=pageimages&pithumbsize=1200&format=json&origin=*`;
 
   try {
-    const res = await fetchWithRetry(searchUrl);
+    const res = await fetchWithRetry(pageUrl);
     if (!res.ok) return null;
 
-    const data = (await res.json()) as {
-      query?: { pages?: Record<string, { thumbnail?: { source: string }; pageimage?: string }> };
-    };
-
+    const data = (await res.json()) as WikiPageImageResponse;
     const pages = data.query?.pages ?? {};
     const page = Object.values(pages)[0];
-    const thumbnail = page?.thumbnail?.source;
+    const thumbnail = page?.thumbnail;
     const pageimage = page?.pageimage;
 
     if (!thumbnail || !pageimage) return null;
 
-    // Fetch image info for license
-    const infoUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(pageimage)}&prop=imageinfo&iiprop=url|extmetadata&format=json&origin=*`;
+    // Fetch license + attribution via imageinfo
+    const infoUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(pageimage)}&prop=imageinfo&iiprop=url|size|extmetadata&format=json&origin=*`;
     const infoRes = await fetchWithRetry(infoUrl);
-    if (!infoRes.ok) return { url: thumbnail, license: 'unknown', attribution: '' };
+    if (!infoRes.ok) {
+      return {
+        url: thumbnail.source,
+        width: thumbnail.width,
+        height: thumbnail.height,
+        license: 'unknown',
+        attribution: '',
+      };
+    }
 
-    const infoData = (await infoRes.json()) as WikimediaResponse;
+    const infoData = (await infoRes.json()) as WikiImageInfoResponse;
     const infoPages = infoData.query?.pages ?? {};
     const infoPage = Object.values(infoPages)[0];
     const imageinfo = infoPage?.imageinfo?.[0];
+
     const license = imageinfo?.extmetadata?.License?.value ?? 'unknown';
     const artist = imageinfo?.extmetadata?.Artist?.value ?? '';
-    // Strip HTML tags from artist field
     const attribution = artist.replace(/<[^>]+>/g, '').trim();
 
-    return { url: thumbnail, license, attribution };
+    return {
+      url: thumbnail.source,
+      width: imageinfo?.width ?? thumbnail.width,
+      height: imageinfo?.height ?? thumbnail.height,
+      license,
+      attribution,
+    };
   } catch (err) {
     console.warn(`  Wikimedia lookup failed for "${searchTerm}": ${err}`);
     return null;
@@ -260,31 +318,32 @@ async function fetchWikimediaImage(
 
 async function fetchImageForSubject(
   slug: string,
-  name: string,
+  commonName: string,
   scientificName: string,
   type: 'bird' | 'plant',
-): Promise<ImageManifestEntry | null> {
-  console.log(`  Fetching image for ${name} (${scientificName})…`);
+): Promise<ImageRecord | null> {
+  console.log(`  Fetching image for ${commonName} (${scientificName})…`);
 
-  const imgDir = join(IMAGES_DIR, type, slug);
+  // Images saved to media/images/{type}s/ (plural, matching media.ts getImagePath)
+  const imgDir = join(IMAGES_DIR, type + 's');
   ensureDir(imgDir);
 
   // Try scientific name first, fall back to common name
   let imageData = await fetchWikimediaImage(scientificName);
   if (!imageData) {
-    imageData = await fetchWikimediaImage(name);
+    imageData = await fetchWikimediaImage(commonName);
   }
   if (!imageData) {
-    console.log(`  No image found for ${name}`);
+    console.log(`  No image found for ${commonName}`);
     return null;
   }
 
   const urlParts = imageData.url.split('/');
   const originalFilename = urlParts[urlParts.length - 1] ?? 'image.jpg';
-  const ext = originalFilename.split('.').pop() ?? 'jpg';
+  const ext = originalFilename.split('.').pop()?.toLowerCase() ?? 'jpg';
+  // Flat filename: {slug}.{ext} — matches getImagePath(type, filename) in media.ts
   const filename = `${slug}.${ext}`;
   const localPath = join(imgDir, filename);
-  const publicPath = `/images/${type}/${slug}/${filename}`;
 
   if (!DRY_RUN && !existsSync(localPath)) {
     try {
@@ -298,23 +357,26 @@ async function fetchImageForSubject(
         return null;
       }
     } catch (err) {
-      console.warn(`  Error downloading image for ${name}: ${err}`);
+      console.warn(`  Error downloading image for ${commonName}: ${err}`);
       return null;
     }
   } else if (DRY_RUN) {
-    console.log(`  [DRY RUN] Would download ${publicPath}`);
+    console.log(`  [DRY RUN] Would download → media/images/${type}s/${filename}`);
   } else {
     console.log(`  Already exists: ${filename}`);
   }
 
   return {
-    subject_slug: slug,
-    subject_type: type,
-    license: imageData.license,
+    entity_type: type,
+    entity_slug: slug,
     filename,
-    path: publicPath,
+    alt_text: `${commonName} (${scientificName})`,
+    width: imageData.width,
+    height: imageData.height,
     source_url: imageData.url,
-    attribution: imageData.attribution,
+    license: imageData.license,
+    author: imageData.attribution || undefined,
+    is_primary: 1,
   };
 }
 
@@ -337,23 +399,25 @@ interface PlantRecord {
 async function main() {
   console.log(`Bird Garden — fetch-media${DRY_RUN ? ' (DRY RUN)' : ''}`);
   console.log('─'.repeat(50));
+  console.log(`Media root: ${MEDIA_ROOT}`);
+  console.log('');
 
   ensureDir(AUDIO_DIR);
-  ensureDir(IMAGES_DIR);
+  ensureDir(join(IMAGES_DIR, 'birds'));
+  ensureDir(join(IMAGES_DIR, 'plants'));
 
   const birds = loadJson<BirdRecord[]>('birds.json');
   const plants = loadJson<PlantRecord[]>('plants.json');
 
   // ---- Songs ----------------------------------------------------------------
   console.log('\n[1/3] Fetching bird songs from Xeno-canto…');
-  const songManifest: SongManifestEntry[] = [];
+  const songManifest: SongRecord[] = [];
 
   for (const bird of birds) {
     console.log(`\n${bird.common_name} (${bird.slug})`);
     const entries = await fetchSongsForBird(bird.slug, bird.scientific_name);
     songManifest.push(...entries);
-    // Polite delay between birds
-    await sleep(500);
+    await sleep(500); // polite delay between birds
   }
 
   console.log(`\nSongs fetched: ${songManifest.length}`);
@@ -364,7 +428,7 @@ async function main() {
 
   // ---- Bird images ----------------------------------------------------------
   console.log('\n[2/3] Fetching bird images from Wikimedia Commons…');
-  const imageManifest: ImageManifestEntry[] = [];
+  const imageManifest: ImageRecord[] = [];
 
   for (const bird of birds) {
     console.log(`\n${bird.common_name} (${bird.slug})`);
@@ -401,6 +465,7 @@ async function main() {
 
   console.log('\n─'.repeat(50));
   console.log('Done.');
+  console.log('\nNext step: bun run optimize-images && bun run seed');
 }
 
 main().catch((err) => {
