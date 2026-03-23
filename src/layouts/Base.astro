@@ -7,6 +7,8 @@
 import '../styles/global.css';
 import '../styles/layout.css';
 import '../styles/components.css';
+import MobileNav from '../components/MobileNav';
+import MiniPlayer from '../components/MiniPlayer';
 
 interface Props {
   /** Page title — will be prefixed with site name */
@@ -167,23 +169,10 @@ const selectedRegion = Astro.url.searchParams.get('region');
             </a>
           )}
 
-          <!-- Mobile nav toggle — MobileNav.tsx island handles the drawer -->
-          <button
-            class="nav-mobile-toggle"
-            aria-label="Open navigation menu"
-            aria-expanded="false"
-            aria-controls="mobile-nav-drawer"
-            id="mobile-nav-toggle"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-              <path d="M3 6H21M3 12H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </button>
+          <!-- Mobile navigation island — renders its own hamburger + drawer -->
+          <MobileNav client:load />
         </div>
       </nav>
-
-      <!-- Mobile navigation drawer island — loaded as Preact client component -->
-      <!-- <MobileNav client:load /> — will be added in Task 6 -->
     </header>
 
     <!-- Main content area -->
@@ -244,10 +233,7 @@ const selectedRegion = Astro.url.searchParams.get('region');
     <div id="aria-live-polite" aria-live="polite" aria-atomic="true" class="sr-only"></div>
     <div id="aria-live-assertive" aria-live="assertive" aria-atomic="true" class="sr-only"></div>
 
-    <!--
-      Mini player island — sticky bottom bar when audio is playing.
-      Rendered here so it sits above all page content in the stacking context.
-      <MiniPlayer client:load /> — will be wired up in Task 9
-    -->
+    <!-- Mini player island — sticky bottom bar when audio is playing -->
+    <MiniPlayer client:load />
   </body>
 </html>
