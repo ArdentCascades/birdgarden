@@ -8,7 +8,7 @@
     }
 }
 
-birdgarden.example.com {
+birdgarden.org {
     tls {
         protocols tls1.2 tls1.3
     }
