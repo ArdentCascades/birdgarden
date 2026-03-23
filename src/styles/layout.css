@@ -110,31 +110,9 @@
     background-color: var(--color-green-100);
   }
 
-  /* Mobile nav toggle button */
-  .nav-mobile-toggle {
-    display: none;
-    padding: var(--space-2);
-    min-height: 2.75rem;
-    min-width: 2.75rem;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-md);
-    color: var(--color-text-muted);
-    transition: color var(--transition-fast), background-color var(--transition-fast);
-  }
-
-  .nav-mobile-toggle:hover {
-    color: var(--color-text);
-    background-color: var(--color-surface);
-  }
-
   @media (max-width: 768px) {
     .nav-links {
       display: none; /* Hidden — shown in MobileNav island */
-    }
-
-    .nav-mobile-toggle {
-      display: flex;
     }
   }
 
