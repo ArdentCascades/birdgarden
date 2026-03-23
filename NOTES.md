@@ -329,6 +329,18 @@ validate-data: Validation passed ✓
 
 ---
 
+---
+
+### Commit 5 — Wire MobileNav and MiniPlayer into Base.astro
+
+#### `src/layouts/Base.astro`
+- Imported `MobileNav` and `MiniPlayer` in the frontmatter
+- Replaced the non-functional static `<button class="nav-mobile-toggle">` stub with `<MobileNav client:load />` — the island renders its own hamburger button (class `mobile-nav-toggle`) + the `<dialog>` drawer
+- Added `<MiniPlayer client:load />` immediately before `</body>` so the sticky "now playing" bar appears site-wide when `bird-garden:song-play` fires
+- The now-unused `.nav-mobile-toggle` CSS rule in `layout.css` is benign; safe to clean up later
+
+---
+
 ## Current state
 
 | Metric | Value |
@@ -343,8 +355,9 @@ validate-data: Validation passed ✓
 
 ## What still needs doing
 1. **Real media files** — `fetch-media.ts` and `optimize-images.ts` are implemented but need actual network access. Run `bun run fetch-media && bun run optimize-images && bun run seed` on a machine with internet access to populate `media/` and the DB.
-2. **AudioPlayer song metadata** — The component only receives `songId` and `birdName`; full metadata (recordist, location, license) is displayed server-side on the bird detail page below each player, but not fetched client-side. This is intentional (reduces API calls) but means the AudioPlayer attribution block inside the component is never populated.
-3. **`about.astro` live data** — The About page's "Media Attribution" section describes where attribution appears in the UI, but doesn't generate a live list of all sources. This could be a future enhancement once media is fetched.
+2. **E2E tests unverified** — the 28 Playwright tests have never run against a fully built server. Need `bun run build` + a live preview with media present.
+3. **CSP header** — `Caddyfile` has security headers but no `Content-Security-Policy`. Needs thought before public launch (inline scripts + Preact islands).
+4. **`about.astro` live attribution list** — the page explains how attribution works but doesn't list actual sources. Once media is fetched, this section should be populated dynamically from the DB.
 
 ---
 
