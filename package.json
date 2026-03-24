@@ -16,7 +16,7 @@
     "test": "bun test"
   },
   "dependencies": {
-    "@astrojs/node": "9",
+    "@astrojs/node": "10",
     "@astrojs/preact": "^4.0.0",
     "astro": "^5.0.0",
     "better-sqlite3": "^9.0.0",
